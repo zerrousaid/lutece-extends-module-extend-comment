@@ -1,0 +1,40 @@
+<#if listComments?? && listComments?has_content>
+	<#list listComments as comment>
+		<p>
+			<strong>#i18n{module.socialhub.comment.comment_info.labelAuthor}</strong>
+		</p>
+		<p>
+			#i18n{module.socialhub.comment.comment_info.labelName} : ${comment.name!} - #i18n{module.socialhub.comment.comment_info.labelSendTime} : ${comment.dateComment!}
+		</p>
+		<p>
+			#i18n{module.socialhub.comment.comment_info.labelEmail} : ${comment.email!} - #i18n{module.socialhub.comment.comment_info.labelIpAddress} : ${comment.ipAddress!}
+		</p>
+		<p>
+			<strong>#i18n{module.socialhub.comment.comment_info.labelComment}</strong>
+		</p>
+		<p>
+			${comment.comment!}
+		</p>
+		<p>
+			<form method=post" action="jsp/admin/plugins/socialhub/modules/comment/DoPublishUnpublishComment.jsp">
+				<input type="hidden" name="idComment" value="${comment.idComment!}" />
+				<#if comment.published>
+					<img src="images/admin/skin/enable.png" alt="#i18n{module.socialhub.comment.comment_info.labelPublished}" title="#i18n{module.socialhub.comment.comment_info.labelPublished}" />
+					<input class="button" type="submit" name="unpublish" value="#i18n{module.socialhub.comment.comment_info.buttonUnpublish}" />
+				<#else>
+					<img src="images/admin/skin/disable.png" alt="#i18n{module.socialhub.comment.comment_info.labelUnpublished}" title="#i18n{module.socialhub.comment.comment_info.labelUnpublished}" />
+					<input class="button" type="submit" name="unpublish" value="#i18n{module.socialhub.comment.comment_info.buttonPublish}" />
+				</#if>
+				<a href="jsp/admin/plugins/socialhub/modules/comment/ConfirmRemoveComment.jsp?idComment=${comment.idComment!}">
+					<img src="images/admin/skin/actions/delete.png" alt="#i18n{portal.util.labelDelete}" title="#i18n{portal.util.labelDelete}" />
+				</a>
+			</form>
+		</p>
+		<hr />
+	</#list>
+<#else>
+	<p>
+		#i18n{module.socialhub.comment.comment_info.labelNoComment}
+	</p>
+	<br />
+</#if>
