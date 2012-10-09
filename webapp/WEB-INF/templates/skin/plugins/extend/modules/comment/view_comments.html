@@ -1,0 +1,21 @@
+<div id="content" class="span-22 prepend-1 append-1 append-bottom last">
+	<div class="portlet -lutece-border-radius">
+		<#if listComments?? && listComments?has_content>
+			<#list listComments as comment>
+				<fieldset>
+					<legend>#i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment?date} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}</legend>
+					<p>${comment.comment!}</p>
+				</fieldset>
+			</#list>
+		<#else>
+			<p>
+				#i18n{module.extend.comment.view_comments.noComments}
+			</p>
+		</#if>
+		<p>
+			<a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}">
+				#i18n{module.extend.comment.view_comments.labelAddComment}
+			</a>
+		</p>
+	</div>
+</div>

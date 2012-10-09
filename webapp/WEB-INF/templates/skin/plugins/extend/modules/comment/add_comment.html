@@ -1,0 +1,81 @@
+<#--
+-- Get the email from a given MyLuteceUser.
+-- It returns the "user.home-info.online.email" information.
+-- If there are no information, then it returns the information "user.business-info.online.email".
+-- @param myLuteceUser the MyLuteceUser
+-- @return the email
+-->
+<#function getEmail myLuteceUser>
+	<#assign email = "" />
+	<#if myLuteceUser??>
+		<#assign email = myLuteceUser.getUserInfo( "user.home-info.online.email" ) />
+		<#if email == "">
+			<#assign email = myLuteceUser.getUserInfo( "user.business-info.online.email" ) />
+		</#if>
+	</#if>
+	<#return email />
+</#function>
+
+<#--
+-- Get the user name from a given MyLuteceUser.
+-- It returns the concatenation of the information "user.name.given" with "user.name.family".
+-- @param myLuteceUser the MyLuteceUser
+-->
+<#function getUserName myLuteceUser>
+	<#assign userName = "" />
+	<#if myLuteceUser??>
+		<#assign givenName = myLuteceUser.getUserInfo( "user.name.given" ) />
+		<#assign familyName = myLuteceUser.getUserInfo( "user.name.family" ) />
+		<#assign userName = givenName />
+		<#if userName != "" && familyName != "">
+			<#assign userName = userName + " " />
+		</#if>
+		<#assign userName = userName + familyName />
+	</#if>
+	<#return userName />
+</#function>
+
+<#-- Init variables -->
+<#assign email = "" />
+<#assign userName = "" />
+<#if myLuteceUser??>
+	<#assign email = getEmail( myLuteceUser! ) />
+	<#assign userName = getUserName( myLuteceUser! ) />
+</#if>
+
+<div id="content" class="span-22 prepend-1 append-1 append-bottom last">
+	<div class="portlet -lutece-border-radius">
+		<form method="post" action="jsp/site/Portal.jsp">
+			<input type="hidden" name="page" value="extend-comment" />
+			<input type="hidden" name="action" value="doAddComment" />
+			<input type="hidden" name="idExtendableResource" value="${idExtendableResource!}" />
+			<input type="hidden" name="extendableResourceType" value="${extendableResourceType!}" />
+			<#if commentConfig?? && commentConfig.moderated>
+				<p>
+					#i18n{module.extend.comment.add_comment.messageModeratedComment}
+				</p>
+			</#if>
+			<p>
+				<label for="name">#i18n{module.extend.comment.add_comment.labelEmail} * :</label>
+				
+				<input type="text" name="email" size="20" maxlength="255" value="${email!}" />
+			</p>
+			<p>
+				<label for="name">#i18n{module.extend.comment.add_comment.labelName} * :</label>
+				<input type="text" name="name" size="20" maxlength="255" value="${userName!}" />
+			</p>
+			<p>
+				<label for="comment">#i18n{module.extend.comment.add_comment.labelComment} * :</label>
+				<textarea name="comment" cols="45" rows="8"></textarea>
+			</p>
+			<#--  <#if properties.captchaActive>  -->
+				<#if is_active_captcha>
+					<div >${captcha!}</div>
+				</#if>
+			<#-- </#if>  -->
+			<p>
+				<input type="submit" name="add" value="#i18n{portal.util.labelValidate}" />
+			</p>
+		</form>
+	</div>
+</div>

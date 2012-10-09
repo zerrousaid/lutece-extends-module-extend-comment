@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
 	<properties>
-		<title>Module Social Hub Comment</title>
+		<title>Module Extend Comment</title>
 	</properties>
 	<body>
-		<section name="Module Social Hub Rating">
+		<section name="Module Extend Rating">
 			<subsection name="Introduction">
 				<p>
 					Ce module permet aux internautes de commenter sur les ressources d'un portail Lut&#232;ce.

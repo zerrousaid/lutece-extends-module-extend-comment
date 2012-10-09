@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
 	<properties>
-		<title>Module Social Hub Comment</title>
+		<title>Module Extend Comment</title>
 	</properties>
 	<body>
-		<section name="Module Social Hub Comment">
+		<section name="Module Extend Comment">
 			<subsection name="Introduction">
 				<p>
 					This module is used to allow users to comment resources.
