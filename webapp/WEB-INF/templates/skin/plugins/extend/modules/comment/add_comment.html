@@ -43,39 +43,47 @@
 	<#assign userName = getUserName( myLuteceUser! ) />
 </#if>
 
-<div id="content" class="span-22 prepend-1 append-1 append-bottom last">
-	<div class="portlet -lutece-border-radius">
-		<form method="post" action="jsp/site/Portal.jsp">
-			<input type="hidden" name="page" value="extend-comment" />
-			<input type="hidden" name="action" value="doAddComment" />
-			<input type="hidden" name="idExtendableResource" value="${idExtendableResource!}" />
-			<input type="hidden" name="extendableResourceType" value="${extendableResourceType!}" />
+<div class="row-fluid" >
+	<form class="form-horizontal" method="post" action="jsp/site/Portal.jsp">
+		<fieldset>
 			<#if commentConfig?? && commentConfig.moderated>
-				<p>
-					#i18n{module.extend.comment.add_comment.messageModeratedComment}
-				</p>
+				<legend>#i18n{module.extend.comment.add_comment.messageModeratedComment}</legend>
 			</#if>
-			<p>
-				<label for="name">#i18n{module.extend.comment.add_comment.labelEmail} * :</label>
-				
-				<input type="text" name="email" size="20" maxlength="255" value="${email!}" />
-			</p>
-			<p>
-				<label for="name">#i18n{module.extend.comment.add_comment.labelName} * :</label>
-				<input type="text" name="name" size="20" maxlength="255" value="${userName!}" />
-			</p>
-			<p>
-				<label for="comment">#i18n{module.extend.comment.add_comment.labelComment} * :</label>
-				<textarea name="comment" cols="45" rows="8"></textarea>
-			</p>
+			<div class="control-group" >
+				<label class="control-label" for="name">#i18n{module.extend.comment.add_comment.labelEmail} * :</label>
+				<div class="controls">
+					<input type="text" name="email" size="20" maxlength="255" value="${email!}" />
+				</div>
+			</div>
+			<div class="control-group" >
+				<label class="control-label" for="name">#i18n{module.extend.comment.add_comment.labelName} * :</label>
+				<div class="controls">
+					<input type="text" name="name" size="20" maxlength="255" value="${userName!}" />
+				</div>
+			</div>
+			<div class="control-group" >
+				<label class="control-label" for="comment">#i18n{module.extend.comment.add_comment.labelComment} * :</label>
+				<div class="controls">
+					<textarea name="comment" cols="45" rows="8"></textarea>
+				</div>
+			</div>
 			<#--  <#if properties.captchaActive>  -->
 				<#if is_active_captcha>
 					<div >${captcha!}</div>
 				</#if>
 			<#-- </#if>  -->
-			<p>
-				<input type="submit" name="add" value="#i18n{portal.util.labelValidate}" />
-			</p>
-		</form>
-	</div>
+			<div class="form-actions">
+				<input type="hidden" name="page" value="extend-comment" />
+				<input type="hidden" name="action" value="doAddComment" />
+				<input type="hidden" name="idExtendableResource" value="${idExtendableResource!}" />
+				<input type="hidden" name="extendableResourceType" value="${extendableResourceType!}" />
+				<button class="btn btn-primary" type="submit" name="add" value="#i18n{portal.util.labelValidate}" title="#i18n{portal.util.labelValidate}" >
+					<i class="icon-ok icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelValidate}
+				</button>
+				<button class="btn" type="button" name="cancel" onclick="javascript:history.back();" value="#i18n{portal.util.labelBack}" title="#i18n{portal.util.labelBack}" >
+					#i18n{portal.util.labelBack}
+				</button>
+			</div>
+		</fieldset>
+	</form>
 </div>
