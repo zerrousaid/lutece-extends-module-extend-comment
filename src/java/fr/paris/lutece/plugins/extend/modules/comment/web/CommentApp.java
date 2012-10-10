@@ -65,25 +65,26 @@ import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.web.constants.Messages;
+import fr.paris.lutece.portal.web.util.LocalizedPaginator;
 import fr.paris.lutece.portal.web.xpages.XPage;
 import fr.paris.lutece.portal.web.xpages.XPageApplication;
 import fr.paris.lutece.util.beanvalidation.BeanValidationUtil;
 import fr.paris.lutece.util.html.HtmlTemplate;
+import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.url.UrlItem;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
-
 import java.lang.reflect.InvocationTargetException;
-
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-
 import javax.validation.ConstraintViolation;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -109,6 +110,8 @@ public class CommentApp implements XPageApplication
     private static final String TEMPLATE_XPAGE_ADD_COMMENT = "skin/plugins/extend/modules/comment/add_comment.html";
     private static final String TEMPLATE_COMMENT_NOTIFY_MESSAGE = "skin/plugins/extend/modules/comment/comment_notify_message.html";
 
+	private static final String PARAMETER_PAGE = "page";
+
     // CONSTANTS
     private static final String JCAPTCHA_PLUGIN = "jcaptcha";
     private static final String HTML_BR = "<br />";
@@ -120,6 +123,10 @@ public class CommentApp implements XPageApplication
     private IResourceExtenderConfigService _configService = SpringContextService.getBean( CommentConstants.BEAN_CONFIG_SERVICE );
     private IResourceExtenderService _resourceExtenderService = SpringContextService.getBean( ResourceExtenderService.BEAN_SERVICE );
     private IResourceExtenderHistoryService _resourceHistoryService = SpringContextService.getBean( ResourceExtenderHistoryService.BEAN_SERVICE );
+
+	private String _strCurrentPageIndex;
+	private int _nItemsPerPage;
+	private int _nDefautlItemsPerPage = 50;
 
     /**
      * {@inheritDoc}
@@ -178,11 +185,35 @@ public class CommentApp implements XPageApplication
         page.setPathLabel( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_VIEW_COMMENTS_PATH_LABEL,
                 request.getLocale(  ) ) );
 
+        boolean bAscSort;
+		String strSort = request.getParameter( CommentConstants.MARK_ASC_SORT );
+        if ( StringUtils.isEmpty( strSort ) )	
+        {
+			bAscSort = false;
+        }
+        else
+        {
+			bAscSort = Boolean.parseBoolean( strSort );
+        }
+        
+        _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
+		_nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, _nDefautlItemsPerPage );
+		UrlItem urlSort = new UrlItem( AppPathService.getPortalUrl( ) );
+		urlSort.addParameter( PARAMETER_PAGE, CommentPlugin.PLUGIN_NAME );
+		urlSort.addParameter( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
+		urlSort.addParameter( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
+		urlSort.addParameter( CommentConstants.MARK_ASC_SORT, strSort );
+		List<Comment> listItems = _commentService.findByResource( strIdExtendableResource, strExtendableResourceType, true, bAscSort );
+
+		Paginator<Comment> paginator = new LocalizedPaginator<Comment>( listItems, _nItemsPerPage, urlSort.getUrl( ), Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, request
+				.getLocale( ) );
+        
         Map<String, Object> model = new HashMap<String, Object>(  );
-        model.put( CommentConstants.MARK_LIST_COMMENTS,
-            _commentService.findByResource( strIdExtendableResource, strExtendableResourceType, true ) );
+		// model.put( CommentConstants.MARK_LIST_COMMENTS, paginator.getPageItems( ) );
         model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
         model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
+		model.put( CommentConstants.MARK_PAGINATOR, paginator );
+		model.put( CommentConstants.MARK_ASC_SORT, strSort );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_XPAGE_VIEW_COMMENTS, request.getLocale(  ),
                 model );

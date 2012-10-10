@@ -85,17 +85,18 @@ public interface ICommentDAO
      */
     void store( Comment comment, Plugin plugin );
 
-    /**
-     * Select by id hub resource.
-     *
-     * @param strIdExtendableResource the str id extendable resource
-     * @param strExtendableResourceType the str extendable resource type
-     * @param bPublishedOnly the b published
-     * @param plugin the plugin
-     * @return the list
-     */
+	/**
+	 * Select by id hub resource.
+	 * 
+	 * @param strIdExtendableResource the str id extendable resource
+	 * @param strExtendableResourceType the str extendable resource type
+	 * @param bPublishedOnly the b published
+	 * @param bAscSort True if comments should be sorted ascendantly, false otherwise
+	 * @param plugin the plugin
+	 * @return the list
+	 */
     List<Comment> selectByResource( String strIdExtendableResource, String strExtendableResourceType,
-        boolean bPublishedOnly, Plugin plugin );
+ boolean bPublishedOnly, boolean bAscSort, Plugin plugin );
 
     /**
      * Update comment status.

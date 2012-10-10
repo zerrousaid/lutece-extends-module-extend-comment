@@ -1,21 +1,49 @@
 <div class="row-fluid">
+	<#assign listComments = paginator.pageItems>
 	<#if listComments?? && listComments?has_content>
+		<br />
+		<form class="form-inline" method="post" action="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;asc_sort=${asc_sort!}">
+			<div class="span5">
+			<a class="btn btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}">
+				<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAddComment}
+			</a>
+			</div>
+			<div class="span2">
+				<p>
+					<strong>#i18n{module.extend.comment.view_comments.sortedByDate}</strong> <@sort jsp_url="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" attribute="date" />
+				</p>
+			</div>
+			<div class="span5">
+			<div class="pull-right" >
+				<@paginationItemCount paginator=paginator combo=1 nb_items_per_page=paginator.itemsPerPage?string/>
+			</div>
+			</div>
+		</form>
+		<@paginationPageLinks paginator=paginator/>
 		<#list listComments as comment>
 			<div class="well">
-				<fieldset>
-					<legend>#i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment?date} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}</legend>
-					<p>${comment.comment!}</p>
-				</fieldset>
+				<p class="lead">#i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment?date} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}</p>
+				<hr />
+				<p>${comment.comment!}</p>
 			</div>
 		</#list>
+		<@paginationPageLinks paginator=paginator/>
+		<form class="form-inline" method="post" action="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;asc_sort=${asc_sort!}">
+			<a class="btn btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}">
+				<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAddComment}
+			</a>
+		    <div class="pull-right" >
+		    	<@paginationItemCount paginator=paginator combo=0 nb_items_per_page=paginator.itemsPerPage?string/>
+		    </div>
+	    </form>
 	<#else>
 		<p>
 			#i18n{module.extend.comment.view_comments.noComments}
 		</p>
+		<p>
+			<a class="btn btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}">
+				<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAddComment}
+			</a>
+		</p>
 	</#if>
-	<p>
-		<a class="btn btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}">
-			<i class="icon-plus-sign icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAddComment}
-		</a>
-	</p>
 </div>

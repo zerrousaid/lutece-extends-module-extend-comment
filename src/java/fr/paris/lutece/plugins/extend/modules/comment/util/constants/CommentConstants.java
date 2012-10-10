@@ -74,10 +74,14 @@ public final class CommentConstants
     public static final String MARK_COMMENT = "comment";
     public static final String MARK_RESOURCE_EXTENDER_NAME = "resourceExtenderName";
     public static final String MARK_RESOURCE_EXTENDER_URL = "resourceExtenderUrl";
+	public static final String MARK_PAGINATOR = "paginator";
 
     // ACTIONS
     public static final String ACTION_ADD_COMMENT = "addComment";
     public static final String ACTION_DO_ADD_COMMENT = "doAddComment";
+
+	// CONSTANTS
+	public static final String MARK_ASC_SORT = "asc_sort";
 
     /**
      * Instantiates a new comment constants.

@@ -35,9 +35,9 @@ package fr.paris.lutece.plugins.extend.modules.comment.service;
 
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -95,16 +95,17 @@ public interface ICommentService
      */
     Comment findByPrimaryKey( int nIdComment );
 
-    /**
-     * Select by resource.
-     *
-     * @param strIdExtendableResource the str id extendable resource
-     * @param strExtendableResourceType the str extendable resource type
-     * @param bPublishedOnly the b only published
-     * @return the list
-     */
+	/**
+	 * Select by resource.
+	 * 
+	 * @param strIdExtendableResource the str id extendable resource
+	 * @param strExtendableResourceType the str extendable resource type
+	 * @param bPublishedOnly the b only published
+	 * @param bAscSort True if comments should be sorted ascendantly, false otherwise
+	 * @return the list
+	 */
     List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType,
-        boolean bPublishedOnly );
+ boolean bPublishedOnly, boolean bAscSort );
 
     /**
      * Check comment nb.

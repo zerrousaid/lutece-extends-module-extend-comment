@@ -49,8 +49,6 @@ import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -58,8 +56,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -157,7 +156,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             Map<String, Object> model = new HashMap<String, Object>(  );
             model.put( CommentConstants.MARK_LIST_COMMENTS,
                 _commentService.findByResource( resourceExtender.getIdExtendableResource(  ),
-                    resourceExtender.getExtendableResourceType(  ), false ) );
+ resourceExtender.getExtendableResourceType( ), false, false ) );
 
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_COMMENTS, request.getLocale(  ),
                     model );

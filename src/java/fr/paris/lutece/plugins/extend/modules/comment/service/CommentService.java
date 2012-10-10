@@ -36,11 +36,11 @@ package fr.paris.lutece.plugins.extend.modules.comment.service;
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.extend.modules.comment.business.ICommentDAO;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 import javax.inject.Inject;
+
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -121,9 +121,9 @@ public class CommentService implements ICommentService
      */
     @Override
     public List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType,
-        boolean bPublishedOnly )
+ boolean bPublishedOnly, boolean bAscSort )
     {
-        return _commentDAO.selectByResource( strIdExtendableResource, strExtendableResourceType, bPublishedOnly,
+		return _commentDAO.selectByResource( strIdExtendableResource, strExtendableResourceType, bPublishedOnly, bAscSort,
             CommentPlugin.getPlugin(  ) );
     }
 

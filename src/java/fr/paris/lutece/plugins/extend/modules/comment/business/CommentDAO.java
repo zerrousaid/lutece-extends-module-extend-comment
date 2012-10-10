@@ -204,20 +204,25 @@ public class CommentDAO implements ICommentDAO
      */
     @Override
     public List<Comment> selectByResource( String strIdExtendableResource, String strExtendableResourceType,
-        boolean bPublishedOnly, Plugin plugin )
+ boolean bPublishedOnly, boolean bAscSort, Plugin plugin )
     {
         List<Comment> listComments = new ArrayList<Comment>(  );
         StringBuilder sbSQL = new StringBuilder( SQL_QUERY_SELECT_BY_RESOURCE );
 
-        if ( bPublishedOnly )
+		String strSortOrder;
+		if ( bAscSort )
         {
-            sbSQL.append( SQL_AND ).append( SQL_FILTER_STATUS_PUBLISHED ).append( SQL_ORDER_BY_DATE_COMMENT )
-                 .append( SQL_ASC );
+			strSortOrder = SQL_ASC;
         }
         else
         {
-            sbSQL.append( SQL_ORDER_BY_DATE_COMMENT ).append( SQL_DESC );
+			strSortOrder = SQL_DESC;
+		}
+		if ( bPublishedOnly )
+		{
+			sbSQL.append( SQL_AND ).append( SQL_FILTER_STATUS_PUBLISHED );
         }
+		sbSQL.append( SQL_ORDER_BY_DATE_COMMENT ).append( strSortOrder );
 
         int nIndex = 1;
         DAOUtil daoUtil = new DAOUtil( sbSQL.toString(  ), plugin );
