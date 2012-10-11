@@ -49,7 +49,7 @@
 	<properties>
 		<componentName>extend-comment</componentName>
 		<jiraProjectName>EXTENDCOMM</jiraProjectName>
-		<jiraComponentId>10693</jiraComponentId>
+		<jiraComponentId>10855</jiraComponentId>
 	</properties>
     
     <scm>
