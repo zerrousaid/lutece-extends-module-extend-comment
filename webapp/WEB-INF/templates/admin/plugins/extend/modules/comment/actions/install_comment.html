@@ -1,0 +1,22 @@
+<#include "../../../actions/create_extender_from_resource.html">
+<a tabindex="-1" href="#">
+	<i class="icon-comment">&nbsp;</i><span class="hidden-phone">&nbsp;#i18n{module.extend.comment.extender.comment.label}</span>
+</a>
+<ul class="dropdown-menu submenu-left">
+	<#assign installed = false>
+	<#assign unremovable = false>
+	<#if extenderTypesInstalled.comment??>
+		<#assign installed = true>
+		<#assign unremovable = extenderTypesInstalled.comment>
+		<li>
+			<#include "manage_comments.html">
+		</li>
+		<li class="divider">
+		</li>
+	</#if>
+	<li>
+		<div class="form-inline">
+			<@createExtenderFromResource extenderType="comment" installed=installed unremovable=unremovable labelAdd="#i18n{module.extend.comment.create_extender_from_resource.labelAddExtender}" labelRemove="#i18n{module.extend.comment.create_extender_from_resource.labelRemoveExtender}" />
+		</div>
+	</li>
+</ul>

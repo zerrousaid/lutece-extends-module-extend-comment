@@ -17,6 +17,9 @@
 		</p>
 			<form method=post" action="jsp/admin/plugins/extend/modules/comment/DoPublishUnpublishComment.jsp">
 				<input type="hidden" name="idComment" value="${comment.idComment!}" />
+				<#if from_url?? && from_url?has_content && from_url != "null">
+					<input type="hidden" name="from_url" value="${from_url!}" />
+				</#if>
 				<#if comment.published>
 					<button class="btn btn-small btn-primary" type="submit" name="unpublish" value="#i18n{module.extend.comment.comment_info.buttonUnpublish}" title="#i18n{module.extend.comment.comment_info.labelPublished}" >
 						<i class="icon-eye-open icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment_info.buttonUnpublish}
@@ -26,7 +29,7 @@
 						<i class="icon-eye-close icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment_info.buttonPublish}
 					</button>
 				</#if>
-				<a class="btn btn-small btn-danger" href="jsp/admin/plugins/extend/modules/comment/ConfirmRemoveComment.jsp?idComment=${comment.idComment!}" title="#i18n{portal.util.labelDelete}">
+				<a class="btn btn-small btn-danger" href="jsp/admin/plugins/extend/modules/comment/ConfirmRemoveComment.jsp?idComment=${comment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{portal.util.labelDelete}">
 					<i class="icon-trash icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelDelete}
 				</a>
 			</form>

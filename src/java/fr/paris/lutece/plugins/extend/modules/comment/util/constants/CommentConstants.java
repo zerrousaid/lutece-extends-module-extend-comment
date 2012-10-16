@@ -60,6 +60,8 @@ public final class CommentConstants
     public static final String PARAMETER_ID_EXTENDABLE_RESOURCE = "idExtendableResource";
     public static final String PARAMETER_EXTENDABLE_RESOURCE_TYPE = "extendableResourceType";
     public static final String PARAMETER_ID_COMMENT = "idComment";
+	public static final String PARAMETER_REFERER = "referer";
+	public static final String PARAMETER_FROM_URL = "from_url";
 
     // BEANS
     public static final String BEAN_CONFIG_SERVICE = "extend-comment.commentExtenderConfigService";

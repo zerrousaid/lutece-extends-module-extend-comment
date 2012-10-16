@@ -46,9 +46,9 @@ import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
 import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.util.url.UrlItem;
 
-import org.apache.commons.lang.StringUtils;
-
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -61,8 +61,14 @@ public class CommentJspBean extends PluginAdminPageJspBean
     // JSP
     private static final String JSP_VIEW_EXTENDER_INFO = "../../ViewExtenderInfo.jsp";
     private static final String JSP_URL_DO_REMOVE_COMMENT = "jsp/admin/plugins/extend/modules/comment/DoRemoveComment.jsp";
-    private ICommentService _commentService = SpringContextService.getBean( CommentService.BEAN_SERVICE );
 
+	// CONSTANT
+	private static final String CONSTANT_AND = "&";
+	private static final String CONSTANT_AND_HTML = "%26";
+
+	private ICommentService _commentService = SpringContextService.getBean( CommentService.BEAN_SERVICE );
+
+	
     /**
      * Do publish unpublish comment.
      *
@@ -99,6 +105,7 @@ public class CommentJspBean extends PluginAdminPageJspBean
                 url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, comment.getIdExtendableResource(  ) );
                 url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE,
                     comment.getExtendableResourceType(  ) );
+				url.addParameter( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace( request.getParameter( CommentConstants.PARAMETER_FROM_URL ), CONSTANT_AND, CONSTANT_AND_HTML ) );
 
                 return url.getUrl(  );
             }
@@ -118,6 +125,7 @@ public class CommentJspBean extends PluginAdminPageJspBean
         UrlItem url = new UrlItem( JSP_URL_DO_REMOVE_COMMENT );
         url.addParameter( CommentConstants.PARAMETER_ID_COMMENT,
             request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
+		url.addParameter( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace( request.getParameter( CommentConstants.PARAMETER_FROM_URL ), CONSTANT_AND, CONSTANT_AND_HTML ) );
 
         return AdminMessageService.getMessageUrl( request, CommentConstants.MESSAGE_CONFIRM_REMOVE_COMMENT,
             url.getUrl(  ), AdminMessage.TYPE_CONFIRMATION );
@@ -159,6 +167,7 @@ public class CommentJspBean extends PluginAdminPageJspBean
                 url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, comment.getIdExtendableResource(  ) );
                 url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE,
                     comment.getExtendableResourceType(  ) );
+				url.addParameter( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace( request.getParameter( CommentConstants.PARAMETER_FROM_URL ), CONSTANT_AND, CONSTANT_AND_HTML ) );
 
                 return url.getUrl(  );
             }

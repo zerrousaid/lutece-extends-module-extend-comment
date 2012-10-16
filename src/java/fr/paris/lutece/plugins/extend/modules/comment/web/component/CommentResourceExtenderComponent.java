@@ -72,6 +72,11 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     private static final String TEMPLATE_COMMENT = "skin/plugins/extend/modules/comment/comment.html";
     private static final String TEMPLATE_COMMENT_CONFIG = "admin/plugins/extend/modules/comment/comment_config.html";
     private static final String TEMPLATE_MANAGE_COMMENTS = "admin/plugins/extend/modules/comment/comment_info.html";
+    
+	// CONSTANT
+	private static final String CONSTANT_AND = "&";
+	private static final String CONSTANT_AND_HTML = "%26";
+    
     @Inject
     private ICommentService _commentService;
     @Inject
@@ -156,7 +161,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             Map<String, Object> model = new HashMap<String, Object>(  );
             model.put( CommentConstants.MARK_LIST_COMMENTS,
                 _commentService.findByResource( resourceExtender.getIdExtendableResource(  ),
- resourceExtender.getExtendableResourceType( ), false, false ) );
+                		resourceExtender.getExtendableResourceType( ), false, false ) );
+            model.put( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace( request.getParameter( CommentConstants.PARAMETER_FROM_URL ), CONSTANT_AND, CONSTANT_AND_HTML ) );
 
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_COMMENTS, request.getLocale(  ),
                     model );

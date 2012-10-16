@@ -50,6 +50,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+
 
 /**
  *
@@ -59,16 +61,19 @@ import javax.servlet.http.HttpServletResponse;
 public class ManageCommentsPluginAction extends AbstractPluginAction<IExtendableResource>
     implements IExtendableResourcePluginAction
 {
-    private static final String ACTION_NAME = "Manage the comments";
-
+	private static final String ACTION_NAME = "Manage comments";
+	
     // PARAMETERS
 	private static final String PARAMETER_MANAGE_COMMENTS = "manageComments";
 
     // TEMPLATE
-    private static final String TEMPLATE_BUTTON = "../plugins/extend/modules/comment/actions/manage_comments.html";
+	private static final String TEMPLATE_BUTTON = "../plugins/extend/modules/comment/actions/install_comment.html";
 
     // JSP
     private static final String JSP_URL = "jsp/admin/plugins/extend/ViewExtenderInfo.jsp";
+
+	private static final String CONSTANT_AND = "&";
+	private static final String CONSTANT_AND_HTML = "%26";
 
     /**
      * {@inheritDoc}
@@ -118,6 +123,7 @@ public class ManageCommentsPluginAction extends AbstractPluginAction<IExtendable
             request.getParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE ) );
         url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE,
             request.getParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE ) );
+		url.addParameter( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace( request.getHeader( CommentConstants.PARAMETER_REFERER ), CONSTANT_AND, CONSTANT_AND_HTML ) );
 
         DefaultPluginActionResult result = new DefaultPluginActionResult(  );
         result.setRedirect( url.getUrl(  ) );
