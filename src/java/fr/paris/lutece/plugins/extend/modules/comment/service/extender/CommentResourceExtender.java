@@ -39,12 +39,11 @@ import fr.paris.lutece.plugins.extend.modules.comment.util.constants.CommentCons
 import fr.paris.lutece.plugins.extend.service.extender.AbstractResourceExtender;
 import fr.paris.lutece.plugins.extend.service.extender.config.IResourceExtenderConfigService;
 
-import org.apache.commons.lang.StringUtils;
-
 import javax.inject.Inject;
 import javax.inject.Named;
-
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -91,10 +90,21 @@ public class CommentResourceExtender extends AbstractResourceExtender
     @Override
     public void doCreateResourceAddOn( ResourceExtenderDTO extender )
     {
-        // Default values
         CommentExtenderConfig config = new CommentExtenderConfig(  );
         config.setIdExtender( extender.getIdExtender(  ) );
-        config.setModerated( false );
+
+        // Default values
+        CommentExtenderConfig defaultConfig = _configService.find( -1 );
+        if ( defaultConfig != null )
+        {
+            config.setIdMailingList( defaultConfig.getIdMailingList( ) );
+            config.setModerated( defaultConfig.isModerated( ) );
+            config.setNbComments( defaultConfig.getNbComments( ) );
+        }
+        else
+        {
+            config.setModerated( false );
+        }
         _configService.create( config );
     }
 
