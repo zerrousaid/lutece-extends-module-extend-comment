@@ -115,6 +115,7 @@ public class CommentApp implements XPageApplication
     // CONSTANTS
     private static final String JCAPTCHA_PLUGIN = "jcaptcha";
     private static final String HTML_BR = "<br />";
+    private static final String FROM_SESSION = "from_session";
 
     // VARIABLES
     private static final boolean _bIsCaptchaEnabled = PluginService.isPluginEnable( JCAPTCHA_PLUGIN ) &&
@@ -196,6 +197,23 @@ public class CommentApp implements XPageApplication
 			bAscSort = Boolean.parseBoolean( strSort );
         }
         
+        String strFromUrl = request.getParameter( CommentConstants.PARAMETER_FROM_URL );
+        if ( FROM_SESSION.equals( strFromUrl ) )
+        {
+            strFromUrl = (String) request.getSession( ).getAttribute(
+                    CommentPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
+        }
+        if ( StringUtils.isEmpty( strFromUrl ) )
+        {
+            strFromUrl = request.getHeader( CommentConstants.PARAMETER_REFERER );
+        }
+        if ( strFromUrl != null )
+        {
+            strFromUrl = strFromUrl.replace( "&", "%26" );
+        }
+        request.getSession( )
+                .setAttribute( CommentPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, strFromUrl );
+
         _strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
 		_nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, _nItemsPerPage, _nDefautlItemsPerPage );
 		UrlItem urlSort = new UrlItem( AppPathService.getPortalUrl( ) );
@@ -203,6 +221,10 @@ public class CommentApp implements XPageApplication
 		urlSort.addParameter( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
 		urlSort.addParameter( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
 		urlSort.addParameter( CommentConstants.MARK_ASC_SORT, strSort );
+        if ( StringUtils.isNotEmpty( strFromUrl ) )
+        {
+            urlSort.addParameter( CommentConstants.PARAMETER_FROM_URL, FROM_SESSION );
+        }
 		List<Comment> listItems = _commentService.findByResource( strIdExtendableResource, strExtendableResourceType, true, bAscSort );
 
 		Paginator<Comment> paginator = new LocalizedPaginator<Comment>( listItems, _nItemsPerPage, urlSort.getUrl( ), Paginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex, request
@@ -214,6 +236,7 @@ public class CommentApp implements XPageApplication
         model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
 		model.put( CommentConstants.MARK_PAGINATOR, paginator );
 		model.put( CommentConstants.MARK_ASC_SORT, strSort );
+        model.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_XPAGE_VIEW_COMMENTS, request.getLocale(  ),
                 model );
@@ -243,10 +266,29 @@ public class CommentApp implements XPageApplication
 
         CommentExtenderConfig config = _configService.find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
                 strIdExtendableResource, strExtendableResourceType );
+
+        String strFromUrl = request.getParameter( CommentConstants.PARAMETER_FROM_URL );
+        if ( FROM_SESSION.equals( strFromUrl ) )
+        {
+            strFromUrl = (String) request.getSession( ).getAttribute(
+                    CommentPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
+        }
+        if ( StringUtils.isEmpty( strFromUrl ) )
+        {
+            strFromUrl = request.getHeader( CommentConstants.PARAMETER_REFERER );
+        }
+        if ( strFromUrl != null )
+        {
+            strFromUrl = strFromUrl.replace( "&", "%26" );
+        }
+        request.getSession( )
+                .setAttribute( CommentPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, strFromUrl );
+
         Map<String, Object> model = new HashMap<String, Object>(  );
         model.put( CommentConstants.MARK_COMMENT_CONFIG, config );
         model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
         model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
+        model.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
 
         // Add Captcha
         model.put( MARK_IS_ACTIVE_CAPTCHA, _bIsCaptchaEnabled );
