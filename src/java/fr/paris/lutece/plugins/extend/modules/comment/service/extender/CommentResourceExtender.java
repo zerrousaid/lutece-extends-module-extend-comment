@@ -35,6 +35,8 @@ package fr.paris.lutece.plugins.extend.modules.comment.service.extender;
 
 import fr.paris.lutece.plugins.extend.business.extender.ResourceExtenderDTO;
 import fr.paris.lutece.plugins.extend.modules.comment.business.config.CommentExtenderConfig;
+import fr.paris.lutece.plugins.extend.modules.comment.service.CommentService;
+import fr.paris.lutece.plugins.extend.modules.comment.service.ICommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.util.constants.CommentConstants;
 import fr.paris.lutece.plugins.extend.service.extender.AbstractResourceExtender;
 import fr.paris.lutece.plugins.extend.service.extender.config.IResourceExtenderConfigService;
@@ -58,6 +60,9 @@ public class CommentResourceExtender extends AbstractResourceExtender
     @Inject
     @Named( CommentConstants.BEAN_CONFIG_SERVICE )
     private IResourceExtenderConfigService _configService;
+    @Inject
+    @Named( CommentService.BEAN_SERVICE )
+    private ICommentService _commentService;
 
     /**
      * {@inheritDoc}
@@ -115,5 +120,6 @@ public class CommentResourceExtender extends AbstractResourceExtender
     public void doDeleteResourceAddOn( ResourceExtenderDTO extender )
     {
         _configService.remove( extender.getIdExtender(  ) );
+        _commentService.removeByResource( extender.getIdExtendableResource( ), extender.getExtendableResourceType( ) );
     }
 }

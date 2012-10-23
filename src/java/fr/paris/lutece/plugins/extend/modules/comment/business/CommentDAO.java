@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.business;
 
+import fr.paris.lutece.plugins.extend.business.extender.ResourceExtenderDTOFilter;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
 
@@ -55,7 +56,8 @@ public class CommentDAO implements ICommentDAO
         " WHERE id_resource = ? AND resource_type = ? ";
     private static final String SQL_QUERY_SELECT_NB_COMMENT_BY_RESOURCE = " SELECT count(*) FROM extend_comment WHERE id_resource = ?, resource_type = ? ";
     private static final String SQL_QUERY_DELETE = " DELETE FROM extend_comment WHERE id_comment = ? ";
-    private static final String SQL_QUERY_DELETE_BY_ID_RESOURCE = " DELETE FROM extend_comment WHERE id_resource = ? AND resource_type = ? ";
+    private static final String SQL_QUERY_DELETE_BY_ID_RESOURCE = " DELETE FROM extend_comment WHERE resource_type = ? ";
+    private static final String SQL_QUERY_FILTER_ID_RESOURCE = " AND id_resource = ? ";
     private static final String SQL_QUERY_UPDATE = " UPDATE extend_comment SET id_resource = ?, resource_type = ?, date_comment = ?, name = ?, email = ?, " +
         " ip_address = ?, comment = ?, is_published = ? WHERE id_comment = ?  ";
     private static final String SQL_QUERY_UPDATE_COMMENT_PUBLISHED = " UPDATE extend_comment SET is_published = ? WHERE id_comment = ?  ";
@@ -168,9 +170,17 @@ public class CommentDAO implements ICommentDAO
     public void deleteByResource( String strIdExtendableResource, String strExtendableResourceType, Plugin plugin )
     {
         int nIndex = 1;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_BY_ID_RESOURCE, plugin );
-        daoUtil.setString( nIndex++, strIdExtendableResource );
-        daoUtil.setString( nIndex, strExtendableResourceType );
+        StringBuilder sbSql = new StringBuilder( SQL_QUERY_DELETE_BY_ID_RESOURCE );
+        if ( !ResourceExtenderDTOFilter.WILDCARD_ID_RESOURCE.equals( strIdExtendableResource ) )
+        {
+            sbSql.append( SQL_QUERY_FILTER_ID_RESOURCE );
+        }
+        DAOUtil daoUtil = new DAOUtil( sbSql.toString( ), plugin );
+        daoUtil.setString( nIndex++, strExtendableResourceType );
+        if ( !ResourceExtenderDTOFilter.WILDCARD_ID_RESOURCE.equals( strIdExtendableResource ) )
+        {
+            daoUtil.setString( nIndex, strIdExtendableResource );
+        }
 
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
