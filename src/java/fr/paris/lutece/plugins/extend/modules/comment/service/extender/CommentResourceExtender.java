@@ -96,20 +96,18 @@ public class CommentResourceExtender extends AbstractResourceExtender
     public void doCreateResourceAddOn( ResourceExtenderDTO extender )
     {
         CommentExtenderConfig config = new CommentExtenderConfig(  );
-        config.setIdExtender( extender.getIdExtender(  ) );
 
         // Default values
         CommentExtenderConfig defaultConfig = _configService.find( -1 );
         if ( defaultConfig != null )
         {
-            config.setIdMailingList( defaultConfig.getIdMailingList( ) );
-            config.setModerated( defaultConfig.isModerated( ) );
-            config.setNbComments( defaultConfig.getNbComments( ) );
+            config = defaultConfig;
         }
         else
         {
             config.setModerated( false );
         }
+        config.setIdExtender( extender.getIdExtender( ) );
         _configService.create( config );
     }
 

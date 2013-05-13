@@ -105,6 +105,10 @@ public class CommentJspBean extends PluginAdminPageJspBean
                 url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, comment.getIdExtendableResource(  ) );
                 url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE,
                     comment.getExtendableResourceType(  ) );
+                if ( comment.getIdParentComment( ) > 0 )
+                {
+                    url.addParameter( CommentConstants.PARAMETER_ID_COMMENT, comment.getIdParentComment( ) );
+                }
 				url.addParameter( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace( request.getParameter( CommentConstants.PARAMETER_FROM_URL ), CONSTANT_AND, CONSTANT_AND_HTML ) );
 
                 return url.getUrl(  );
@@ -167,6 +171,10 @@ public class CommentJspBean extends PluginAdminPageJspBean
                 url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, comment.getIdExtendableResource(  ) );
                 url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE,
                     comment.getExtendableResourceType(  ) );
+                if ( comment.getIdParentComment( ) > 0 )
+                {
+                    url.addParameter( CommentConstants.PARAMETER_ID_COMMENT, comment.getIdParentComment( ) );
+                }
 				url.addParameter( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace( request.getParameter( CommentConstants.PARAMETER_FROM_URL ), CONSTANT_AND, CONSTANT_AND_HTML ) );
 
                 return url.getUrl(  );

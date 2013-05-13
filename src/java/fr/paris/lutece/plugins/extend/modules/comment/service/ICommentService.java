@@ -47,7 +47,7 @@ public interface ICommentService
 {
     /**
      * Delete.
-     *
+     * 
      * @param nIdComment the n id comment
      */
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
@@ -55,7 +55,7 @@ public interface ICommentService
 
     /**
      * Delete by resource
-     *
+     * 
      * @param strIdExtendableResource the str id extendable resource
      * @param strExtendableResourceType the str extendable resource type
      */
@@ -64,7 +64,7 @@ public interface ICommentService
 
     /**
      * Insert.
-     *
+     * 
      * @param comment the comment
      */
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
@@ -72,7 +72,7 @@ public interface ICommentService
 
     /**
      * Store.
-     *
+     * 
      * @param comment the comment
      */
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
@@ -80,7 +80,7 @@ public interface ICommentService
 
     /**
      * Update comment status.
-     *
+     * 
      * @param nIdComment the n id comment
      * @param bPublished the b published
      */
@@ -89,42 +89,100 @@ public interface ICommentService
 
     /**
      * Load.
-     *
+     * 
      * @param nIdComment the n id comment
      * @return the comment
      */
     Comment findByPrimaryKey( int nIdComment );
 
-	/**
-	 * Select by resource.
-	 * 
-	 * @param strIdExtendableResource the str id extendable resource
-	 * @param strExtendableResourceType the str extendable resource type
-	 * @param bPublishedOnly the b only published
-	 * @param bAscSort True if comments should be sorted ascendantly, false otherwise
-	 * @return the list
-	 */
+    /**
+     * Select by resource.
+     * 
+     * @param strIdExtendableResource the id of the extendable resource
+     * @param strExtendableResourceType the extendable resource type
+     * @param bPublishedOnly Get only published comments
+     * @param bAscSort True if comments should be sorted ascendantly, false
+     *            otherwise
+     * @return the list
+     */
     List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType,
- boolean bPublishedOnly, boolean bAscSort );
+            boolean bPublishedOnly, boolean bAscSort );
 
     /**
-     * Check comment nb.
-     *
-     * @param strIdExtendableResource the str id extendable resource
-     * @param strExtendableResourceType the str extendable resource type
-     * @return the int
+     * Get the number of comment
+     * 
+     * @param strIdExtendableResource the id of the extendable resource
+     * @param strExtendableResourceType the extendable resource type
+     * @param bParentsOnly True to consider only comments with no parent, false
+     *            otherwise
+     * @param bPublishedOnly True to get only published comments, false to get
+     *            every comments
+     * @return the number of comments
      */
-    int getCommentNb( String strIdExtendableResource, String strExtendableResourceType );
+    int getCommentNb( String strIdExtendableResource, String strExtendableResourceType, boolean bParentsOnly,
+            boolean bPublishedOnly );
 
     /**
      * Load last comments.
-     *
-     * @param strIdExtendableResource the str id extendable resource
-     * @param strExtendableResourceType the str extendable resource type
-     * @param nNbComments the n nb commentss
-     * @param bPublishedOnly the b published only
+     * 
+     * @param strIdExtendableResource the id of the extendable resource
+     * @param strExtendableResourceType the extendable resource type
+     * @param nNbComments the number of comments
+     * @param bPublishedOnly True to get only published comments, false to get
+     *            every comments
+     * @param bParentsOnly True to get only parent comments, false to get every
+     *            comments.
+     * @param bGetNumberSubComments True to get the number of sub comments of
+     *            each comment, false otherwise
      * @return the list
      */
     List<Comment> findLastComments( String strIdExtendableResource, String strExtendableResourceType, int nNbComments,
-        boolean bPublishedOnly );
+            boolean bPublishedOnly, boolean bParentsOnly, boolean bGetNumberSubComments );
+
+    /**
+     * Get comments of a given resource
+     * @param strIdExtendableResource The id of the resource
+     * @param strExtendableResourceType The type of the resource
+     * @param bPublishedOnly True to consider only published comments
+     * @param strSortedAttributeName The name of the attribute to sort, or null
+     *            if no sort should be done
+     * @param bAscSort True to sort ascendantly, false otherwise
+     * @param nItemsOffset The offset of the items to get, or 0 to get items
+     *            from the first one
+     * @param nMaxItemsNumber The maximum number of items to return, or 0 to get
+     *            every items
+     * @param bLoadSubComments True if sub comments should be loaded, false if
+     *            they should be ignored
+     * @return The list of comments associated with the given resource
+     */
+    List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType,
+            boolean bPublishedOnly, String strSortedAttributeName, boolean bAscSort, int nItemsOffset,
+            int nMaxItemsNumber, boolean bLoadSubComments );
+
+    /**
+     * Get comments from their parent
+     * @param nIdParent The id of the parent of comments to get
+     * @param bPublishedOnly True to consider only published comments
+     * @return The list of comments associated with the given parent
+     */
+    List<Comment> findByIdParent( int nIdParent, boolean bPublishedOnly );
+
+    /**
+     * Get comments from their parent
+     * @param nIdParent The id of the parent of comments to get
+     * @param bPublishedOnly True to consider only published comments
+     * @param strSortedAttributeName The name of the attribute to sort, or null
+     *            if no sort should be done
+     * @param bAscSort True to sort ascendantly, false otherwise
+     * @return The list of comments associated with the given parent
+     */
+    List<Comment> findByIdParent( int nIdParent, boolean bPublishedOnly, String strSortedAttributeName, boolean bAscSort );
+
+    /**
+     * Get the number of comments associated with a given parent
+     * @param nIdParent The id of the parent of comments to count.
+     * @param bPublishedOnly True to consider only published comments
+     * @return The number of comments associated with the given parent
+     */
+    int countByIdParent( int nIdParent, boolean bPublishedOnly );
 }

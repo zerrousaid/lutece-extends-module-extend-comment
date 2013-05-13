@@ -39,16 +39,16 @@ import fr.paris.lutece.util.sql.DAOUtil;
 
 
 /**
- *
+ * 
  * CommentExtenderConfigDAO
- *
+ * 
  */
 public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExtenderConfig>
 {
-    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment_config ( id_extender, is_moderated, nb_comments, id_mailing_list ) VALUES ( ?, ?, ?, ? ) ";
-    private static final String SQL_QUERY_UPDATE = " UPDATE extend_comment_config SET is_moderated = ?, nb_comments = ?, id_mailing_list = ? WHERE id_extender = ? ";
+    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment_config ( id_extender, is_moderated, nb_comments, id_mailing_list, authorize_sub_comments, use_bbcode ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_UPDATE = " UPDATE extend_comment_config SET is_moderated = ?, nb_comments = ?, id_mailing_list = ?, authorize_sub_comments = ?, use_bbcode = ? WHERE id_extender = ? ";
     private static final String SQL_QUERY_DELETE = " DELETE FROM extend_comment_config WHERE id_extender = ? ";
-    private static final String SQL_QUERY_SELECT = " SELECT id_extender, is_moderated, nb_comments, id_mailing_list FROM extend_comment_config WHERE id_extender = ? ";
+    private static final String SQL_QUERY_SELECT = " SELECT id_extender, is_moderated, nb_comments, id_mailing_list, authorize_sub_comments, use_bbcode FROM extend_comment_config WHERE id_extender = ? ";
 
     /**
      * {@inheritDoc}
@@ -58,14 +58,16 @@ public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExten
     {
         int nIndex = 1;
 
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, CommentPlugin.getPlugin(  ) );
-        daoUtil.setInt( nIndex++, config.getIdExtender(  ) );
-        daoUtil.setBoolean( nIndex++, config.isModerated(  ) );
-        daoUtil.setInt( nIndex++, config.getNbComments(  ) );
-        daoUtil.setInt( nIndex, config.getIdMailingList(  ) );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, CommentPlugin.getPlugin( ) );
+        daoUtil.setInt( nIndex++, config.getIdExtender( ) );
+        daoUtil.setBoolean( nIndex++, config.isModerated( ) );
+        daoUtil.setInt( nIndex++, config.getNbComments( ) );
+        daoUtil.setInt( nIndex++, config.getIdMailingList( ) );
+        daoUtil.setBoolean( nIndex++, config.getAuthorizeSubComments( ) );
+        daoUtil.setBoolean( nIndex, config.getUseBBCodeEditor( ) );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -76,15 +78,17 @@ public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExten
     {
         int nIndex = 1;
 
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, CommentPlugin.getPlugin(  ) );
-        daoUtil.setBoolean( nIndex++, config.isModerated(  ) );
-        daoUtil.setInt( nIndex++, config.getNbComments(  ) );
-        daoUtil.setInt( nIndex++, config.getIdMailingList(  ) );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, CommentPlugin.getPlugin( ) );
+        daoUtil.setBoolean( nIndex++, config.isModerated( ) );
+        daoUtil.setInt( nIndex++, config.getNbComments( ) );
+        daoUtil.setInt( nIndex++, config.getIdMailingList( ) );
+        daoUtil.setBoolean( nIndex++, config.getAuthorizeSubComments( ) );
+        daoUtil.setBoolean( nIndex++, config.getUseBBCodeEditor( ) );
 
-        daoUtil.setInt( nIndex, config.getIdExtender(  ) );
+        daoUtil.setInt( nIndex, config.getIdExtender( ) );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -93,11 +97,11 @@ public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExten
     @Override
     public void delete( int nIdExtender )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, CommentPlugin.getPlugin(  ) );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, CommentPlugin.getPlugin( ) );
         daoUtil.setInt( 1, nIdExtender );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -106,23 +110,25 @@ public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExten
     @Override
     public CommentExtenderConfig load( int nIdExtender )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, CommentPlugin.getPlugin(  ) );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, CommentPlugin.getPlugin( ) );
         daoUtil.setInt( 1, nIdExtender );
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
         CommentExtenderConfig config = null;
 
-        if ( daoUtil.next(  ) )
+        if ( daoUtil.next( ) )
         {
             int nIndex = 1;
-            config = new CommentExtenderConfig(  );
+            config = new CommentExtenderConfig( );
             config.setIdExtender( daoUtil.getInt( nIndex++ ) );
             config.setModerated( daoUtil.getBoolean( nIndex++ ) );
             config.setNbComments( daoUtil.getInt( nIndex++ ) );
-            config.setIdMailingList( daoUtil.getInt( nIndex ) );
+            config.setIdMailingList( daoUtil.getInt( nIndex++ ) );
+            config.setAuthorizeSubComments( daoUtil.getBoolean( nIndex++ ) );
+            config.setUseBBCodeEditor( daoUtil.getBoolean( nIndex ) );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return config;
     }

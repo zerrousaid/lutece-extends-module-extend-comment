@@ -35,7 +35,10 @@ package fr.paris.lutece.plugins.extend.modules.comment.service;
 
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.extend.modules.comment.business.ICommentDAO;
+import fr.paris.lutece.portal.service.plugin.Plugin;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -44,9 +47,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 /**
- *
+ * 
  * CommentService
- *
+ * 
  */
 public class CommentService implements ICommentService
 {
@@ -62,7 +65,16 @@ public class CommentService implements ICommentService
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
     public void create( Comment comment )
     {
-        _commentDAO.insert( comment, CommentPlugin.getPlugin(  ) );
+        Timestamp currentTimestamp = new Timestamp( new Date( ).getTime( ) );
+        comment.setDateComment( currentTimestamp );
+        comment.setDateLastModif( currentTimestamp );
+        _commentDAO.insert( comment, CommentPlugin.getPlugin( ) );
+        if ( comment.getIdParentComment( ) > 0 )
+        {
+            Comment parentComment = findByPrimaryKey( comment.getIdParentComment( ) );
+            parentComment.setDateLastModif( currentTimestamp );
+            update( parentComment );
+        }
     }
 
     /**
@@ -72,7 +84,8 @@ public class CommentService implements ICommentService
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
     public void update( Comment comment )
     {
-        _commentDAO.store( comment, CommentPlugin.getPlugin(  ) );
+        comment.setDateLastModif( new Timestamp( new Date( ).getTime( ) ) );
+        _commentDAO.store( comment, CommentPlugin.getPlugin( ) );
     }
 
     /**
@@ -82,7 +95,7 @@ public class CommentService implements ICommentService
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
     public void updateCommentStatus( int nIdComment, boolean bPublished )
     {
-        _commentDAO.updateCommentStatus( nIdComment, bPublished, CommentPlugin.getPlugin(  ) );
+        _commentDAO.updateCommentStatus( nIdComment, bPublished, CommentPlugin.getPlugin( ) );
     }
 
     /**
@@ -92,7 +105,7 @@ public class CommentService implements ICommentService
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
     public void remove( int nIdComment )
     {
-        _commentDAO.delete( nIdComment, CommentPlugin.getPlugin(  ) );
+        _commentDAO.delete( nIdComment, CommentPlugin.getPlugin( ) );
     }
 
     /**
@@ -102,7 +115,7 @@ public class CommentService implements ICommentService
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
     public void removeByResource( String strIdExtendableResource, String strExtendableResourceType )
     {
-        _commentDAO.deleteByResource( strIdExtendableResource, strExtendableResourceType, CommentPlugin.getPlugin(  ) );
+        _commentDAO.deleteByResource( strIdExtendableResource, strExtendableResourceType, CommentPlugin.getPlugin( ) );
     }
 
     // GET
@@ -113,7 +126,7 @@ public class CommentService implements ICommentService
     @Override
     public Comment findByPrimaryKey( int nIdComment )
     {
-        return _commentDAO.load( nIdComment, CommentPlugin.getPlugin(  ) );
+        return _commentDAO.load( nIdComment, CommentPlugin.getPlugin( ) );
     }
 
     /**
@@ -121,19 +134,21 @@ public class CommentService implements ICommentService
      */
     @Override
     public List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType,
- boolean bPublishedOnly, boolean bAscSort )
+            boolean bPublishedOnly, boolean bAscSort )
     {
-		return _commentDAO.selectByResource( strIdExtendableResource, strExtendableResourceType, bPublishedOnly, bAscSort,
-            CommentPlugin.getPlugin(  ) );
+        return _commentDAO.findParentCommentsByResource( strIdExtendableResource, strExtendableResourceType,
+                bPublishedOnly, null, bAscSort, 0, 0, CommentPlugin.getPlugin( ) );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int getCommentNb( String strIdExtendableResource, String strExtendableResourceType )
+    public int getCommentNb( String strIdExtendableResource, String strExtendableResourceType, boolean bParentsOnly,
+            boolean bPublishedOnly )
     {
-        return _commentDAO.getCommentNb( strIdExtendableResource, strExtendableResourceType, CommentPlugin.getPlugin(  ) );
+        return _commentDAO.getCommentNb( strIdExtendableResource, strExtendableResourceType, bParentsOnly,
+                bPublishedOnly, CommentPlugin.getPlugin( ) );
     }
 
     /**
@@ -141,9 +156,71 @@ public class CommentService implements ICommentService
      */
     @Override
     public List<Comment> findLastComments( String strIdExtendableResource, String strExtendableResourceType,
-        int nNbComments, boolean bPublishedOnly )
+            int nNbComments, boolean bPublishedOnly, boolean bParentsOnly, boolean bGetNumberSubComments )
     {
-        return _commentDAO.selectLastComments( strIdExtendableResource, strExtendableResourceType, nNbComments,
-            bPublishedOnly, CommentPlugin.getPlugin(  ) );
+        Plugin plugin = CommentPlugin.getPlugin( );
+        List<Comment> listComments = _commentDAO.selectLastComments( strIdExtendableResource,
+                strExtendableResourceType, nNbComments, bPublishedOnly, bParentsOnly, plugin );
+        if ( bGetNumberSubComments )
+        {
+            for ( Comment comment : listComments )
+            {
+                comment.setNumberSubComments( _commentDAO.countByIdParent( comment.getIdComment( ), bPublishedOnly,
+                        plugin ) );
+            }
+        }
+        return listComments;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType,
+            boolean bPublishedOnly, String strSortedAttributeName, boolean bAscSort, int nItemsOffset,
+            int nMaxItemsNumber, boolean bLoadSubComments )
+    {
+        List<Comment> listComments = _commentDAO.findParentCommentsByResource( strIdExtendableResource,
+                strExtendableResourceType, bPublishedOnly, strSortedAttributeName, bAscSort, nItemsOffset,
+                nMaxItemsNumber, CommentPlugin.getPlugin( ) );
+        if ( bLoadSubComments )
+        {
+            for ( Comment comment : listComments )
+            {
+                comment.setListSubComments( this.findByIdParent( comment.getIdComment( ), bPublishedOnly,
+                        strSortedAttributeName, bAscSort ) );
+            }
+        }
+
+        return listComments;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Comment> findByIdParent( int nIdParent, boolean bPublishedOnly )
+    {
+        return this.findByIdParent( nIdParent, bPublishedOnly, null, true );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Comment> findByIdParent( int nIdParent, boolean bPublishedOnly, String strSortedAttributeName,
+            boolean bAscSort )
+    {
+        return _commentDAO.findByIdParent( nIdParent, bPublishedOnly, strSortedAttributeName, bAscSort,
+                CommentPlugin.getPlugin( ) );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int countByIdParent( int nIdParent, boolean bPublishedOnly )
+    {
+        return _commentDAO.countByIdParent( nIdParent, bPublishedOnly, CommentPlugin.getPlugin( ) );
     }
 }

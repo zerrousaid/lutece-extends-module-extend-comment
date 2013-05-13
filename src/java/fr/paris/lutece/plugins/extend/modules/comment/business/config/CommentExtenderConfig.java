@@ -37,29 +37,31 @@ import fr.paris.lutece.plugins.extend.business.extender.config.ExtenderConfig;
 
 
 /**
- *
+ * 
  * CommentExtenderConfig
- *
+ * 
  */
 public class CommentExtenderConfig extends ExtenderConfig
 {
     private boolean _bIsModerated;
     private int _nNbComments;
     private int _nIdMailingList = -1;
+    private boolean _bAuthorizeSubComments;
+    private boolean _bUseBBCodeEditor;
 
     /**
      * Checks if is moderated.
-     *
+     * 
      * @return true, if is moderated
      */
-    public boolean isModerated(  )
+    public boolean isModerated( )
     {
         return _bIsModerated;
     }
 
     /**
      * Sets the moderated.
-     *
+     * 
      * @param bModerated the new moderated
      */
     public void setModerated( boolean bModerated )
@@ -70,7 +72,7 @@ public class CommentExtenderConfig extends ExtenderConfig
     /**
      * @return the nNbComments
      */
-    public int getNbComments(  )
+    public int getNbComments( )
     {
         return _nNbComments;
     }
@@ -86,7 +88,7 @@ public class CommentExtenderConfig extends ExtenderConfig
     /**
      * @return the nIdMailingList
      */
-    public int getIdMailingList(  )
+    public int getIdMailingList( )
     {
         return _nIdMailingList;
     }
@@ -97,5 +99,44 @@ public class CommentExtenderConfig extends ExtenderConfig
     public void setIdMailingList( int nIdMailingList )
     {
         _nIdMailingList = nIdMailingList;
+    }
+
+    /**
+     * Check if sub comments are authorized for this extender
+     * @return True if sub comments are authorized, false otherwise
+     */
+    public boolean getAuthorizeSubComments( )
+    {
+        return _bAuthorizeSubComments;
+    }
+
+    /**
+     * Authorize or unauthorize sub comments for this extender
+     * @param bAuthorizeSubComments True if sub comments are authorized, false
+     *            otherwise
+     */
+    public void setAuthorizeSubComments( boolean bAuthorizeSubComments )
+    {
+        this._bAuthorizeSubComments = bAuthorizeSubComments;
+    }
+
+    /**
+     * Check if a BBCode editor should be used to compose comments
+     * @return True if a BBCode should be used to compose comments, false
+     *         otherwise
+     */
+    public boolean getUseBBCodeEditor( )
+    {
+        return _bUseBBCodeEditor;
+    }
+
+    /**
+     * Set the usage of a BBCode editor compose comments
+     * @param bUseBBCodeEditor True to use a BBCode editor to compose comments,
+     *            false otherwise
+     */
+    public void setUseBBCodeEditor( boolean bUseBBCodeEditor )
+    {
+        this._bUseBBCodeEditor = bUseBBCodeEditor;
     }
 }

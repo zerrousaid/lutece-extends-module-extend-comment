@@ -1,43 +1,152 @@
+<#if (paginator.pagesCount > 1) >
+    <@paginationPageLinks paginator=paginator />
+</#if>
+<form class="form form-inline" method="post" action="">
+	<div class="row-fluid">
+		<select name="sorted_attribute_name">
+			<option <#if sorted_attribute_name?? && sorted_attribute_name = "date_last_modif">selected="selected"</#if> value="date_last_modif">Date de modifications</option>
+			<option <#if sorted_attribute_name?? && sorted_attribute_name = "date_comment">selected="selected"</#if> value="date_comment">Date de création</option>
+		</select>
+		<select name="asc_sort">
+			<option <#if asc_sort?? && asc_sort>selected="selected"</#if> value="true">#i18n{portal.util.sort.asc}</option>
+			<option <#if asc_sort?? && !asc_sort>selected="selected"</#if>value="false">#i18n{portal.util.sort.desc}</option>
+		</select>
+		<button class="btn btn-small">
+			#i18n{module.extend.comment.comment_info.labelSort}
+		</button>
+		<div class="pull-right" >
+			<div class="form-inline">
+				<@paginationItemCount paginator=paginator combo=1 nb_items_per_page=nb_items_per_page/>
+			</div>
+		</div>
+	</div>
+</form>
 <#if listComments?? && listComments?has_content>
 	<#list listComments as comment>
-		<p>
+		<div class="well">
+		<a name="comment_${comment.idComment!}"></a>
+		<div>
 			<strong>#i18n{module.extend.comment.comment_info.labelAuthor}</strong>
-		</p>
-		<p>
+		</div>
+		<div>
 			#i18n{module.extend.comment.comment_info.labelName} : ${comment.name!} - #i18n{module.extend.comment.comment_info.labelSendTime} : ${comment.dateComment!}
-		</p>
-		<p>
+			<div class="pull-right">
+				<form method=post" action="jsp/admin/plugins/extend/modules/comment/DoPublishUnpublishComment.jsp#comment_${comment.idComment!}">
+					<input type="hidden" name="idComment" value="${comment.idComment!}" />
+					<#if from_url?? && from_url?has_content && from_url != "null">
+						<input type="hidden" name="from_url" value="${from_url!}" />
+					</#if>
+					<#if comment.published>
+						<button class="btn btn-small btn-primary" type="submit" name="unpublish" value="#i18n{module.extend.comment.comment_info.buttonUnpublish}" title="#i18n{module.extend.comment.comment_info.labelPublished}" >
+							<i class="icon-eye-open icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment_info.buttonUnpublish}
+						</button>
+					<#else>
+						<button class="btn btn-small btn-primary" type="submit" name="unpublish" value="#i18n{module.extend.comment.comment_info.buttonPublish}" title="#i18n{module.extend.comment.comment_info.labelUnpublished}" >
+							<i class="icon-eye-close icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment_info.buttonPublish}
+						</button>
+					</#if>
+					<a class="btn btn-small btn-danger" href="jsp/admin/plugins/extend/modules/comment/ConfirmRemoveComment.jsp?idComment=${comment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{portal.util.labelDelete}">
+						<i class="icon-trash icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelDelete}
+					</a>
+				</form>
+			</div>
+		</div>
+		<div>
 			#i18n{module.extend.comment.comment_info.labelEmail} : ${comment.email!} - #i18n{module.extend.comment.comment_info.labelIpAddress} : ${comment.ipAddress!}
-		</p>
-		<p>
-			<strong>#i18n{module.extend.comment.comment_info.labelComment}</strong>
-		</p>
-		<p>
-			${comment.comment!}
-		</p>
-			<form method=post" action="jsp/admin/plugins/extend/modules/comment/DoPublishUnpublishComment.jsp">
-				<input type="hidden" name="idComment" value="${comment.idComment!}" />
-				<#if from_url?? && from_url?has_content && from_url != "null">
-					<input type="hidden" name="from_url" value="${from_url!}" />
-				</#if>
+		</div>
+		<div>
+			<strong>
+				#i18n{module.extend.comment.comment_info.labelComment}
 				<#if comment.published>
-					<button class="btn btn-small btn-primary" type="submit" name="unpublish" value="#i18n{module.extend.comment.comment_info.buttonUnpublish}" title="#i18n{module.extend.comment.comment_info.labelPublished}" >
-						<i class="icon-eye-open icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment_info.buttonUnpublish}
-					</button>
+					<span class="label label-success">#i18n{module.extend.comment.comment_info.statePublished}</span>
 				<#else>
-					<button class="btn btn-small btn-primary" type="submit" name="unpublish" value="#i18n{module.extend.comment.comment_info.buttonPublish}" title="#i18n{module.extend.comment.comment_info.labelUnpublished}" >
-						<i class="icon-eye-close icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment_info.buttonPublish}
-					</button>
+					<span class="label label-important">#i18n{module.extend.comment.comment_info.stateNotPublished}</span>
 				</#if>
-				<a class="btn btn-small btn-danger" href="jsp/admin/plugins/extend/modules/comment/ConfirmRemoveComment.jsp?idComment=${comment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{portal.util.labelDelete}">
-					<i class="icon-trash icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelDelete}
-				</a>
-			</form>
+			</strong>
+		</div>
+		<div>
+			<#if use_bbcode>
+				${comment.BBCodeComment!}
+			<#else>
+				${comment.comment!}
+			</#if>
+		</div>
+		<#if comment.listSubComments?? && 0 < comment.listSubComments?size>
+			<p class="comment_toggle" id="comment_toggle_${comment.idComment!}">
+				<i class="icon-chevron-down"></i>#i18n{module.extend.comment.comment_info.displaySubComments}
+			</p>
+			<div <#if !idComment?? || comment.idComment?string != idComment>class="commentComments"</#if>>
+				<#list comment.listSubComments as subComment>
+					<blockquote>
+						<div>
+							<strong>#i18n{module.extend.comment.comment_info.labelAuthor}</strong>
+						</div>
+						<div>
+							#i18n{module.extend.comment.comment_info.labelName} : ${subComment.name!} - #i18n{module.extend.comment.comment_info.labelSendTime} : ${subComment.dateComment!}
+							<div class="pull-right">
+								<form method=post" action="jsp/admin/plugins/extend/modules/comment/DoPublishUnpublishComment.jsp#comment_${comment.idComment!}">
+									<input type="hidden" name="idComment" value="${subComment.idComment!}" />
+									<#if from_url?? && from_url?has_content && from_url != "null">
+										<input type="hidden" name="from_url" value="${from_url!}" />
+									</#if>
+									<#if subComment.published>
+										<button class="btn btn-small btn-primary" type="submit" name="unpublish" value="#i18n{module.extend.comment.comment_info.buttonUnpublish}" title="#i18n{module.extend.comment.comment_info.labelPublished}" >
+											<i class="icon-eye-open icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment_info.buttonUnpublish}
+										</button>
+									<#else>
+										<button class="btn btn-small btn-primary" type="submit" name="unpublish" value="#i18n{module.extend.comment.comment_info.buttonPublish}" title="#i18n{module.extend.comment.comment_info.labelUnpublished}" >
+											<i class="icon-eye-close icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment_info.buttonPublish}
+										</button>
+									</#if>
+									<a class="btn btn-small btn-danger" href="jsp/admin/plugins/extend/modules/comment/ConfirmRemoveComment.jsp?idComment=${subComment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{portal.util.labelDelete}">
+										<i class="icon-trash icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelDelete}
+									</a>
+								</form>
+							</div>
+						</div>
+						<div>
+							#i18n{module.extend.comment.comment_info.labelEmail} : ${subComment.email!} - #i18n{module.extend.comment.comment_info.labelIpAddress} : ${subComment.ipAddress!}
+						</div>
+						<div>
+							<strong>
+								#i18n{module.extend.comment.comment_info.labelComment}
+								<#if subComment.published>
+									<span class="label label-success">#i18n{module.extend.comment.comment_info.statePublished}</span>
+								<#else>
+									<span class="label label-important">#i18n{module.extend.comment.comment_info.stateNotPublished}</span>
+								</#if>
+							</strong>
+						</div>
+						<div class="well">
+							<#if use_bbcode>
+								${subComment.BBCodeComment!}
+							<#else>
+								${subComment.comment!}
+							</#if>
+						</div>
+					</blockquote>
+				</#list>
+			</div>
+		</#if> 
+		</div>
 		<hr />
 	</#list>
 <#else>
-	<p>
+	<div>
 		#i18n{module.extend.comment.comment_info.labelNoComment}
-	</p>
+	</div>
 	<br />
 </#if>
+<@paginationAdmin paginator=paginator form=1 combo=0 />
+<script>
+	$(document).ready( function () {
+		$("div.commentComments").toggle();
+		doToggle( ".comment_toggle" );
+	});
+	
+	function doToggle( idParent ){
+		$( idParent ).click( function(){ 
+			$(this).next().toggle();
+		});
+	}
+</script>

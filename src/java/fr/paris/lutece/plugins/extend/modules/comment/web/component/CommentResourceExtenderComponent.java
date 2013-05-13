@@ -38,6 +38,7 @@ import fr.paris.lutece.plugins.extend.business.extender.config.IExtenderConfig;
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.extend.modules.comment.business.config.CommentExtenderConfig;
 import fr.paris.lutece.plugins.extend.modules.comment.service.ICommentService;
+import fr.paris.lutece.plugins.extend.modules.comment.service.extender.CommentResourceExtender;
 import fr.paris.lutece.plugins.extend.modules.comment.util.constants.CommentConstants;
 import fr.paris.lutece.plugins.extend.service.extender.config.IResourceExtenderConfigService;
 import fr.paris.lutece.plugins.extend.util.ExtendErrorException;
@@ -46,8 +47,15 @@ import fr.paris.lutece.portal.service.admin.AdminUserService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mailinglist.AdminMailingListService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.service.util.AppPathService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.web.constants.Parameters;
+import fr.paris.lutece.portal.web.util.LocalizedDelegatePaginator;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
+import fr.paris.lutece.util.html.IPaginator;
+import fr.paris.lutece.util.html.Paginator;
+import fr.paris.lutece.util.url.UrlItem;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,14 +65,15 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 
 
 /**
- *
+ * 
  * CommentResourceExtenderComponent
- *
+ * 
  */
 public class CommentResourceExtenderComponent extends AbstractResourceExtenderComponent
 {
@@ -72,23 +81,28 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     private static final String TEMPLATE_COMMENT = "skin/plugins/extend/modules/comment/comment.html";
     private static final String TEMPLATE_COMMENT_CONFIG = "admin/plugins/extend/modules/comment/comment_config.html";
     private static final String TEMPLATE_MANAGE_COMMENTS = "admin/plugins/extend/modules/comment/comment_info.html";
-    
-	// CONSTANT
-	private static final String CONSTANT_AND = "&";
-	private static final String CONSTANT_AND_HTML = "%26";
-    
+
+    private static final String JSP_URL_MANAGE_COMMENTS = "jsp/admin/plugins/extend/ViewExtenderInfo.jsp";
+
+    // CONSTANT
+    private static final String CONSTANT_AND = "&";
+    private static final String CONSTANT_AND_HTML = "%26";
+
     @Inject
     private ICommentService _commentService;
     @Inject
     @Named( CommentConstants.BEAN_CONFIG_SERVICE )
     private IResourceExtenderConfigService _configService;
 
+    private int _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt(
+            CommentConstants.PROPERTY_DEFAULT_LIST_COMMENTS_PER_PAGE, 50 );
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void buildXmlAddOn( String strIdExtendableResource, String strExtendableResourceType, String strParameters,
-        StringBuffer strXml )
+            StringBuffer strXml )
     {
         // Nothing yet
     }
@@ -98,27 +112,31 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
      */
     @Override
     public String getPageAddOn( String strIdExtendableResource, String strExtendableResourceType, String strParameters,
-        HttpServletRequest request )
+            HttpServletRequest request )
     {
-        CommentExtenderConfig config = _configService.find( getResourceExtender(  ).getKey(  ),
-                strIdExtendableResource, strExtendableResourceType );
+        CommentExtenderConfig config = _configService.find( getResourceExtender( ).getKey( ), strIdExtendableResource,
+                strExtendableResourceType );
         int nNbComments = 1;
-
+        boolean bAuthorizedsubComments = true;
+        boolean bUseBBCodeEditor = false;
         if ( config != null )
         {
-            nNbComments = config.getNbComments(  );
+            nNbComments = config.getNbComments( );
+            bAuthorizedsubComments = config.getAuthorizeSubComments( );
+            bUseBBCodeEditor = config.getUseBBCodeEditor( );
         }
 
         List<Comment> listComments = _commentService.findLastComments( strIdExtendableResource,
-                strExtendableResourceType, nNbComments, true );
-        Map<String, Object> model = new HashMap<String, Object>(  );
+                strExtendableResourceType, nNbComments, true, true, bAuthorizedsubComments );
+        Map<String, Object> model = new HashMap<String, Object>( );
         model.put( CommentConstants.MARK_LIST_COMMENTS, listComments );
         model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
         model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
+        model.put( CommentConstants.MARK_USE_BBCODE, bUseBBCodeEditor );
 
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT, request.getLocale(  ), model );
+        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT, request.getLocale( ), model );
 
-        return template.getHtml(  );
+        return template.getHtml( );
     }
 
     /**
@@ -127,18 +145,19 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     @Override
     public String getConfigHtml( ResourceExtenderDTO resourceExtender, Locale locale, HttpServletRequest request )
     {
-        ReferenceList listIdsMailingList = new ReferenceList(  );
-        listIdsMailingList.addItem( -1,
-            I18nService.getLocalizedString( CommentConstants.PROPERTY_COMMENT_CONFIG_LABEL_NO_MAILING_LIST, locale ) );
+        ReferenceList listIdsMailingList = new ReferenceList( );
+        listIdsMailingList
+                .addItem( -1, I18nService.getLocalizedString(
+                        CommentConstants.PROPERTY_COMMENT_CONFIG_LABEL_NO_MAILING_LIST, locale ) );
         listIdsMailingList.addAll( AdminMailingListService.getMailingLists( AdminUserService.getAdminUser( request ) ) );
 
-        Map<String, Object> model = new HashMap<String, Object>(  );
-        model.put( CommentConstants.MARK_COMMENT_CONFIG, _configService.find( resourceExtender.getIdExtender(  ) ) );
+        Map<String, Object> model = new HashMap<String, Object>( );
+        model.put( CommentConstants.MARK_COMMENT_CONFIG, _configService.find( resourceExtender.getIdExtender( ) ) );
         model.put( CommentConstants.MARK_LIST_IDS_MAILING_LIST, listIdsMailingList );
 
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT_CONFIG, request.getLocale(  ), model );
+        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT_CONFIG, request.getLocale( ), model );
 
-        return template.getHtml(  );
+        return template.getHtml( );
     }
 
     /**
@@ -151,23 +170,105 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     }
 
     /**
-         * {@inheritDoc}
-         */
+     * {@inheritDoc}
+     */
     @Override
     public String getInfoHtml( ResourceExtenderDTO resourceExtender, Locale locale, HttpServletRequest request )
     {
         if ( resourceExtender != null )
         {
-            Map<String, Object> model = new HashMap<String, Object>(  );
-            model.put( CommentConstants.MARK_LIST_COMMENTS,
-                _commentService.findByResource( resourceExtender.getIdExtendableResource(  ),
-                		resourceExtender.getExtendableResourceType( ), false, false ) );
-            model.put( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace( request.getParameter( CommentConstants.PARAMETER_FROM_URL ), CONSTANT_AND, CONSTANT_AND_HTML ) );
+            CommentExtenderConfig config = _configService.find( getResourceExtender( ).getKey( ),
+                    resourceExtender.getIdExtendableResource( ), resourceExtender.getExtendableResourceType( ) );
 
-            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_COMMENTS, request.getLocale(  ),
+            // We get the pagination info from the session
+            Integer nItemsPerPage = _nDefaultItemsPerPage;
+            String strCurrentPageIndex = CommentConstants.CONSTANT_FIRST_PAGE_NUMBER;
+            Boolean bIsAscSort = true;
+            String strSortedAttributeName = null;
+            Object object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_ITEMS_PER_PAGE );
+            if ( object != null )
+            {
+                nItemsPerPage = (Integer) object;
+            }
+            object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_CURRENT_PAGE_INDEX );
+            if ( object != null )
+            {
+                strCurrentPageIndex = (String) object;
+            }
+            object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_IS_ASC_SORT );
+            if ( object != null )
+            {
+                bIsAscSort = (Boolean) object;
+            }
+            object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_SORTED_ATTRIBUTE_NAME );
+            if ( object != null )
+            {
+                strSortedAttributeName = (String) object;
+            }
+
+            int nItemsCount = _commentService.getCommentNb( resourceExtender.getIdExtendableResource( ),
+                    resourceExtender.getExtendableResourceType( ), config.getAuthorizeSubComments( ), false );
+            String strFromUrl = StringUtils.replace( request.getParameter( CommentConstants.PARAMETER_FROM_URL ),
+                    CONSTANT_AND, CONSTANT_AND_HTML );
+            strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, strCurrentPageIndex );
+            int nOldITemsPerPage = nItemsPerPage;
+            nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, nItemsPerPage,
+                    _nDefaultItemsPerPage );
+            if ( nItemsPerPage <= 0 )
+            {
+                nItemsPerPage = _nDefaultItemsPerPage;
+            }
+            // If we changed the number of items per page, we go back to the first page
+            if ( nItemsPerPage != nOldITemsPerPage )
+            {
+                strCurrentPageIndex = CommentConstants.CONSTANT_FIRST_PAGE_NUMBER;
+            }
+            String strNewSortedAttributeName = request.getParameter( Parameters.SORTED_ATTRIBUTE_NAME );
+            if ( strNewSortedAttributeName != null )
+            {
+                // We update sort properties
+                strSortedAttributeName = strNewSortedAttributeName;
+                bIsAscSort = Boolean.parseBoolean( request.getParameter( Parameters.SORTED_ASC ) );
+            }
+            int nItemsOffset = nItemsPerPage * ( Integer.parseInt( strCurrentPageIndex ) - 1 );
+
+            List<Comment> listComments = _commentService.findByResource( resourceExtender.getIdExtendableResource( ),
+                    resourceExtender.getExtendableResourceType( ), false, strSortedAttributeName, bIsAscSort,
+                    nItemsOffset, nItemsPerPage, config.getAuthorizeSubComments( ) );
+
+            UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_COMMENTS );
+            url.addParameter( CommentConstants.PARAMETER_EXTENDER_TYPE, CommentResourceExtender.EXTENDER_TYPE_COMMENT );
+            url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE,
+                    resourceExtender.getIdExtendableResource( ) );
+            url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE,
+                    resourceExtender.getExtendableResourceType( ) );
+            url.addParameter( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
+
+            IPaginator<Comment> paginator = new LocalizedDelegatePaginator<Comment>( listComments, nItemsPerPage,
+                    url.getUrl( ), Paginator.PARAMETER_PAGE_INDEX, strCurrentPageIndex, nItemsCount,
+                    AdminUserService.getLocale( request ) );
+            Map<String, Object> model = new HashMap<String, Object>( );
+            model.put( CommentConstants.MARK_LIST_COMMENTS, paginator.getPageItems( ) );
+            model.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
+            model.put( CommentConstants.MARK_PAGINATOR, paginator );
+            model.put( CommentConstants.MARK_NB_ITEMS_PER_PAGE, Integer.toString( paginator.getItemsPerPage( ) ) );
+            model.put( CommentConstants.MARK_ASC_SORT, bIsAscSort );
+            model.put( Parameters.SORTED_ATTRIBUTE_NAME, strSortedAttributeName );
+            model.put( CommentConstants.PARAMETER_ID_COMMENT,
+                    request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
+            model.put( CommentConstants.MARK_USE_BBCODE, config.getUseBBCodeEditor( ) );
+
+            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_COMMENTS, request.getLocale( ),
                     model );
 
-            return template.getHtml(  );
+            // We save the pagination info in the session
+            HttpSession session = request.getSession( );
+            session.setAttribute( CommentConstants.SESSION_COMMENT_ADMIN_ITEMS_PER_PAGE, nItemsPerPage );
+            session.setAttribute( CommentConstants.SESSION_COMMENT_ADMIN_CURRENT_PAGE_INDEX, strCurrentPageIndex );
+            session.setAttribute( CommentConstants.SESSION_COMMENT_ADMIN_IS_ASC_SORT, bIsAscSort );
+            session.setAttribute( CommentConstants.SESSION_COMMENT_ADMIN_SORTED_ATTRIBUTE_NAME, strSortedAttributeName );
+
+            return template.getHtml( );
         }
 
         return StringUtils.EMPTY;
@@ -177,8 +278,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
      * {@inheritDoc}
      */
     @Override
-    public void doSaveConfig( HttpServletRequest request, IExtenderConfig config )
-        throws ExtendErrorException
+    public void doSaveConfig( HttpServletRequest request, IExtenderConfig config ) throws ExtendErrorException
     {
         _configService.update( config );
     }

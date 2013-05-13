@@ -33,11 +33,10 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.util.constants;
 
-
 /**
- *
+ * 
  * CommentConstants
- *
+ * 
  */
 public final class CommentConstants
 {
@@ -48,6 +47,7 @@ public final class CommentConstants
     public static final String PROPERTY_XPAGE_ADD_COMMENT_PAGE_LABEL = "module.extend.comment.add_comment.pageLabel";
     public static final String PROPERTY_MANAGE_COMMENTS_PAGE_TITLE = "module.extend.comment.manage_comments.pageTitle";
     public static final String PROPERTY_COMMENT_CONFIG_LABEL_NO_MAILING_LIST = "module.extend.comment.comment_config.labelNoMailingList";
+    public static final String PROPERTY_DEFAULT_LIST_COMMENTS_PER_PAGE = "module.extend.comment.commentInfo.itemsPerPage";
 
     // MESSAGES
     public static final String MESSAGE_CONFIRM_REMOVE_COMMENT = "module.extend.comment.message.confirm.removeComment";
@@ -60,8 +60,9 @@ public final class CommentConstants
     public static final String PARAMETER_ID_EXTENDABLE_RESOURCE = "idExtendableResource";
     public static final String PARAMETER_EXTENDABLE_RESOURCE_TYPE = "extendableResourceType";
     public static final String PARAMETER_ID_COMMENT = "idComment";
-	public static final String PARAMETER_REFERER = "referer";
-	public static final String PARAMETER_FROM_URL = "from_url";
+    public static final String PARAMETER_REFERER = "referer";
+    public static final String PARAMETER_FROM_URL = "from_url";
+    public static final String PARAMETER_AUTHORIZE_SUB_COMMENTS = "authorizeSubComments";
 
     // BEANS
     public static final String BEAN_CONFIG_SERVICE = "extend-comment.commentExtenderConfigService";
@@ -76,19 +77,33 @@ public final class CommentConstants
     public static final String MARK_COMMENT = "comment";
     public static final String MARK_RESOURCE_EXTENDER_NAME = "resourceExtenderName";
     public static final String MARK_RESOURCE_EXTENDER_URL = "resourceExtenderUrl";
-	public static final String MARK_PAGINATOR = "paginator";
+    public static final String MARK_PAGINATOR = "paginator";
+    public static final String MARK_NB_ITEMS_PER_PAGE = "nb_items_per_page";
+    public static final String MARK_WEBAPP_URL = "webapp_url";
+    public static final String MARK_LOCALE = "locale";
+    public static final String MARK_USE_BBCODE = "use_bbcode";
+    public static final String MARK_ALLOW_SUB_COMMENTS = "allowSubComments";
 
     // ACTIONS
     public static final String ACTION_ADD_COMMENT = "addComment";
     public static final String ACTION_DO_ADD_COMMENT = "doAddComment";
 
-	// CONSTANTS
-	public static final String MARK_ASC_SORT = "asc_sort";
+    // CONSTANTS
+    public static final String MARK_ASC_SORT = "asc_sort";
+
+    public static final String CONSTANT_FIRST_PAGE_NUMBER = "1";
+    public static final String SESSION_COMMENT_ITEMS_PER_PAGE = "session_comment_fo_items_per_page";
+    public static final String SESSION_COMMENT_CURRENT_PAGE_INDEX = "session_comment_fo_current_page_index";
+    public static final String SESSION_COMMENT_IS_ASC_SORT = "session_comment_fo_is_asc_sort";
+    public static final String SESSION_COMMENT_ADMIN_ITEMS_PER_PAGE = "session_comment_bo_items_per_page";
+    public static final String SESSION_COMMENT_ADMIN_CURRENT_PAGE_INDEX = "session_comment_bo_current_page_index";
+    public static final String SESSION_COMMENT_ADMIN_IS_ASC_SORT = "session_comment_bo_is_asc_sort";
+    public static final String SESSION_COMMENT_ADMIN_SORTED_ATTRIBUTE_NAME = "session_comment_bo_sorted_attribute_name";
 
     /**
      * Instantiates a new comment constants.
      */
-    private CommentConstants(  )
+    private CommentConstants( )
     {
     }
 }

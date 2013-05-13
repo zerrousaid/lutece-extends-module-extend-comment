@@ -12,6 +12,8 @@ CREATE TABLE extend_comment (
 	ip_address VARCHAR(100) NOT NULL,
 	comment LONG VARCHAR NOT NULL,
 	is_published SMALLINT default 0 NOT NULL,
+	date_last_modif TIMESTAMP,
+	id_parent_comment INT DEFAULT 0 NOT NULL,
 	PRIMARY KEY (id_comment)
 );
 
@@ -24,5 +26,7 @@ CREATE TABLE extend_comment_config (
 	is_moderated SMALLINT default 0 NOT NULL,
 	nb_comments INT DEFAULT 1 NOT NULL,
 	id_mailing_list INT DEFAULT 0 NOT NULL,
+	authorize_sub_comments SMALLINT default 0 NOT NULL,
+	use_bbcode SMALLINT default 1 NOT NULL,
 	PRIMARY KEY (id_extender)
 );

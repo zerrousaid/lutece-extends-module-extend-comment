@@ -34,16 +34,19 @@
 package fr.paris.lutece.plugins.extend.modules.comment.business;
 
 import fr.paris.lutece.plugins.extend.modules.comment.util.annotation.Email;
+import fr.paris.lutece.portal.service.editor.EditorBbcodeService;
+import fr.paris.lutece.portal.service.util.AppLogService;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
 
 /**
- *
+ * 
  * Comment
- *
+ * 
  */
 public class Comment
 {
@@ -53,17 +56,21 @@ public class Comment
     @NotNull
     private String _strExtendableResourceType;
     private Timestamp _dateComment;
+    private Timestamp _dateLastModif;
     private String _strName;
     @Email
     private String _strEmail;
     private String _strIpAddress;
     private String _strComment;
     private boolean _bIsPublished;
+    private int _nIdParentComment;
+    private List<Comment> _listSubComments;
+    private int _nNumberSubComments = -1;
 
     /**
      * @return the strIdExtendableResource
      */
-    public String getIdExtendableResource(  )
+    public String getIdExtendableResource( )
     {
         return _strIdExtendableResource;
     }
@@ -79,7 +86,7 @@ public class Comment
     /**
      * @return the extendableResourceType
      */
-    public String getExtendableResourceType(  )
+    public String getExtendableResourceType( )
     {
         return _strExtendableResourceType;
     }
@@ -93,10 +100,10 @@ public class Comment
     }
 
     /**
-    * Returns the date of the comment
-    * @return the date of the comment
-    */
-    public Timestamp getDateComment(  )
+     * Returns the date of the comment
+     * @return the date of the comment
+     */
+    public Timestamp getDateComment( )
     {
         return _dateComment;
     }
@@ -111,10 +118,28 @@ public class Comment
     }
 
     /**
-    * Returns the identifier of the object
+     * Get the date of last modification of the comment
+     * @return The date of last modification of the comment
+     */
+    public Timestamp getDateLastModif( )
+    {
+        return _dateLastModif;
+    }
+
+    /**
+     * Set the date of last modification of the comment
+     * @param dateLastModif The date of last modification of the comment
+     */
+    public void setDateLastModif( Timestamp dateLastModif )
+    {
+        this._dateLastModif = dateLastModif;
+    }
+
+    /**
+     * Returns the identifier of the object
      * @return The identifier of the object
      */
-    public int getIdComment(  )
+    public int getIdComment( )
     {
         return _nIdComment;
     }
@@ -130,17 +155,17 @@ public class Comment
 
     /**
      * Gets the checks if is published.
-     *
+     * 
      * @return the checks if is published
      */
-    public boolean isPublished(  )
+    public boolean isPublished( )
     {
         return _bIsPublished;
     }
 
     /**
      * Sets the published.
-     *
+     * 
      * @param bIsPublished the new published
      */
     public void setPublished( boolean bIsPublished )
@@ -152,7 +177,7 @@ public class Comment
      * Returns the comment
      * @return the comment
      */
-    public String getComment(  )
+    public String getComment( )
     {
         return _strComment;
     }
@@ -167,10 +192,27 @@ public class Comment
     }
 
     /**
+     * Get the content of the comment interpreted as BBCode
+     * @return The content of the comment interpreted as BBCode
+     */
+    public String getBBCodeComment( )
+    {
+        try
+        {
+            return EditorBbcodeService.getInstance( ).parse( _strComment );
+        }
+        catch ( Exception e )
+        {
+            AppLogService.error( e.getMessage( ), e );
+        }
+        return _strComment;
+    }
+
+    /**
      * Returns the email of the user
      * @return the email of the user
      */
-    public String getEmail(  )
+    public String getEmail( )
     {
         return _strEmail;
     }
@@ -188,7 +230,7 @@ public class Comment
      * Returns the IP address of the user
      * @return the IP address of the user
      */
-    public String getIpAddress(  )
+    public String getIpAddress( )
     {
         return _strIpAddress;
     }
@@ -206,7 +248,7 @@ public class Comment
      * Returns the name of the user
      * @return the name of the user
      */
-    public String getName(  )
+    public String getName( )
     {
         return _strName;
     }
@@ -218,5 +260,68 @@ public class Comment
     public void setName( String strName )
     {
         _strName = strName;
+    }
+
+    /**
+     * Get the id of the parent comment of this comment
+     * @return The id of the parent comment of this comment
+     */
+    public int getIdParentComment( )
+    {
+        return _nIdParentComment;
+    }
+
+    /**
+     * Set the id of the parent comment of this comment
+     * @param nIdParentComment The id of the parent comment of this comment
+     */
+    public void setIdParentComment( int nIdParentComment )
+    {
+        this._nIdParentComment = nIdParentComment;
+    }
+
+    /**
+     * Get the list of sub comments of this comment
+     * @return The list of sub comments of this comment. An empty list means
+     *         that this comment has no sub comment. A null value means that the
+     *         sub comment list has not been initialized.
+     */
+    public List<Comment> getListSubComments( )
+    {
+        return _listSubComments;
+    }
+
+    /**
+     * Set the list of sub comments of this comment, and update the number of
+     * sub comments.
+     * @param listSubComments The list of sub comments of this comment.
+     */
+    public void setListSubComments( List<Comment> listSubComments )
+    {
+        this._listSubComments = listSubComments;
+        if ( listSubComments != null )
+        {
+            this._nNumberSubComments = listSubComments.size( );
+        }
+    }
+
+    /**
+     * Get the number of sub comments of this comment
+     * @return the number of sub comments of this comment, or -1 if this
+     *         information is not known.
+     */
+    public int getNumberSubComments( )
+    {
+        return _nNumberSubComments;
+    }
+
+    /**
+     * Set the number of sub comments of this comment
+     * @param nNumberSubComments the number of sub comments of this comment, or
+     *            -1 if this information is not known.
+     */
+    public void setNumberSubComments( int nNumberSubComments )
+    {
+        this._nNumberSubComments = nNumberSubComments;
     }
 }

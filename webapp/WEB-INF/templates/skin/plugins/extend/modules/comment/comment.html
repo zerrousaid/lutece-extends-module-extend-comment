@@ -4,7 +4,16 @@
 			<div class="well">
 				<fieldset>
 					<legend>#i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}</legend>
-					<p>${comment.comment!}</p>
+					<p>
+						<#if use_bbcode>
+							${comment.BBCodeComment!}
+						<#else>
+							${comment.comment!}
+						</#if>
+					</p>
+					<#if 0 < comment.numberSubComments >
+					<a href="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;idComment=${comment.idComment!}#comment_${comment.idComment!}">#i18n{module.extend.comment.comment.labelViewSubComments} (${comment.numberSubComments})</a>
+					</#if>
 				</fieldset>
 			</div>
 		</#list>

@@ -45,7 +45,7 @@ public interface ICommentDAO
 {
     /**
      * Delete.
-     *
+     * 
      * @param nIdComment the n id comment
      * @param plugin the plugin
      */
@@ -53,7 +53,7 @@ public interface ICommentDAO
 
     /**
      * Delete by id hub resource.
-     *
+     * 
      * @param strIdExtendableResource the str id extendable resource
      * @param strExtendableResourceType the str extendable resource type
      * @param plugin the plugin
@@ -62,7 +62,7 @@ public interface ICommentDAO
 
     /**
      * Insert.
-     *
+     * 
      * @param comment the comment
      * @param plugin the plugin
      */
@@ -70,7 +70,7 @@ public interface ICommentDAO
 
     /**
      * Load.
-     *
+     * 
      * @param nIdComment the n id comment
      * @param plugin the plugin
      * @return the comment
@@ -79,28 +79,15 @@ public interface ICommentDAO
 
     /**
      * Store.
-     *
+     * 
      * @param comment the comment
      * @param plugin the plugin
      */
     void store( Comment comment, Plugin plugin );
 
-	/**
-	 * Select by id hub resource.
-	 * 
-	 * @param strIdExtendableResource the str id extendable resource
-	 * @param strExtendableResourceType the str extendable resource type
-	 * @param bPublishedOnly the b published
-	 * @param bAscSort True if comments should be sorted ascendantly, false otherwise
-	 * @param plugin the plugin
-	 * @return the list
-	 */
-    List<Comment> selectByResource( String strIdExtendableResource, String strExtendableResourceType,
- boolean bPublishedOnly, boolean bAscSort, Plugin plugin );
-
     /**
      * Update comment status.
-     *
+     * 
      * @param nIdComment the n id comment
      * @param bPublished the b published
      * @param plugin the plugin
@@ -109,24 +96,70 @@ public interface ICommentDAO
 
     /**
      * Check comment nb.
-     *
-     * @param strIdExtendableResource the str id extendable resource
-     * @param strExtendableResourceType the str extendable resource type
+     * 
+     * @param strIdExtendableResource the id of the extendable resource
+     * @param strExtendableResourceType the extendable resource type
+     * @param bParentsOnly True to consider only comments with no parent, false
+     *            otherwise
      * @param plugin the plugin
      * @return the int
      */
-    int getCommentNb( String strIdExtendableResource, String strExtendableResourceType, Plugin plugin );
+    int getCommentNb( String strIdExtendableResource, String strExtendableResourceType, boolean bParentsOnly,
+            boolean bPublishedOnly, Plugin plugin );
 
     /**
      * Load last comments.
-     *
-     * @param strIdExtendableResource the str id extendable resource
-     * @param strExtendableResourceType the str extendable resource type
-     * @param nNbComments the n nb comments
+     * 
+     * @param strIdExtendableResource the id of the extendable resource
+     * @param strExtendableResourceType the extendable resource type
+     * @param nNbComments the number of comments
      * @param bPublishedOnly the b published only
+     * @param bParentsOnly True to get only parent comments, false to get every
+     *            comments.
      * @param plugin the plugin
      * @return the list
      */
     List<Comment> selectLastComments( String strIdExtendableResource, String strExtendableResourceType,
-        int nNbComments, boolean bPublishedOnly, Plugin plugin );
+            int nNbComments, boolean bPublishedOnly, boolean bParentsOnly, Plugin plugin );
+
+    /**
+     * Get comments of a given resource. Only parents comments are returned.
+     * @param strIdExtendableResource The id of the resource
+     * @param strExtendableResourceType The type of the resource
+     * @param bPublishedOnly True to consider only published comments
+     * @param strSortedAttributeName The name of the attribute to sort, or null
+     *            if no sort should be done
+     * @param bAscSort True to sort ascendantly, false otherwise
+     * @param nItemsOffset The offset of the items to get, or 0 to get items
+     *            from the first one
+     * @param nMaxItemsNumber The maximum number of items to return, or 0 to get
+     *            every items
+     * @param plugin The plugin
+     * @return The list of comments associated with the given resource
+     */
+    List<Comment> findParentCommentsByResource( String strIdExtendableResource, String strExtendableResourceType,
+            boolean bPublishedOnly, String strSortedAttributeName, boolean bAscSort, int nItemsOffset,
+            int nMaxItemsNumber, Plugin plugin );
+
+    /**
+     * Get comments from their parent
+     * @param nIdParent The id of the parent of comments to get
+     * @param bPublishedOnly True to consider only published comments
+     * @param strSortedAttributeName The name of the attribute to sort, or null
+     *            if no sort should be done
+     * @param bAscSort True to sort ascendantly, false otherwise
+     * @param plugin The plugin
+     * @return The list of comments associated with the given parent
+     */
+    List<Comment> findByIdParent( int nIdParent, boolean bPublishedOnly, String strSortedAttributeName,
+            boolean bAscSort, Plugin plugin );
+
+    /**
+     * Get the number of comments associated with a given parent
+     * @param nIdParent The id of the parent of comments to count.
+     * @param bPublishedOnly True to consider only published comments
+     * @param plugin The plugin
+     * @return The number of comments associated with the given parent
+     */
+    int countByIdParent( int nIdParent, boolean bPublishedOnly, Plugin plugin );
 }

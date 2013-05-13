@@ -1,41 +1,79 @@
 <div class="span12 row-fluid">
 	<#assign listComments = paginator.pageItems>
-	<#if listComments?? && listComments?has_content>
-		<br />
-		<form class="form-inline" method="post" action="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;asc_sort=${asc_sort!}">
-			<div class="span5">
-			<a class="btn btn-small btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
-				<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAddComment}
+	<br />
+	<form class="form-inline" method="post" action="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;asc_sort=${asc_sort!}">
+		<div class="span5">
+		<a class="btn btn-small btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
+			<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAddComment}
+		</a>
+		<#if from_url?? && from_url?has_content && from_url != "null">
+			<a class="btn btn-small" href="${from_url?replace("%26","&amp;")}">
+				#i18n{portal.util.labelBack}
 			</a>
-			<#if from_url?? && from_url?has_content && from_url != "null">
-				<a class="btn btn-small" href="${from_url?replace("%26","&amp;")}">
-					#i18n{portal.util.labelBack}
-				</a>
-			</#if>
+		</#if>
+		</div>
+		<div class="span2">
+			<p>
+				<strong>#i18n{module.extend.comment.view_comments.sortedByDate}</strong> <@sort jsp_url="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;from_url=from_session" attribute="date" />
+			</p>
+		</div>
+		<div class="span5">
+			<div class="pull-right" >
+				<@paginationSiteItemCount paginator=paginator combo=1 nb_items_per_page=paginator.itemsPerPage?string/>
 			</div>
-			<div class="span2">
-				<p>
-					<strong>#i18n{module.extend.comment.view_comments.sortedByDate}</strong> <@sort jsp_url="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;from_url=from_session" attribute="date" />
-				</p>
-			</div>
-			<div class="span5">
-				<div class="pull-right" >
-					<@paginationItemCount paginator=paginator combo=1 nb_items_per_page=paginator.itemsPerPage?string/>
-				</div>
-			</div>
-			<#if from_url?? && from_url?has_content && from_url != "null">
-				<input type="hidden" name="from_url" value="${from_url!}" />
-			</#if>
-		</form>
-		<@paginationPageLinks paginator=paginator/>
+		</div>
+		<#if from_url?? && from_url?has_content && from_url != "null">
+			<input type="hidden" name="from_url" value="${from_url!}" />
+		</#if>
+	</form>
+	<@paginationSitePageLinks paginator=paginator/>
+	<#if listComments?? && listComments?has_content>
 		<#list listComments as comment>
+			<a name="comment_${comment.idComment!}"></a>
 			<div class="well">
-				<p class="lead">#i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment?date} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}</p>
-				<hr />
-				<p>${comment.comment!}</p>
+				<legend>
+					#i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}
+					<#if allowSubComments>
+						<div class="pull-right">
+							<a class="btn btn-small btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;idComment=${comment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
+								<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAnswerComment}
+							</a>
+						</div>
+					</#if>
+				</legend>
+				<p>
+					<#if use_bbcode>
+						${comment.BBCodeComment!}
+					<#else>
+						${comment.comment!}
+					</#if>
+				</p>
+				<#if comment.listSubComments?? && 0 < comment.listSubComments?size>
+					<p class="comment_toggle" id="comment_toggle_${comment.idComment!}">
+						<i class="icon-chevron-down"></i>#i18n{module.extend.comment.comment_info.displaySubComments}
+					</p>
+					<div <#if !idComment?? || comment.idComment?string != idComment>class="commentComments"</#if>>
+						<#list comment.listSubComments as subComment>
+							<blockquote>
+								<div>
+									<strong>#i18n{module.extend.comment.view_comments.labelPosted} ${subComment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${subComment.name!}</strong>
+								</div>
+								<div class="well">
+									<p>
+										<#if use_bbcode>
+											${subComment.BBCodeComment!}
+										<#else>
+											${subComment.comment!}
+										</#if>
+									</p>
+								</div>
+							</blockquote>
+						</#list>
+					</div>
+				</#if>
 			</div>
 		</#list>
-		<@paginationPageLinks paginator=paginator/>
+		<@paginationSitePageLinks paginator=paginator/>
 		<form class="form-inline" method="post" action="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;asc_sort=${asc_sort!}">
 			<a class="btn btn-small btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
 				<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAddComment}
@@ -56,15 +94,17 @@
 		<p>
 			#i18n{module.extend.comment.view_comments.noComments}
 		</p>
-		<p>
-			<a class="btn btn-small btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
-				<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAddComment}
-			</a>
-			<#if from_url?? && from_url?has_content && from_url != "null">
-				<a class="btn btn-small" href="${from_url?replace("%26","&amp;")}">
-					#i18n{portal.util.labelBack}
-				</a>
-			</#if>
-		</p>
 	</#if>
 </div>
+<script>
+	$(document).ready( function () {
+		$("div.commentComments").toggle();
+		doToggle( ".comment_toggle" );
+	});
+	
+	function doToggle( idParent ){
+		$( idParent ).click( function(){ 
+			$(this).next().toggle();
+		});
+	}
+</script>
