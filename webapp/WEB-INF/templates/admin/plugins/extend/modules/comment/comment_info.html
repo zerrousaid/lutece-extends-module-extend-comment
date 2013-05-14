@@ -1,5 +1,5 @@
 <div class="pull-right">
-	<a class="btn btn-primary btn-small" href="jsp/admin/plugins/extend/modules/comment/GetCreateComment.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>">
+	<a class="btn btn-primary btn-small" href="jsp/admin/plugins/extend/modules/comment/GetCreateComment.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{module.extend.comment.comment.labelAddComment}">
 		<i class="icon-white icon-plus"></i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}
 	</a>
 </div>
@@ -35,7 +35,7 @@
 			<strong>#i18n{module.extend.comment.comment_info.labelAuthor}</strong>
 		</div>
 		<div>
-			#i18n{module.extend.comment.comment_info.labelName} : ${comment.name!} <#if comment.isAdminComment>${adminBadge!}</#if> - #i18n{module.extend.comment.comment_info.labelSendTime} : ${comment.dateComment!}
+			#i18n{module.extend.comment.comment_info.labelName} : ${comment.name!} - #i18n{module.extend.comment.comment_info.labelSendTime} : ${comment.dateComment!}
 			<div class="pull-right">
 				<form method=post" action="jsp/admin/plugins/extend/modules/comment/DoPublishUnpublishComment.jsp#comment_${comment.idComment!}">
 					<input type="hidden" name="idComment" value="${comment.idComment!}" />
@@ -52,7 +52,7 @@
 						</button>
 					</#if>
 					<#if allowSubComments>
-						<a class="btn btn-primary btn-small" href="jsp/admin/plugins/extend/modules/comment/GetCreateComment.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${comment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>">
+						<a class="btn btn-primary btn-small" href="jsp/admin/plugins/extend/modules/comment/GetCreateComment.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${comment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{module.extend.comment.comment_info.labelAnswer}">
 							<i class="icon-white icon-repeat"></i>&nbsp;#i18n{module.extend.comment.comment_info.labelAnswer}
 						</a>
 					</#if>
@@ -65,6 +65,11 @@
 		<div>
 			#i18n{module.extend.comment.comment_info.labelEmail} : ${comment.email!} - #i18n{module.extend.comment.comment_info.labelIpAddress} : ${comment.ipAddress!}
 		</div>
+		<#if comment.isAdminComment>
+			<div>
+				${adminBadge!}
+			</div>
+		</#if>
 		<div>
 			<strong>
 				#i18n{module.extend.comment.comment_info.labelComment}
@@ -93,7 +98,7 @@
 							<strong>#i18n{module.extend.comment.comment_info.labelAuthor}</strong>
 						</div>
 						<div>
-							#i18n{module.extend.comment.comment_info.labelName} : ${subComment.name!} <#if subComment.isAdminComment>${adminBadge!}</#if> - #i18n{module.extend.comment.comment_info.labelSendTime} : ${subComment.dateComment!}
+							#i18n{module.extend.comment.comment_info.labelName} : ${subComment.name!} - #i18n{module.extend.comment.comment_info.labelSendTime} : ${subComment.dateComment!}
 							<div class="pull-right">
 								<form method=post" action="jsp/admin/plugins/extend/modules/comment/DoPublishUnpublishComment.jsp#comment_${comment.idComment!}">
 									<input type="hidden" name="idComment" value="${subComment.idComment!}" />
@@ -118,6 +123,11 @@
 						<div>
 							#i18n{module.extend.comment.comment_info.labelEmail} : ${subComment.email!} - #i18n{module.extend.comment.comment_info.labelIpAddress} : ${subComment.ipAddress!}
 						</div>
+						<#if subComment.isAdminComment>
+							<div>
+								${adminBadge!}
+							</div>
+						</#if>
 						<div>
 							<strong>
 								#i18n{module.extend.comment.comment_info.labelComment}
