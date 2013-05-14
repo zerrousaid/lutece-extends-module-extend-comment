@@ -63,6 +63,7 @@ public final class CommentConstants
     public static final String PARAMETER_REFERER = "referer";
     public static final String PARAMETER_FROM_URL = "from_url";
     public static final String PARAMETER_AUTHORIZE_SUB_COMMENTS = "authorizeSubComments";
+    public static final String PARAMETER_NAME = "name";
 
     // BEANS
     public static final String BEAN_CONFIG_SERVICE = "extend-comment.commentExtenderConfigService";
@@ -92,6 +93,9 @@ public final class CommentConstants
     public static final String MARK_ASC_SORT = "asc_sort";
 
     public static final String CONSTANT_FIRST_PAGE_NUMBER = "1";
+    public static final String CONSTANT_AND = "&";
+    public static final String CONSTANT_AND_HTML = "%26";
+
     public static final String SESSION_COMMENT_ITEMS_PER_PAGE = "session_comment_fo_items_per_page";
     public static final String SESSION_COMMENT_CURRENT_PAGE_INDEX = "session_comment_fo_current_page_index";
     public static final String SESSION_COMMENT_IS_ASC_SORT = "session_comment_fo_is_asc_sort";
@@ -99,6 +103,7 @@ public final class CommentConstants
     public static final String SESSION_COMMENT_ADMIN_CURRENT_PAGE_INDEX = "session_comment_bo_current_page_index";
     public static final String SESSION_COMMENT_ADMIN_IS_ASC_SORT = "session_comment_bo_is_asc_sort";
     public static final String SESSION_COMMENT_ADMIN_SORTED_ATTRIBUTE_NAME = "session_comment_bo_sorted_attribute_name";
+    public static final String MARK_ADMIN_BADGE = "adminBadge";
 
     /**
      * Instantiates a new comment constants.

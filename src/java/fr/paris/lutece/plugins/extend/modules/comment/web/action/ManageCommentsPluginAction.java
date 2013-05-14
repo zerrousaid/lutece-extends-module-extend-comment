@@ -54,26 +54,23 @@ import org.apache.commons.lang.StringUtils;
 
 
 /**
- *
+ * 
  * ManageCommentsPluginAction
- *
+ * 
  */
 public class ManageCommentsPluginAction extends AbstractPluginAction<IExtendableResource>
     implements IExtendableResourcePluginAction
 {
-	private static final String ACTION_NAME = "Manage comments";
-	
+    private static final String ACTION_NAME = "Manage comments";
+
     // PARAMETERS
-	private static final String PARAMETER_MANAGE_COMMENTS = "manageComments";
+    private static final String PARAMETER_MANAGE_COMMENTS = "manageComments";
 
     // TEMPLATE
-	private static final String TEMPLATE_BUTTON = "../plugins/extend/modules/comment/actions/install_comment.html";
+    private static final String TEMPLATE_BUTTON = "../plugins/extend/modules/comment/actions/install_comment.html";
 
     // JSP
     private static final String JSP_URL = "jsp/admin/plugins/extend/ViewExtenderInfo.jsp";
-
-	private static final String CONSTANT_AND = "&";
-	private static final String CONSTANT_AND_HTML = "%26";
 
     /**
      * {@inheritDoc}
@@ -96,7 +93,7 @@ public class ManageCommentsPluginAction extends AbstractPluginAction<IExtendable
      * {@inheritDoc}
      */
     @Override
-    public String getButtonTemplate(  )
+    public String getButtonTemplate( )
     {
         return TEMPLATE_BUTTON;
     }
@@ -105,7 +102,7 @@ public class ManageCommentsPluginAction extends AbstractPluginAction<IExtendable
      * {@inheritDoc}
      */
     @Override
-    public String getName(  )
+    public String getName( )
     {
         return ACTION_NAME;
     }
@@ -115,18 +112,20 @@ public class ManageCommentsPluginAction extends AbstractPluginAction<IExtendable
      */
     @Override
     public IPluginActionResult process( HttpServletRequest request, HttpServletResponse response, AdminUser adminUser,
-        IExtendableResource sessionFields ) throws AccessDeniedException
+            IExtendableResource sessionFields ) throws AccessDeniedException
     {
         UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + JSP_URL );
         url.addParameter( CommentConstants.PARAMETER_EXTENDER_TYPE, CommentResourceExtender.EXTENDER_TYPE_COMMENT );
         url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE,
-            request.getParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE ) );
+                request.getParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE ) );
         url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE,
-            request.getParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE ) );
-		url.addParameter( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace( request.getHeader( CommentConstants.PARAMETER_REFERER ), CONSTANT_AND, CONSTANT_AND_HTML ) );
+                request.getParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE ) );
+        url.addParameter( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace(
+                request.getHeader( CommentConstants.PARAMETER_REFERER ), CommentConstants.CONSTANT_AND,
+                CommentConstants.CONSTANT_AND_HTML ) );
 
-        DefaultPluginActionResult result = new DefaultPluginActionResult(  );
-        result.setRedirect( url.getUrl(  ) );
+        DefaultPluginActionResult result = new DefaultPluginActionResult( );
+        result.setRedirect( url.getUrl( ) );
 
         return result;
     }

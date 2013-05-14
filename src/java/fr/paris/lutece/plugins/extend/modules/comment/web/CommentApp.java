@@ -72,6 +72,7 @@ import fr.paris.lutece.util.beanvalidation.BeanValidationUtil;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.html.IPaginator;
 import fr.paris.lutece.util.html.Paginator;
+import fr.paris.lutece.util.http.SecurityUtil;
 import fr.paris.lutece.util.url.UrlItem;
 
 import java.lang.reflect.InvocationTargetException;
@@ -190,7 +191,7 @@ public class CommentApp implements XPageApplication
 
         Integer nItemsPerPage = _nDefaultItemsPerPage;
         String strCurrentPageIndex = CommentConstants.CONSTANT_FIRST_PAGE_NUMBER;
-        Boolean bIsAscSort = true;
+        Boolean bIsAscSort = false;
         Object object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ITEMS_PER_PAGE );
         if ( object != null )
         {
@@ -260,6 +261,7 @@ public class CommentApp implements XPageApplication
         boolean bGetSubComments = false;
         boolean bUseBBCodeEditor = false;
         boolean bAllowSubComments = false;
+        String strAdminBadge = StringUtils.EMPTY;
         CommentExtenderConfig config = _configService.find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
                 strIdExtendableResource, strExtendableResourceType );
         if ( config != null )
@@ -267,6 +269,7 @@ public class CommentApp implements XPageApplication
             bGetSubComments = config.getAuthorizeSubComments( );
             bUseBBCodeEditor = config.getUseBBCodeEditor( );
             bAllowSubComments = config.getAuthorizeSubComments( );
+            strAdminBadge = config.getAdminBadge( );
         }
         int nItemsOffset = nItemsPerPage * ( Integer.parseInt( strCurrentPageIndex ) - 1 );
 
@@ -288,6 +291,7 @@ public class CommentApp implements XPageApplication
         model.put( CommentConstants.PARAMETER_ID_COMMENT, request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
         model.put( CommentConstants.MARK_USE_BBCODE, bUseBBCodeEditor );
         model.put( CommentConstants.MARK_ALLOW_SUB_COMMENTS, bAllowSubComments );
+        model.put( CommentConstants.MARK_ADMIN_BADGE, strAdminBadge );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_XPAGE_VIEW_COMMENTS, request.getLocale( ),
                 model );
@@ -434,7 +438,7 @@ public class CommentApp implements XPageApplication
 
         if ( config != null )
         {
-            comment.setIpAddress( request.getRemoteAddr( ) );
+            comment.setIpAddress( SecurityUtil.getRealIp( request ) );
             comment.setIdExtendableResource( strIdExtendableResource );
             comment.setExtendableResourceType( strExtendableResourceType );
             comment.setPublished( !config.isModerated( ) );

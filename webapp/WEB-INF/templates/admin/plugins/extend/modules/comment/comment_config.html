@@ -1,3 +1,4 @@
+<#include "/admin/util/editor/editor.html" />
 <div class="control-group" >
 	<label class="control-label" for="moderated">#i18n{module.extend.comment.comment_config.labelModerated} : </label>
 	<div class="controls">
@@ -33,3 +34,10 @@
 		<span class="help-block">#i18n{module.extend.comment.comment_config.labelMailingListComment}</span>
 	</div>
 </div>
+<div class="control-group" >
+	<label class="control-label" for="isAdminComment">#i18n{module.extend.comment.comment_config.labelAdminComment} : </label>
+	<div class="controls">
+		<textarea class="richtext" name="adminBadge" >${commentConfig.adminBadge!}</textarea>
+	</div>
+</div>
+<@initEditor />

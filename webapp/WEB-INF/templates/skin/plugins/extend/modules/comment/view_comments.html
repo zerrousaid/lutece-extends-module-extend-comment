@@ -27,16 +27,18 @@
 		</#if>
 	</form>
 	<@paginationSitePageLinks paginator=paginator/>
+	<br />
 	<#if listComments?? && listComments?has_content>
 		<#list listComments as comment>
 			<a name="comment_${comment.idComment!}"></a>
 			<div class="well">
 				<legend>
 					#i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}
+					<#if comment.isAdminComment><div>${adminBadge!}</div></#if>
 					<#if allowSubComments>
 						<div class="pull-right">
-							<a class="btn btn-small btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;idComment=${comment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
-								<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAnswerComment}
+							<a class="btn btn-small btn-primary" title="#i18n{module.extend.comment.view_comments.labelAnswerComment}" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;idComment=${comment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
+								<i class="icon-plus icon-white">&nbsp;</i>&nbsp;<span class="hidden-phone">#i18n{module.extend.comment.view_comments.labelAnswerComment}</span>
 							</a>
 						</div>
 					</#if>
@@ -49,14 +51,19 @@
 					</#if>
 				</p>
 				<#if comment.listSubComments?? && 0 < comment.listSubComments?size>
-					<p class="comment_toggle" id="comment_toggle_${comment.idComment!}">
+					<a class="comment_toggle" id="comment_toggle_${comment.idComment!}" href="javascript:;">
 						<i class="icon-chevron-down"></i>#i18n{module.extend.comment.comment_info.displaySubComments}
-					</p>
+					</a>
 					<div <#if !idComment?? || comment.idComment?string != idComment>class="commentComments"</#if>>
 						<#list comment.listSubComments as subComment>
 							<blockquote>
 								<div>
-									<strong>#i18n{module.extend.comment.view_comments.labelPosted} ${subComment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${subComment.name!}</strong>
+									<strong>
+										#i18n{module.extend.comment.view_comments.labelPosted} ${subComment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${subComment.name!}
+										<#if subComment.isAdminComment>
+											<div>${adminBadge!}</div>
+										</#if>
+									</strong>
 								</div>
 								<div class="well">
 									<p>

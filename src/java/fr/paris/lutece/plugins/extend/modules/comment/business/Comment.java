@@ -66,6 +66,7 @@ public class Comment
     private int _nIdParentComment;
     private List<Comment> _listSubComments;
     private int _nNumberSubComments = -1;
+    private boolean _bIsAdminComment;
 
     /**
      * @return the strIdExtendableResource
@@ -323,5 +324,25 @@ public class Comment
     public void setNumberSubComments( int nNumberSubComments )
     {
         this._nNumberSubComments = nNumberSubComments;
+    }
+
+    /**
+     * Check if the comment has been written by an admin or by a front office
+     * user
+     * @return True if the comment has been written by an admin, false otherwise
+     */
+    public boolean getIsAdminComment( )
+    {
+        return _bIsAdminComment;
+    }
+
+    /**
+     * Set the admin written status of this comment
+     * @param bIsAdminComment True if the comment has been written by an admin,
+     *            false otherwise
+     */
+    public void setIsAdminComment( boolean bIsAdminComment )
+    {
+        this._bIsAdminComment = bIsAdminComment;
     }
 }

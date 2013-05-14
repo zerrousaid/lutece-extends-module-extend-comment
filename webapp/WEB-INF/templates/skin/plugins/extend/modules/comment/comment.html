@@ -3,7 +3,10 @@
 		<#list listComments as comment>
 			<div class="well">
 				<fieldset>
-					<legend>#i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}</legend>
+					<legend>
+						#i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}
+						<#if comment.isAdminComment><div>${adminBadge!}</div></#if>
+					</legend>
 					<p>
 						<#if use_bbcode>
 							${comment.BBCodeComment!}

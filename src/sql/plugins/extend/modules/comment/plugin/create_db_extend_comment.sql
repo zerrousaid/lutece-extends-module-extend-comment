@@ -14,6 +14,8 @@ CREATE TABLE extend_comment (
 	is_published SMALLINT default 0 NOT NULL,
 	date_last_modif TIMESTAMP,
 	id_parent_comment INT DEFAULT 0 NOT NULL,
+	is_admin_comment SMALLINT default 0 NOT NULL,
+	admin_badge LONG VARCHAR NOT NULL,
 	PRIMARY KEY (id_comment)
 );
 

@@ -51,10 +51,8 @@ import org.apache.commons.lang.StringUtils;
 public class CommentDAO implements ICommentDAO
 {
     private static final String SQL_QUERY_NEW_PK = " SELECT max( id_comment ) FROM extend_comment ";
-    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment ( id_comment, id_resource, resource_type, date_comment, "
-            + " name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment ) "
-            + " VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
-    private static final String SQL_QUERY_SELECT_ALL = " SELECT id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment FROM extend_comment ";
+    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment ( id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_SELECT_ALL = " SELECT id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment FROM extend_comment ";
     private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_ALL + " WHERE id_comment = ? ";
     private static final String SQL_QUERY_SELECT_BY_RESOURCE = SQL_QUERY_SELECT_ALL
             + " WHERE id_resource = ? AND resource_type = ? ";
@@ -63,7 +61,7 @@ public class CommentDAO implements ICommentDAO
     private static final String SQL_QUERY_DELETE_BY_ID_RESOURCE = " DELETE FROM extend_comment WHERE resource_type = ? ";
     private static final String SQL_QUERY_FILTER_ID_RESOURCE = " AND id_resource = ? ";
     private static final String SQL_QUERY_UPDATE = " UPDATE extend_comment SET id_resource = ?, resource_type = ?, date_comment = ?, name = ?, email = ?, "
-            + " ip_address = ?, comment = ?, is_published = ?, date_last_modif = ?, id_parent_comment = ? WHERE id_comment = ?  ";
+            + " ip_address = ?, comment = ?, is_published = ?, date_last_modif = ?, id_parent_comment = ?, is_admin_comment = ? WHERE id_comment = ?  ";
     private static final String SQL_QUERY_FIND_BY_ID_PARENT = SQL_QUERY_SELECT_ALL + " WHERE id_parent_comment = ? ";
     private static final String SQL_QUERY_COUNT_BY_ID_PARENT = " SELECT count( id_comment ) FROM extend_comment WHERE id_parent_comment = ? ";
     private static final String SQL_QUERY_UPDATE_COMMENT_PUBLISHED = " UPDATE extend_comment SET is_published = ?, date_last_modif = ? WHERE id_comment = ?  ";
@@ -129,6 +127,7 @@ public class CommentDAO implements ICommentDAO
         daoUtil.setBoolean( nIndex++, comment.isPublished( ) );
         daoUtil.setTimestamp( nIndex++, comment.getDateLastModif( ) );
         daoUtil.setInt( nIndex++, comment.getIdParentComment( ) );
+        daoUtil.setBoolean( nIndex, comment.getIsAdminComment( ) );
 
         daoUtil.executeUpdate( );
         daoUtil.free( );
@@ -148,19 +147,7 @@ public class CommentDAO implements ICommentDAO
 
         if ( daoUtil.next( ) )
         {
-            int nIndex = 1;
-            comment = new Comment( );
-            comment.setIdComment( daoUtil.getInt( nIndex++ ) );
-            comment.setIdExtendableResource( daoUtil.getString( nIndex++ ) );
-            comment.setExtendableResourceType( daoUtil.getString( nIndex++ ) );
-            comment.setDateComment( daoUtil.getTimestamp( nIndex++ ) );
-            comment.setName( daoUtil.getString( nIndex++ ) );
-            comment.setEmail( daoUtil.getString( nIndex++ ) );
-            comment.setIpAddress( daoUtil.getString( nIndex++ ) );
-            comment.setComment( daoUtil.getString( nIndex++ ) );
-            comment.setPublished( daoUtil.getBoolean( nIndex++ ) );
-            comment.setDateLastModif( daoUtil.getTimestamp( nIndex++ ) );
-            comment.setIdParentComment( daoUtil.getInt( nIndex ) );
+            comment = getCommentInfo( daoUtil );
         }
 
         daoUtil.free( );
@@ -222,6 +209,7 @@ public class CommentDAO implements ICommentDAO
         daoUtil.setBoolean( nIndex++, comment.isPublished( ) );
         daoUtil.setTimestamp( nIndex++, comment.getDateLastModif( ) );
         daoUtil.setInt( nIndex++, comment.getIdParentComment( ) );
+        daoUtil.setBoolean( nIndex++, comment.getIsAdminComment( ) );
 
         daoUtil.setInt( nIndex, comment.getIdComment( ) );
 
@@ -311,22 +299,7 @@ public class CommentDAO implements ICommentDAO
 
         while ( daoUtil.next( ) )
         {
-            nIndex = 1;
-
-            Comment comment = new Comment( );
-            comment.setIdComment( daoUtil.getInt( nIndex++ ) );
-            comment.setIdExtendableResource( daoUtil.getString( nIndex++ ) );
-            comment.setExtendableResourceType( daoUtil.getString( nIndex++ ) );
-            comment.setDateComment( daoUtil.getTimestamp( nIndex++ ) );
-            comment.setName( daoUtil.getString( nIndex++ ) );
-            comment.setEmail( daoUtil.getString( nIndex++ ) );
-            comment.setIpAddress( daoUtil.getString( nIndex++ ) );
-            comment.setComment( daoUtil.getString( nIndex++ ) );
-            comment.setPublished( daoUtil.getBoolean( nIndex++ ) );
-            comment.setDateLastModif( daoUtil.getTimestamp( nIndex++ ) );
-            comment.setIdParentComment( daoUtil.getInt( nIndex ) );
-
-            listComments.add( comment );
+            listComments.add( getCommentInfo( daoUtil ) );
         }
 
         daoUtil.free( );
@@ -408,22 +381,7 @@ public class CommentDAO implements ICommentDAO
         // We fetch results
         while ( daoUtil.next( ) )
         {
-            nIndex = 1;
-
-            Comment comment = new Comment( );
-            comment.setIdComment( daoUtil.getInt( nIndex++ ) );
-            comment.setIdExtendableResource( daoUtil.getString( nIndex++ ) );
-            comment.setExtendableResourceType( daoUtil.getString( nIndex++ ) );
-            comment.setDateComment( daoUtil.getTimestamp( nIndex++ ) );
-            comment.setName( daoUtil.getString( nIndex++ ) );
-            comment.setEmail( daoUtil.getString( nIndex++ ) );
-            comment.setIpAddress( daoUtil.getString( nIndex++ ) );
-            comment.setComment( daoUtil.getString( nIndex++ ) );
-            comment.setPublished( daoUtil.getBoolean( nIndex++ ) );
-            comment.setDateLastModif( daoUtil.getTimestamp( nIndex ) );
-            comment.setIdParentComment( daoUtil.getInt( nIndex ) );
-
-            listComments.add( comment );
+            listComments.add( getCommentInfo( daoUtil ) );
         }
 
         daoUtil.free( );
@@ -477,22 +435,7 @@ public class CommentDAO implements ICommentDAO
         daoUtil.executeQuery( );
         while ( daoUtil.next( ) )
         {
-            nIndex = 1;
-
-            Comment comment = new Comment( );
-            comment.setIdComment( daoUtil.getInt( nIndex++ ) );
-            comment.setIdExtendableResource( daoUtil.getString( nIndex++ ) );
-            comment.setExtendableResourceType( daoUtil.getString( nIndex++ ) );
-            comment.setDateComment( daoUtil.getTimestamp( nIndex++ ) );
-            comment.setName( daoUtil.getString( nIndex++ ) );
-            comment.setEmail( daoUtil.getString( nIndex++ ) );
-            comment.setIpAddress( daoUtil.getString( nIndex++ ) );
-            comment.setComment( daoUtil.getString( nIndex++ ) );
-            comment.setPublished( daoUtil.getBoolean( nIndex++ ) );
-            comment.setDateLastModif( daoUtil.getTimestamp( nIndex ) );
-            comment.setIdParentComment( daoUtil.getInt( nIndex ) );
-
-            listComments.add( comment );
+            listComments.add( getCommentInfo( daoUtil ) );
         }
         daoUtil.free( );
         return listComments;
@@ -527,4 +470,22 @@ public class CommentDAO implements ICommentDAO
         return nResult;
     }
 
+    private Comment getCommentInfo( DAOUtil daoUtil )
+    {
+        int nIndex = 1;
+        Comment comment = new Comment( );
+        comment.setIdComment( daoUtil.getInt( nIndex++ ) );
+        comment.setIdExtendableResource( daoUtil.getString( nIndex++ ) );
+        comment.setExtendableResourceType( daoUtil.getString( nIndex++ ) );
+        comment.setDateComment( daoUtil.getTimestamp( nIndex++ ) );
+        comment.setName( daoUtil.getString( nIndex++ ) );
+        comment.setEmail( daoUtil.getString( nIndex++ ) );
+        comment.setIpAddress( daoUtil.getString( nIndex++ ) );
+        comment.setComment( daoUtil.getString( nIndex++ ) );
+        comment.setPublished( daoUtil.getBoolean( nIndex++ ) );
+        comment.setDateLastModif( daoUtil.getTimestamp( nIndex++ ) );
+        comment.setIdParentComment( daoUtil.getInt( nIndex++ ) );
+        comment.setIsAdminComment( daoUtil.getBoolean( nIndex++ ) );
+        return comment;
+    }
 }

@@ -84,10 +84,6 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
 
     private static final String JSP_URL_MANAGE_COMMENTS = "jsp/admin/plugins/extend/ViewExtenderInfo.jsp";
 
-    // CONSTANT
-    private static final String CONSTANT_AND = "&";
-    private static final String CONSTANT_AND_HTML = "%26";
-
     @Inject
     private ICommentService _commentService;
     @Inject
@@ -119,11 +115,13 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         int nNbComments = 1;
         boolean bAuthorizedsubComments = true;
         boolean bUseBBCodeEditor = false;
+        String strAdminBadge = StringUtils.EMPTY;
         if ( config != null )
         {
             nNbComments = config.getNbComments( );
             bAuthorizedsubComments = config.getAuthorizeSubComments( );
             bUseBBCodeEditor = config.getUseBBCodeEditor( );
+            strAdminBadge = config.getAdminBadge( );
         }
 
         List<Comment> listComments = _commentService.findLastComments( strIdExtendableResource,
@@ -133,6 +131,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
         model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
         model.put( CommentConstants.MARK_USE_BBCODE, bUseBBCodeEditor );
+        model.put( CommentConstants.MARK_ADMIN_BADGE, strAdminBadge );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT, request.getLocale( ), model );
 
@@ -154,6 +153,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         Map<String, Object> model = new HashMap<String, Object>( );
         model.put( CommentConstants.MARK_COMMENT_CONFIG, _configService.find( resourceExtender.getIdExtender( ) ) );
         model.put( CommentConstants.MARK_LIST_IDS_MAILING_LIST, listIdsMailingList );
+        model.put( CommentConstants.MARK_WEBAPP_URL, AppPathService.getBaseUrl( request ) );
+        model.put( CommentConstants.MARK_LOCALE, AdminUserService.getLocale( request ) );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT_CONFIG, request.getLocale( ), model );
 
@@ -183,7 +184,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             // We get the pagination info from the session
             Integer nItemsPerPage = _nDefaultItemsPerPage;
             String strCurrentPageIndex = CommentConstants.CONSTANT_FIRST_PAGE_NUMBER;
-            Boolean bIsAscSort = true;
+            Boolean bIsAscSort = false;
             String strSortedAttributeName = null;
             Object object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_ITEMS_PER_PAGE );
             if ( object != null )
@@ -209,7 +210,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             int nItemsCount = _commentService.getCommentNb( resourceExtender.getIdExtendableResource( ),
                     resourceExtender.getExtendableResourceType( ), config.getAuthorizeSubComments( ), false );
             String strFromUrl = StringUtils.replace( request.getParameter( CommentConstants.PARAMETER_FROM_URL ),
-                    CONSTANT_AND, CONSTANT_AND_HTML );
+                    CommentConstants.CONSTANT_AND, CommentConstants.CONSTANT_AND_HTML );
             strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, strCurrentPageIndex );
             int nOldITemsPerPage = nItemsPerPage;
             nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, nItemsPerPage,
@@ -236,6 +237,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
                     resourceExtender.getExtendableResourceType( ), false, strSortedAttributeName, bIsAscSort,
                     nItemsOffset, nItemsPerPage, config.getAuthorizeSubComments( ) );
 
+            // We generate the base URL for the paginator
             UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_COMMENTS );
             url.addParameter( CommentConstants.PARAMETER_EXTENDER_TYPE, CommentResourceExtender.EXTENDER_TYPE_COMMENT );
             url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE,
@@ -244,10 +246,14 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
                     resourceExtender.getExtendableResourceType( ) );
             url.addParameter( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
 
+            // We get the paginator
             IPaginator<Comment> paginator = new LocalizedDelegatePaginator<Comment>( listComments, nItemsPerPage,
                     url.getUrl( ), Paginator.PARAMETER_PAGE_INDEX, strCurrentPageIndex, nItemsCount,
                     AdminUserService.getLocale( request ) );
+
             Map<String, Object> model = new HashMap<String, Object>( );
+            model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, resourceExtender.getIdExtendableResource( ) );
+            model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, resourceExtender.getExtendableResourceType( ) );
             model.put( CommentConstants.MARK_LIST_COMMENTS, paginator.getPageItems( ) );
             model.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
             model.put( CommentConstants.MARK_PAGINATOR, paginator );
@@ -257,6 +263,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             model.put( CommentConstants.PARAMETER_ID_COMMENT,
                     request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
             model.put( CommentConstants.MARK_USE_BBCODE, config.getUseBBCodeEditor( ) );
+            model.put( CommentConstants.MARK_ADMIN_BADGE, config.getAdminBadge( ) );
+            model.put( CommentConstants.MARK_ALLOW_SUB_COMMENTS, config.getAuthorizeSubComments( ) );
 
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_COMMENTS, request.getLocale( ),
                     model );

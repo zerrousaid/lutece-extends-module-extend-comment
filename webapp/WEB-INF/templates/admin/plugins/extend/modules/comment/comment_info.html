@@ -1,3 +1,9 @@
+<div class="pull-right">
+	<a class="btn btn-primary btn-small" href="jsp/admin/plugins/extend/modules/comment/GetCreateComment.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>">
+		<i class="icon-white icon-plus"></i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}
+	</a>
+</div>
+<br />
 <#if (paginator.pagesCount > 1) >
     <@paginationPageLinks paginator=paginator />
 </#if>
@@ -29,7 +35,7 @@
 			<strong>#i18n{module.extend.comment.comment_info.labelAuthor}</strong>
 		</div>
 		<div>
-			#i18n{module.extend.comment.comment_info.labelName} : ${comment.name!} - #i18n{module.extend.comment.comment_info.labelSendTime} : ${comment.dateComment!}
+			#i18n{module.extend.comment.comment_info.labelName} : ${comment.name!} <#if comment.isAdminComment>${adminBadge!}</#if> - #i18n{module.extend.comment.comment_info.labelSendTime} : ${comment.dateComment!}
 			<div class="pull-right">
 				<form method=post" action="jsp/admin/plugins/extend/modules/comment/DoPublishUnpublishComment.jsp#comment_${comment.idComment!}">
 					<input type="hidden" name="idComment" value="${comment.idComment!}" />
@@ -44,6 +50,11 @@
 						<button class="btn btn-small btn-primary" type="submit" name="unpublish" value="#i18n{module.extend.comment.comment_info.buttonPublish}" title="#i18n{module.extend.comment.comment_info.labelUnpublished}" >
 							<i class="icon-eye-close icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment_info.buttonPublish}
 						</button>
+					</#if>
+					<#if allowSubComments>
+						<a class="btn btn-primary btn-small" href="jsp/admin/plugins/extend/modules/comment/GetCreateComment.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${comment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>">
+							<i class="icon-white icon-repeat"></i>&nbsp;#i18n{module.extend.comment.comment_info.labelAnswer}
+						</a>
 					</#if>
 					<a class="btn btn-small btn-danger" href="jsp/admin/plugins/extend/modules/comment/ConfirmRemoveComment.jsp?idComment=${comment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{portal.util.labelDelete}">
 						<i class="icon-trash icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelDelete}
@@ -72,9 +83,9 @@
 			</#if>
 		</div>
 		<#if comment.listSubComments?? && 0 < comment.listSubComments?size>
-			<p class="comment_toggle" id="comment_toggle_${comment.idComment!}">
-				<i class="icon-chevron-down"></i>#i18n{module.extend.comment.comment_info.displaySubComments}
-			</p>
+			<a class="comment_toggle" id="comment_toggle_${comment.idComment!}" href="javascript:;">
+				<i class="icon-chevron-down"></i>&nbsp;#i18n{module.extend.comment.comment_info.displaySubComments}
+			</a>
 			<div <#if !idComment?? || comment.idComment?string != idComment>class="commentComments"</#if>>
 				<#list comment.listSubComments as subComment>
 					<blockquote>
@@ -82,7 +93,7 @@
 							<strong>#i18n{module.extend.comment.comment_info.labelAuthor}</strong>
 						</div>
 						<div>
-							#i18n{module.extend.comment.comment_info.labelName} : ${subComment.name!} - #i18n{module.extend.comment.comment_info.labelSendTime} : ${subComment.dateComment!}
+							#i18n{module.extend.comment.comment_info.labelName} : ${subComment.name!} <#if subComment.isAdminComment>${adminBadge!}</#if> - #i18n{module.extend.comment.comment_info.labelSendTime} : ${subComment.dateComment!}
 							<div class="pull-right">
 								<form method=post" action="jsp/admin/plugins/extend/modules/comment/DoPublishUnpublishComment.jsp#comment_${comment.idComment!}">
 									<input type="hidden" name="idComment" value="${subComment.idComment!}" />

@@ -48,6 +48,7 @@ public class CommentExtenderConfig extends ExtenderConfig
     private int _nIdMailingList = -1;
     private boolean _bAuthorizeSubComments;
     private boolean _bUseBBCodeEditor;
+    private String _strAdminBadge;
 
     /**
      * Checks if is moderated.
@@ -138,5 +139,23 @@ public class CommentExtenderConfig extends ExtenderConfig
     public void setUseBBCodeEditor( boolean bUseBBCodeEditor )
     {
         this._bUseBBCodeEditor = bUseBBCodeEditor;
+    }
+
+    /**
+     * Get the badge of comments posted by admin users
+     * @return The badge of comments posted by admin users
+     */
+    public String getAdminBadge( )
+    {
+        return _strAdminBadge;
+    }
+
+    /**
+     * Set the badge of comments posted by admin users
+     * @param strAdminAnswerBadge The badge of comments posted by admin users
+     */
+    public void setAdminBadge( String strAdminAnswerBadge )
+    {
+        this._strAdminBadge = strAdminAnswerBadge;
     }
 }
