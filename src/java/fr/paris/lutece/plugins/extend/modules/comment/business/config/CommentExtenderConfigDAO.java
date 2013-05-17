@@ -45,10 +45,10 @@ import fr.paris.lutece.util.sql.DAOUtil;
  */
 public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExtenderConfig>
 {
-    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment_config ( id_extender, is_moderated, nb_comments, id_mailing_list, authorize_sub_comments, use_bbcode, admin_badge ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
-    private static final String SQL_QUERY_UPDATE = " UPDATE extend_comment_config SET is_moderated = ?, nb_comments = ?, id_mailing_list = ?, authorize_sub_comments = ?, use_bbcode = ?, admin_badge = ? WHERE id_extender = ? ";
+    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment_config ( id_extender, is_moderated, nb_comments, id_mailing_list, authorize_sub_comments, use_bbcode, admin_badge, message_comment_created ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_UPDATE = " UPDATE extend_comment_config SET is_moderated = ?, nb_comments = ?, id_mailing_list = ?, authorize_sub_comments = ?, use_bbcode = ?, admin_badge = ?, message_comment_created = ? WHERE id_extender = ? ";
     private static final String SQL_QUERY_DELETE = " DELETE FROM extend_comment_config WHERE id_extender = ? ";
-    private static final String SQL_QUERY_SELECT = " SELECT id_extender, is_moderated, nb_comments, id_mailing_list, authorize_sub_comments, use_bbcode, admin_badge FROM extend_comment_config WHERE id_extender = ? ";
+    private static final String SQL_QUERY_SELECT = " SELECT id_extender, is_moderated, nb_comments, id_mailing_list, authorize_sub_comments, use_bbcode, admin_badge, message_comment_created FROM extend_comment_config WHERE id_extender = ? ";
 
     /**
      * {@inheritDoc}
@@ -65,7 +65,8 @@ public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExten
         daoUtil.setInt( nIndex++, config.getIdMailingList( ) );
         daoUtil.setBoolean( nIndex++, config.getAuthorizeSubComments( ) );
         daoUtil.setBoolean( nIndex++, config.getUseBBCodeEditor( ) );
-        daoUtil.setString( nIndex, config.getAdminBadge( ) );
+        daoUtil.setString( nIndex++, config.getAdminBadge( ) );
+        daoUtil.setString( nIndex, config.getMessageCommentCreated( ) );
 
         daoUtil.executeUpdate( );
         daoUtil.free( );
@@ -86,6 +87,7 @@ public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExten
         daoUtil.setBoolean( nIndex++, config.getAuthorizeSubComments( ) );
         daoUtil.setBoolean( nIndex++, config.getUseBBCodeEditor( ) );
         daoUtil.setString( nIndex++, config.getAdminBadge( ) );
+        daoUtil.setString( nIndex++, config.getMessageCommentCreated( ) );
 
         daoUtil.setInt( nIndex, config.getIdExtender( ) );
 
@@ -128,7 +130,8 @@ public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExten
             config.setIdMailingList( daoUtil.getInt( nIndex++ ) );
             config.setAuthorizeSubComments( daoUtil.getBoolean( nIndex++ ) );
             config.setUseBBCodeEditor( daoUtil.getBoolean( nIndex++ ) );
-            config.setAdminBadge( daoUtil.getString( nIndex ) );
+            config.setAdminBadge( daoUtil.getString( nIndex++ ) );
+            config.setMessageCommentCreated( daoUtil.getString( nIndex ) );
         }
 
         daoUtil.free( );

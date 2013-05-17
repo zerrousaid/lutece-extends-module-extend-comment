@@ -112,6 +112,7 @@ public class CommentApp implements XPageApplication
     // TEMPLATES
     private static final String TEMPLATE_XPAGE_VIEW_COMMENTS = "skin/plugins/extend/modules/comment/view_comments.html";
     private static final String TEMPLATE_XPAGE_ADD_COMMENT = "skin/plugins/extend/modules/comment/add_comment.html";
+    private static final String TEMPLATE_XPAGE_MESSAGE_COMMENT_CREATED = "skin/plugins/extend/modules/comment/message_comment_created.html";
     private static final String TEMPLATE_COMMENT_NOTIFY_MESSAGE = "skin/plugins/extend/modules/comment/comment_notify_message.html";
 
     private static final String PARAMETER_PAGE = "page";
@@ -120,6 +121,8 @@ public class CommentApp implements XPageApplication
     private static final String JCAPTCHA_PLUGIN = "jcaptcha";
     private static final String HTML_BR = "<br />";
     private static final String FROM_SESSION = "from_session";
+    private static final String CONSTANT_AND = "&";
+    private static final String CONSTANT_AND_HTML = "%26";
 
     // VARIABLES
     private static final boolean _bIsCaptchaEnabled = PluginService.isPluginEnable( JCAPTCHA_PLUGIN )
@@ -164,7 +167,7 @@ public class CommentApp implements XPageApplication
             }
             else if ( CommentConstants.ACTION_DO_ADD_COMMENT.equals( strAction ) )
             {
-                doAddComment( request, strIdExtendableResource, strExtendableResourceType );
+                page = doAddComment( request, strIdExtendableResource, strExtendableResourceType );
             }
         }
 
@@ -231,7 +234,7 @@ public class CommentApp implements XPageApplication
         }
         if ( strFromUrl != null )
         {
-            strFromUrl = strFromUrl.replace( "&", "%26" );
+            strFromUrl = strFromUrl.replace( CONSTANT_AND, CONSTANT_AND_HTML );
         }
         request.getSession( )
                 .setAttribute( CommentPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, strFromUrl );
@@ -339,7 +342,7 @@ public class CommentApp implements XPageApplication
         }
         if ( strFromUrl != null )
         {
-            strFromUrl = strFromUrl.replace( "&", "%26" );
+            strFromUrl = strFromUrl.replace( CONSTANT_AND, CONSTANT_AND_HTML );
         }
         request.getSession( )
                 .setAttribute( CommentPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, strFromUrl );
@@ -386,9 +389,10 @@ public class CommentApp implements XPageApplication
      * @param request the request
      * @param strIdExtendableResource the str id extendable resource
      * @param strExtendableResourceType the str extendable resource type
+     * @return The page to display, or null to display the default page
      * @throws SiteMessageException the site message exception
      */
-    private void doAddComment( HttpServletRequest request, String strIdExtendableResource,
+    private XPage doAddComment( HttpServletRequest request, String strIdExtendableResource,
             String strExtendableResourceType ) throws SiteMessageException
     {
         Comment comment = new Comment( );
@@ -472,13 +476,31 @@ public class CommentApp implements XPageApplication
 
                 // Notify the mailing list
                 sendCommentNotification( request, comment, config );
+
+                XPage page = new XPage( );
+                page.setTitle( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_ADD_COMMENT_PAGE_TITLE,
+                        request.getLocale( ) ) );
+                page.setPathLabel( I18nService.getLocalizedString(
+                        CommentConstants.PROPERTY_XPAGE_ADD_COMMENT_PAGE_LABEL, request.getLocale( ) ) );
+
+                Map<String, Object> model = new HashMap<String, Object>( );
+                model.put( CommentConstants.MARK_MESSAGE_COMMENT_CREATED, config.getMessageCommentCreated( ) );
+                model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
+                model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
+                model.put( CommentConstants.PARAMETER_ID_COMMENT, comment.getIdParentComment( ) );
+
+                HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_XPAGE_MESSAGE_COMMENT_CREATED,
+                        request.getLocale( ), model );
+
+                page.setContent( template.getHtml( ) );
+
+                return page;
             }
+            return null;
         }
-        else
-        {
-            SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE,
+        SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE,
                     SiteMessage.TYPE_ERROR );
-        }
+        return null;
     }
 
     /**

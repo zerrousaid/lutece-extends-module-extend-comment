@@ -84,6 +84,7 @@ public final class CommentConstants
     public static final String MARK_LOCALE = "locale";
     public static final String MARK_USE_BBCODE = "use_bbcode";
     public static final String MARK_ALLOW_SUB_COMMENTS = "allowSubComments";
+    public static final String MARK_MESSAGE_COMMENT_CREATED = "message_comment_created";
 
     // ACTIONS
     public static final String ACTION_ADD_COMMENT = "addComment";

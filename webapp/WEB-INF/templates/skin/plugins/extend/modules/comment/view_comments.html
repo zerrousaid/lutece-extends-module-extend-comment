@@ -40,6 +40,7 @@
 							<a class="btn btn-small btn-primary" title="#i18n{module.extend.comment.view_comments.labelAnswerComment}" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;idComment=${comment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
 								<i class="icon-plus icon-white">&nbsp;</i>&nbsp;<span class="hidden-phone">#i18n{module.extend.comment.view_comments.labelAnswerComment}</span>
 							</a>
+							@Extender[${comment.idComment!},comment,rating]@
 						</div>
 					</#if>
 				</legend>

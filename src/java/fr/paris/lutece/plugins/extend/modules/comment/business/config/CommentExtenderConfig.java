@@ -49,6 +49,7 @@ public class CommentExtenderConfig extends ExtenderConfig
     private boolean _bAuthorizeSubComments;
     private boolean _bUseBBCodeEditor;
     private String _strAdminBadge;
+    private String _strMessageCommentCreated;
 
     /**
      * Checks if is moderated.
@@ -157,5 +158,23 @@ public class CommentExtenderConfig extends ExtenderConfig
     public void setAdminBadge( String strAdminAnswerBadge )
     {
         this._strAdminBadge = strAdminAnswerBadge;
+    }
+
+    /**
+     * Get the message to display to users when a comment is created
+     * @return The message to display
+     */
+    public String getMessageCommentCreated( )
+    {
+        return _strMessageCommentCreated;
+    }
+
+    /**
+     * Set the message to display to users when a comment is created
+     * @param strMessageCommentCreated The message to display
+     */
+    public void setMessageCommentCreated( String strMessageCommentCreated )
+    {
+        this._strMessageCommentCreated = strMessageCommentCreated;
     }
 }

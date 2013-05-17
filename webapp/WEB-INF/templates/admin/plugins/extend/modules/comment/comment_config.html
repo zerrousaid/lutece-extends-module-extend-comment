@@ -35,9 +35,15 @@
 	</div>
 </div>
 <div class="control-group" >
-	<label class="control-label" for="isAdminComment">#i18n{module.extend.comment.comment_config.labelAdminComment} : </label>
+	<label class="control-label" for="adminBadge">#i18n{module.extend.comment.comment_config.labelAdminComment} : </label>
 	<div class="controls">
 		<textarea class="richtext" name="adminBadge" >${commentConfig.adminBadge!}</textarea>
+	</div>
+</div>
+<div class="control-group" >
+	<label class="control-label" for="messageCommentCreated">#i18n{module.extend.comment.comment_config.labelMessageCommentCreated} : </label>
+	<div class="controls">
+		<textarea class="richtext" name="messageCommentCreated" >${commentConfig.messageCommentCreated!}</textarea>
 	</div>
 </div>
 <@initEditor />

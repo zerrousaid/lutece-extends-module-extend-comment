@@ -16,6 +16,7 @@ CREATE TABLE extend_comment (
 	id_parent_comment INT DEFAULT 0 NOT NULL,
 	is_admin_comment SMALLINT default 0 NOT NULL,
 	admin_badge LONG VARCHAR NOT NULL,
+	message_comment_created LONG VARCHAR NOT NULL,
 	PRIMARY KEY (id_comment)
 );
 

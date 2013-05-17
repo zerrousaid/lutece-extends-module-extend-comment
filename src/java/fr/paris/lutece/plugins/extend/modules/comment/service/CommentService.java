@@ -75,6 +75,7 @@ public class CommentService implements ICommentService
             parentComment.setDateLastModif( currentTimestamp );
             update( parentComment );
         }
+        CommentListenerService.createComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ) );
     }
 
     /**
@@ -86,6 +87,7 @@ public class CommentService implements ICommentService
     {
         comment.setDateLastModif( new Timestamp( new Date( ).getTime( ) ) );
         _commentDAO.store( comment, CommentPlugin.getPlugin( ) );
+        CommentListenerService.updateComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ) );
     }
 
     /**
@@ -96,6 +98,7 @@ public class CommentService implements ICommentService
     public void updateCommentStatus( int nIdComment, boolean bPublished )
     {
         _commentDAO.updateCommentStatus( nIdComment, bPublished, CommentPlugin.getPlugin( ) );
+        CommentListenerService.updateComment( nIdComment );
     }
 
     /**
@@ -106,6 +109,7 @@ public class CommentService implements ICommentService
     public void remove( int nIdComment )
     {
         _commentDAO.delete( nIdComment, CommentPlugin.getPlugin( ) );
+        CommentListenerService.deleteComment( nIdComment );
     }
 
     /**
