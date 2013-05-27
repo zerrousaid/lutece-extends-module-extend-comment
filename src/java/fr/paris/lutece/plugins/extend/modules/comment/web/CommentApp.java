@@ -40,6 +40,7 @@ import fr.paris.lutece.plugins.extend.modules.comment.service.CommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.ICommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.extender.CommentResourceExtender;
 import fr.paris.lutece.plugins.extend.modules.comment.util.constants.CommentConstants;
+import fr.paris.lutece.plugins.extend.service.ExtendPlugin;
 import fr.paris.lutece.plugins.extend.service.extender.IResourceExtenderService;
 import fr.paris.lutece.plugins.extend.service.extender.ResourceExtenderService;
 import fr.paris.lutece.plugins.extend.service.extender.config.IResourceExtenderConfigService;
@@ -226,7 +227,7 @@ public class CommentApp implements XPageApplication
         if ( FROM_SESSION.equals( strFromUrl ) )
         {
             strFromUrl = (String) request.getSession( ).getAttribute(
-                    CommentPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
+                    ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
         }
         if ( StringUtils.isEmpty( strFromUrl ) )
         {
@@ -237,7 +238,7 @@ public class CommentApp implements XPageApplication
             strFromUrl = strFromUrl.replace( CONSTANT_AND, CONSTANT_AND_HTML );
         }
         request.getSession( )
-                .setAttribute( CommentPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, strFromUrl );
+                .setAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, strFromUrl );
 
         strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, strCurrentPageIndex );
         int nOldITemsPerPage = nItemsPerPage;
@@ -334,7 +335,7 @@ public class CommentApp implements XPageApplication
         if ( FROM_SESSION.equals( strFromUrl ) )
         {
             strFromUrl = (String) request.getSession( ).getAttribute(
-                    CommentPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
+                    ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
         }
         if ( StringUtils.isEmpty( strFromUrl ) )
         {
@@ -345,7 +346,7 @@ public class CommentApp implements XPageApplication
             strFromUrl = strFromUrl.replace( CONSTANT_AND, CONSTANT_AND_HTML );
         }
         request.getSession( )
-                .setAttribute( CommentPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, strFromUrl );
+                .setAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, strFromUrl );
 
         Map<String, Object> model = new HashMap<String, Object>( );
         model.put( CommentConstants.MARK_COMMENT_CONFIG, config );
