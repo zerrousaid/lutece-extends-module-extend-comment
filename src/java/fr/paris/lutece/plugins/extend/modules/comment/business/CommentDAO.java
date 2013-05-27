@@ -470,6 +470,11 @@ public class CommentDAO implements ICommentDAO
         return nResult;
     }
 
+    /**
+     * Fetch the attributes of a comment from a daoUtil.
+     * @param daoUtil The daoUtil to get the attributes from
+     * @return The comment with the attributes contained in the daoUtil.
+     */
     private Comment getCommentInfo( DAOUtil daoUtil )
     {
         int nIndex = 1;

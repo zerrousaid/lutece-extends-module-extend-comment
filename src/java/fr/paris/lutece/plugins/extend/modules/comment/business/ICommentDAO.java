@@ -101,8 +101,10 @@ public interface ICommentDAO
      * @param strExtendableResourceType the extendable resource type
      * @param bParentsOnly True to consider only comments with no parent, false
      *            otherwise
+     * @param bPublishedOnly True to consider only published comments, false to
+     *            consider every comments.
      * @param plugin the plugin
-     * @return the int
+     * @return the number of comments
      */
     int getCommentNb( String strIdExtendableResource, String strExtendableResourceType, boolean bParentsOnly,
             boolean bPublishedOnly, Plugin plugin );

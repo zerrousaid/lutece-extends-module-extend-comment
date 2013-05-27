@@ -22,6 +22,14 @@ public class CommentListenerService
     private static ICommentDAO _commentDAO;
 
     /**
+     * Private constructor
+     */
+    private CommentListenerService( )
+    {
+
+    }
+
+    /**
      * Register a comment listener.
      * @param strExtendableResourceType The extendable resource type associated
      *            with the listener.
