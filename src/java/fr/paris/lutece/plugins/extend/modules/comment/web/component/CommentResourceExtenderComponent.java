@@ -46,7 +46,6 @@ import fr.paris.lutece.plugins.extend.util.ExtendErrorException;
 import fr.paris.lutece.plugins.extend.web.component.AbstractResourceExtenderComponent;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
 import fr.paris.lutece.portal.service.content.ContentPostProcessor;
-import fr.paris.lutece.portal.service.content.ContentPostProcessorService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mailinglist.AdminMailingListService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -142,13 +141,10 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT, request.getLocale( ), model );
         String strContent = template.getHtml( );
 
-        if ( ContentPostProcessorService.hasProcessor( ) )
+        ContentPostProcessor postProcessor = getExtendPostProcessor( );
+        if ( postProcessor != null )
         {
-            ContentPostProcessor postProcessor = getExtendPostProcessor( );
-            if ( postProcessor != null )
-            {
-                strContent = postProcessor.process( request, strContent );
-            }
+            strContent = postProcessor.process( request, strContent );
         }
 
         return strContent;
