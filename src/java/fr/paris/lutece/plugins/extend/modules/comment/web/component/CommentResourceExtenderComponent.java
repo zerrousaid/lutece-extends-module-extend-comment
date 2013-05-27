@@ -305,6 +305,10 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         _configService.update( config );
     }
 
+    /**
+     * Get the content post processor of plugin extend
+     * @return the content post processor of plugin extend
+     */
     private ContentPostProcessor getExtendPostProcessor( )
     {
         return SpringContextService.getBean( ExtendableContentPostProcessor.BEAN_NAME );
