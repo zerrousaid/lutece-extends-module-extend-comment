@@ -97,6 +97,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     private int _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt(
             CommentConstants.PROPERTY_DEFAULT_LIST_COMMENTS_PER_PAGE, 50 );
 
+    private ContentPostProcessor _contentPostProcessor;
+
     /**
      * {@inheritDoc}
      */
@@ -311,6 +313,16 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
      */
     private ContentPostProcessor getExtendPostProcessor( )
     {
-        return SpringContextService.getBean( ExtendableContentPostProcessor.BEAN_NAME );
+        if ( _contentPostProcessor == null )
+        {
+            synchronized ( this )
+            {
+                if ( _contentPostProcessor == null )
+                {
+                    _contentPostProcessor = SpringContextService.getBean( ExtendableContentPostProcessor.BEAN_NAME );
+                }
+            }
+        }
+        return _contentPostProcessor;
     }
 }
