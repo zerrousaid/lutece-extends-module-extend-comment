@@ -40,13 +40,16 @@ import fr.paris.lutece.plugins.extend.modules.comment.business.config.CommentExt
 import fr.paris.lutece.plugins.extend.modules.comment.service.ICommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.extender.CommentResourceExtender;
 import fr.paris.lutece.plugins.extend.modules.comment.util.constants.CommentConstants;
+import fr.paris.lutece.plugins.extend.service.content.ExtendableContentPostProcessor;
 import fr.paris.lutece.plugins.extend.service.extender.config.IResourceExtenderConfigService;
 import fr.paris.lutece.plugins.extend.util.ExtendErrorException;
 import fr.paris.lutece.plugins.extend.web.component.AbstractResourceExtenderComponent;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
+import fr.paris.lutece.portal.service.content.ContentPostProcessor;
 import fr.paris.lutece.portal.service.content.ContentPostProcessorService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mailinglist.AdminMailingListService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
@@ -139,7 +142,11 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
 
         if ( ContentPostProcessorService.hasProcessor( ) )
         {
-            strContent = ContentPostProcessorService.process( request, strContent );
+            ContentPostProcessor postProcessor = getExtendPostProcessor( );
+            if ( postProcessor != null )
+            {
+                strContent = postProcessor.process( request, strContent );
+            }
         }
 
         return strContent;
@@ -296,5 +303,10 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     public void doSaveConfig( HttpServletRequest request, IExtenderConfig config ) throws ExtendErrorException
     {
         _configService.update( config );
+    }
+
+    private ContentPostProcessor getExtendPostProcessor( )
+    {
+        return SpringContextService.getBean( ExtendableContentPostProcessor.BEAN_NAME );
     }
 }
