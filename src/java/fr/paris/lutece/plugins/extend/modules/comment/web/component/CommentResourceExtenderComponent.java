@@ -44,6 +44,7 @@ import fr.paris.lutece.plugins.extend.service.extender.config.IResourceExtenderC
 import fr.paris.lutece.plugins.extend.util.ExtendErrorException;
 import fr.paris.lutece.plugins.extend.web.component.AbstractResourceExtenderComponent;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
+import fr.paris.lutece.portal.service.content.ContentPostProcessorService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mailinglist.AdminMailingListService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
@@ -134,8 +135,14 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         model.put( CommentConstants.MARK_ADMIN_BADGE, strAdminBadge );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT, request.getLocale( ), model );
+        String strContent = template.getHtml( );
 
-        return template.getHtml( );
+        if ( ContentPostProcessorService.hasProcessor( ) )
+        {
+            strContent = ContentPostProcessorService.process( request, strContent );
+        }
+
+        return strContent;
     }
 
     /**

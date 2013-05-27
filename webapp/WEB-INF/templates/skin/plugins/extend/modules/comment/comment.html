@@ -7,6 +7,9 @@
 						#i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}
 						<#if comment.isAdminComment><div>${adminBadge!}</div></#if>
 					</legend>
+					<div class="pull-right">
+						@Extender[${comment.idComment},Comment,rating,{show:"vote"}]@
+					</div>
 					<p>
 						<#if use_bbcode>
 							${comment.BBCodeComment!}
