@@ -57,6 +57,8 @@ public class CommentResourceExtender extends AbstractResourceExtender
 {
     /** The Constant EXTENDER_TYPE_COMMENT. */
     public static final String EXTENDER_TYPE_COMMENT = "comment";
+    private static final String EXTENDABLE_RESOURCE_TYPE_COMMENT = "comment";
+
     @Inject
     @Named( CommentConstants.BEAN_CONFIG_SERVICE )
     private IResourceExtenderConfigService _configService;
@@ -85,6 +87,10 @@ public class CommentResourceExtender extends AbstractResourceExtender
     public String getContent( String strIdExtendableResource, String strExtendableResourceType, String strParameters,
         HttpServletRequest request )
     {
+        if ( StringUtils.equals( EXTENDABLE_RESOURCE_TYPE_COMMENT, strExtendableResourceType ) )
+        {
+            return StringUtils.EMPTY;
+        }
         return getResourceExtenderComponent(  )
                    .getPageAddOn( strIdExtendableResource, strExtendableResourceType, strParameters, request );
     }
