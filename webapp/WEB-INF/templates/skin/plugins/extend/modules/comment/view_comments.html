@@ -45,6 +45,9 @@
 						</#if>
 						<#if comment.isAdminComment>${adminBadge!}</#if>
 					</legend>
+					<div>
+						<p><b>#i18n{module.extend.comment.view_comments.labelLastModified} ${comment.dateLastModif!}</b></p>
+					</div>
 					<div class="pull-right">
 						@Extender[${comment.idComment},Comment,rating,{show:"all"}]@
 					</div>
@@ -66,7 +69,8 @@
 								<blockquote>
 									<div>
 										<strong>
-											#i18n{module.extend.comment.view_comments.labelPosted} ${subComment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${subComment.name!}
+											#i18n{module.extend.comment.view_comments.labelPosted} ${subComment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${subComment.name!}</p>
+											<p>#i18n{module.extend.comment.view_comments.labelLastModified} ${comment.dateLastModif!}</p>
 											<#if subComment.isAdminComment>
 												<div>${adminBadge!}</div>
 											</#if>

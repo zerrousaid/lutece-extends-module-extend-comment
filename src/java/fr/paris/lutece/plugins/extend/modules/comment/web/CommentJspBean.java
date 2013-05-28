@@ -260,6 +260,16 @@ public class CommentJspBean extends PluginAdminPageJspBean
         if ( StringUtils.isNotEmpty( strIdParentComment ) && StringUtils.isNumeric( strIdParentComment ) )
         {
             nIdParentComment = Integer.parseInt( strIdParentComment );
+            // We check that the parent has no parent. If it has one, then we use it instead
+            if ( nIdParentComment > 0 )
+            {
+                Comment parrentComment = _commentService.findByPrimaryKey( nIdParentComment );
+                // If the parent has a parent
+                if ( parrentComment.getIdParentComment( ) > 0 )
+                {
+                    nIdParentComment = parrentComment.getIdParentComment( );
+                }
+            }
         }
         AdminUser user = AdminUserService.getAdminUser( request );
 
