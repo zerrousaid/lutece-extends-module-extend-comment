@@ -15,8 +15,6 @@ CREATE TABLE extend_comment (
 	date_last_modif TIMESTAMP,
 	id_parent_comment INT DEFAULT 0 NOT NULL,
 	is_admin_comment SMALLINT default 0 NOT NULL,
-	admin_badge LONG VARCHAR NOT NULL,
-	message_comment_created LONG VARCHAR NOT NULL,
 	PRIMARY KEY (id_comment)
 );
 
@@ -31,5 +29,7 @@ CREATE TABLE extend_comment_config (
 	id_mailing_list INT DEFAULT 0 NOT NULL,
 	authorize_sub_comments SMALLINT default 0 NOT NULL,
 	use_bbcode SMALLINT default 1 NOT NULL,
+	admin_badge LONG VARCHAR NOT NULL,
+	message_comment_created LONG VARCHAR NOT NULL,
 	PRIMARY KEY (id_extender)
 );

@@ -288,7 +288,15 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             session.setAttribute( CommentConstants.SESSION_COMMENT_ADMIN_IS_ASC_SORT, bIsAscSort );
             session.setAttribute( CommentConstants.SESSION_COMMENT_ADMIN_SORTED_ATTRIBUTE_NAME, strSortedAttributeName );
 
-            return template.getHtml( );
+            String strContent = template.getHtml( );
+
+            ContentPostProcessor postProcessor = getExtendPostProcessor( );
+            if ( postProcessor != null )
+            {
+                strContent = postProcessor.process( request, strContent );
+            }
+
+            return strContent;
         }
 
         return StringUtils.EMPTY;

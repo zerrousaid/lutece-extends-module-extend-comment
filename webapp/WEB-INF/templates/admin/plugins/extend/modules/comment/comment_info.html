@@ -29,8 +29,12 @@
 </form>
 <#if listComments?? && listComments?has_content>
 	<#list listComments as comment>
+		<div class="pull-right">
+			@Extender[${comment.idComment},Comment,rating,{show:"vote"}]@
+		</div>
 		<div class="well">
 		<a name="comment_${comment.idComment!}"></a>
+		
 		<div>
 			<strong>#i18n{module.extend.comment.comment_info.labelAuthor}</strong>
 		</div>
