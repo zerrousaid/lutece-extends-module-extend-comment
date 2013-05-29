@@ -139,30 +139,6 @@ public class CommentListenerService
     }
 
     /**
-     * Notify to listeners the removal of a comment. Only listeners
-     * associated with the extendable resource type of the comment are notified.
-     * @param nIdComment The id of the removed comment
-     */
-    public static void deleteComment( int nIdComment )
-    {
-        try
-        {
-            if ( _mapListeners.size( ) > 0 )
-            {
-                Comment comment = getCommentDAO( ).load( nIdComment, CommentPlugin.getPlugin( ) );
-                List<Integer> listRemovedCommenIntegers = new ArrayList<Integer>( 1 );
-                listRemovedCommenIntegers.add( nIdComment );
-                deleteComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ),
-                        listRemovedCommenIntegers );
-            }
-        }
-        catch ( Exception e )
-        {
-            AppLogService.error( e.getMessage( ), e );
-        }
-    }
-
-    /**
      * Notify to listeners the modification of a comment. Only listeners
      * associated with the extendable resource type of the comment are notified.
      * @param strExtendableResourceType The extendable resource type of the

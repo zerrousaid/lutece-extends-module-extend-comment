@@ -38,6 +38,7 @@ import fr.paris.lutece.plugins.extend.modules.comment.business.ICommentDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -115,8 +116,15 @@ public class CommentService implements ICommentService
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
     public void remove( int nIdComment )
     {
+        if ( CommentListenerService.hasListener( ) )
+        {
+            Comment comment = findByPrimaryKey( nIdComment );
+            List<Integer> listIdRemovedComments = new ArrayList<Integer>( );
+            listIdRemovedComments.add( nIdComment );
+            CommentListenerService.deleteComment( comment.getExtendableResourceType( ),
+                    comment.getIdExtendableResource( ), listIdRemovedComments );
+        }
         _commentDAO.delete( nIdComment, CommentPlugin.getPlugin( ) );
-        CommentListenerService.deleteComment( nIdComment );
     }
 
     /**

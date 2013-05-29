@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.extend.modules.comment.web;
 
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
+import fr.paris.lutece.plugins.extend.modules.comment.service.CommentPlugin;
 import fr.paris.lutece.plugins.extend.modules.comment.service.CommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.ICommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.extender.CommentResourceExtender;
@@ -88,6 +89,7 @@ public class CommentJspBean extends PluginAdminPageJspBean
     private ICommentService _commentService = SpringContextService.getBean( CommentService.BEAN_SERVICE );
     private IResourceExtenderHistoryService _resourceHistoryService = SpringContextService
             .getBean( ResourceExtenderHistoryService.BEAN_SERVICE );
+
     /**
      * Do publish unpublish comment.
      * 
@@ -118,7 +120,15 @@ public class CommentJspBean extends PluginAdminPageJspBean
                             AdminMessage.TYPE_ERROR );
                 }
 
-                UrlItem url = new UrlItem( JSP_VIEW_EXTENDER_INFO );
+                String strPostBackUrl = (String) request.getSession( ).getAttribute(
+                        CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL );
+                request.getSession( ).setAttribute(
+                        CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL, null );
+                if ( StringUtils.isEmpty( strPostBackUrl ) )
+                {
+                    strPostBackUrl = JSP_VIEW_EXTENDER_INFO;
+                }
+                UrlItem url = new UrlItem( strPostBackUrl );
                 url.addParameter( CommentConstants.PARAMETER_EXTENDER_TYPE,
                         CommentResourceExtender.EXTENDER_TYPE_COMMENT );
                 url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, comment.getIdExtendableResource( ) );
@@ -188,7 +198,15 @@ public class CommentJspBean extends PluginAdminPageJspBean
                             AdminMessage.TYPE_ERROR );
                 }
 
-                UrlItem url = new UrlItem( JSP_VIEW_EXTENDER_INFO );
+                String strPostBackUrl = (String) request.getSession( ).getAttribute(
+                        CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL );
+                request.getSession( ).setAttribute(
+                        CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL, null );
+                if ( StringUtils.isEmpty( strPostBackUrl ) )
+                {
+                    strPostBackUrl = JSP_VIEW_EXTENDER_INFO;
+                }
+                UrlItem url = new UrlItem( strPostBackUrl );
                 url.addParameter( CommentConstants.PARAMETER_EXTENDER_TYPE,
                         CommentResourceExtender.EXTENDER_TYPE_COMMENT );
                 url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, comment.getIdExtendableResource( ) );
@@ -295,7 +313,15 @@ public class CommentJspBean extends PluginAdminPageJspBean
                 strExtendableResourceType, request );
 
         // we redirect the user to the manage comment page
-        UrlItem url = new UrlItem( JSP_VIEW_EXTENDER_INFO );
+        String strPostBackUrl = (String) request.getSession( ).getAttribute(
+                CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL );
+        request.getSession( ).setAttribute(
+                CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL, null );
+        if ( StringUtils.isEmpty( strPostBackUrl ) )
+        {
+            strPostBackUrl = JSP_VIEW_EXTENDER_INFO;
+        }
+        UrlItem url = new UrlItem( strPostBackUrl );
         url.addParameter( CommentConstants.PARAMETER_EXTENDER_TYPE, CommentResourceExtender.EXTENDER_TYPE_COMMENT );
         url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
         url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );

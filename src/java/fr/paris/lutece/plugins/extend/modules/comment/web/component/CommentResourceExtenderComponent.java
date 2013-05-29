@@ -37,6 +37,7 @@ import fr.paris.lutece.plugins.extend.business.extender.ResourceExtenderDTO;
 import fr.paris.lutece.plugins.extend.business.extender.config.IExtenderConfig;
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.extend.modules.comment.business.config.CommentExtenderConfig;
+import fr.paris.lutece.plugins.extend.modules.comment.service.CommentPlugin;
 import fr.paris.lutece.plugins.extend.modules.comment.service.ICommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.extender.CommentResourceExtender;
 import fr.paris.lutece.plugins.extend.modules.comment.util.constants.CommentConstants;
@@ -64,6 +65,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -190,6 +192,11 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     {
         if ( resourceExtender != null )
         {
+            // We save in session the post back URL
+            String strPostBackUrl = getPostBackUrl( request );
+            request.getSession( ).setAttribute(
+                    CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL, strPostBackUrl );
+
             CommentExtenderConfig config = _configService.find( getResourceExtender( ).getKey( ),
                     resourceExtender.getIdExtendableResource( ), resourceExtender.getExtendableResourceType( ) );
 
@@ -250,7 +257,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
                     nItemsOffset, nItemsPerPage, config.getAuthorizeSubComments( ) );
 
             // We generate the base URL for the paginator
-            UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + JSP_URL_MANAGE_COMMENTS );
+            UrlItem url = new UrlItem( strPostBackUrl );
             url.addParameter( CommentConstants.PARAMETER_EXTENDER_TYPE, CommentResourceExtender.EXTENDER_TYPE_COMMENT );
             url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE,
                     resourceExtender.getIdExtendableResource( ) );
@@ -277,6 +284,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             model.put( CommentConstants.MARK_USE_BBCODE, config.getUseBBCodeEditor( ) );
             model.put( CommentConstants.MARK_ADMIN_BADGE, config.getAdminBadge( ) );
             model.put( CommentConstants.MARK_ALLOW_SUB_COMMENTS, config.getAuthorizeSubComments( ) );
+            model.put( CommentConstants.PARAMETER_POST_BACK_URL, strPostBackUrl );
 
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_COMMENTS, request.getLocale( ),
                     model );
@@ -309,6 +317,31 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     public void doSaveConfig( HttpServletRequest request, IExtenderConfig config ) throws ExtendErrorException
     {
         _configService.update( config );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPostBackUrl( HttpServletRequest request )
+    {
+        UrlItem urlItem = new UrlItem( request.getRequestURI( ) );
+        Map<String, String[]> mapParameters = new HashMap<String, String[]>( request.getParameterMap( ) );
+        // We ignore some parameters : those parameter will be set regardlessly of the post pack URL
+        mapParameters.remove( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE );
+        mapParameters.remove( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE );
+        mapParameters.remove( CommentConstants.PARAMETER_EXTENDER_TYPE );
+        mapParameters.remove( CommentConstants.PARAMETER_FROM_URL );
+        mapParameters.remove( CommentConstants.PARAMETER_ID_COMMENT );
+        mapParameters.remove( Paginator.PARAMETER_PAGE_INDEX );
+        mapParameters.remove( Paginator.PARAMETER_ITEMS_PER_PAGE );
+        mapParameters.remove( Parameters.SORTED_ATTRIBUTE_NAME );
+        mapParameters.remove( Parameters.SORTED_ASC );
+        for ( Entry<String, String[]> entry : mapParameters.entrySet( ) )
+        {
+            urlItem.addParameter( entry.getKey( ), entry.getValue( )[0] );
+        }
+        return urlItem.getUrl( );
     }
 
     /**

@@ -107,6 +107,7 @@ public final class CommentConstants
     public static final String MARK_ADMIN_BADGE = "adminBadge";
     public static final String SESSION_COMMENT_POST_BACK_URL = "commentPostBackUrl";
     public static final String PARAMETER_POST_BACK_URL = "postBackUrl";
+    public static final String SESSION_COMMENT_ADMIN_POST_BACK_URL = "adminInfoPostBackUrl";
 
     /**
      * Instantiates a new comment constants.
