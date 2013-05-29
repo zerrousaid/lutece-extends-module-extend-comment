@@ -345,4 +345,26 @@ public class Comment
     {
         this._bIsAdminComment = bIsAdminComment;
     }
+
+    /**
+     * Get the id of the first unpublished sub comment of this comment
+     * @return The id of the first unpublished sub comment, or 0 if it has no
+     *         sub comments or no unpublished sub comments. 0 is also returned
+     *         if sub comments of this comment have not been fetched.
+     */
+    public int getFirstUnpublishedSubComment( )
+    {
+        if ( _listSubComments == null || _listSubComments.size( ) == 0 )
+        {
+            return 0;
+        }
+        for ( Comment comment : _listSubComments )
+        {
+            if ( !comment.isPublished( ) )
+            {
+                return comment.getIdComment( );
+            }
+        }
+        return 0;
+    }
 }

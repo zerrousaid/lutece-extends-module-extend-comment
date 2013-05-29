@@ -164,4 +164,17 @@ public interface ICommentDAO
      * @return The number of comments associated with the given parent
      */
     int countByIdParent( int nIdParent, boolean bPublishedOnly, Plugin plugin );
+
+    /**
+     * Select ids of comments associated with a given resource
+     * @param strIdExtendableResource The id of the extendable resource
+     * @param strExtendableResourceType The extendable resource type
+     * @param bPublishedOnly True to consider only published comments, false to
+     *            consider every comment
+     * @param plugin The plugin
+     * @return The list of comment ids, or an empty list if no comment is
+     *         associated with the given resource
+     */
+    List<Integer> findIdsByResource( String strIdExtendableResource, String strExtendableResourceType,
+            boolean bPublishedOnly, Plugin plugin );
 }

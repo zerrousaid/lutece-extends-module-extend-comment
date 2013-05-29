@@ -2,6 +2,7 @@ package fr.paris.lutece.plugins.extend.modules.comment.service;
 
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.extend.modules.comment.business.ICommentDAO;
+import fr.paris.lutece.portal.service.util.AppLogService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,13 @@ import javax.inject.Inject;
  */
 public class CommentListenerService
 {
+    /**
+     * Constant that represents every extendable resource type
+     */
+    public static final String CONSTANT_EVERY_EXTENDABLE_RESOURCE_TYPE = "*";
+
     private static Map<String, List<ICommentListener>> _mapListeners = new HashMap<String, List<ICommentListener>>( );
+    private static boolean _bHasListeners;
 
     @Inject
     private static ICommentDAO _commentDAO;
@@ -32,7 +39,9 @@ public class CommentListenerService
     /**
      * Register a comment listener.
      * @param strExtendableResourceType The extendable resource type associated
-     *            with the listener.
+     *            with the listener. Use
+     *            {@link #CONSTANT_EVERY_EXTENDABLE_RESOURCE_TYPE} to associated
+     *            the listener with every resource type.
      * @param listener The listener to register
      */
     public static synchronized void registerListener( String strExtendableResourceType, ICommentListener listener )
@@ -44,6 +53,16 @@ public class CommentListenerService
             _mapListeners.put( strExtendableResourceType, listListeners );
         }
         listListeners.add( listener );
+        _bHasListeners = true;
+    }
+
+    /**
+     * Check if there is listeners to notify
+     * @return True if there is at last one listener, false otherwise
+     */
+    public static boolean hasListener( )
+    {
+        return _bHasListeners;
     }
 
     /**
@@ -52,15 +71,25 @@ public class CommentListenerService
      * @param strExtendableResourceType The extendable resource type of the
      *            created comment
      * @param strIdExtendableResource The extendable resource id of the comment
+     * @param bPublished True if the comment is published, false otherwise
      */
-    public static void createComment( String strExtendableResourceType, String strIdExtendableResource )
+    public static void createComment( String strExtendableResourceType, String strIdExtendableResource,
+            boolean bPublished )
     {
         List<ICommentListener> listListeners = _mapListeners.get( strExtendableResourceType );
         if ( listListeners != null )
         {
             for ( ICommentListener listener : listListeners )
             {
-                listener.createComment( strIdExtendableResource );
+                listener.createComment( strIdExtendableResource, bPublished );
+            }
+        }
+        listListeners = _mapListeners.get( CONSTANT_EVERY_EXTENDABLE_RESOURCE_TYPE );
+        if ( listListeners != null )
+        {
+            for ( ICommentListener listener : listListeners )
+            {
+                listener.createComment( strIdExtendableResource, bPublished );
             }
         }
     }
@@ -69,13 +98,15 @@ public class CommentListenerService
      * Notify to listeners the modification of a comment. Only listeners
      * associated with the extendable resource type of the comment are notified.
      * @param nIdComment The id of the updated comment
+     * @param bPublished True if the comment was published, false if it was
+     *            unpublished
      */
-    public static void updateComment( int nIdComment )
+    public static void publishComment( int nIdComment, boolean bPublished )
     {
         if ( _mapListeners.size( ) > 0 )
         {
             Comment comment = _commentDAO.load( nIdComment, CommentPlugin.getPlugin( ) );
-            updateComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ) );
+            publishComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ), bPublished );
         }
     }
 
@@ -85,15 +116,26 @@ public class CommentListenerService
      * @param strExtendableResourceType The extendable resource type of the
      *            updated comment
      * @param strIdExtendableResource The extendable resource id of the comment
+     * @param bPublished True if the comment was published, false if it was
+     *            unpublished
      */
-    public static void updateComment( String strExtendableResourceType, String strIdExtendableResource )
+    public static void publishComment( String strExtendableResourceType, String strIdExtendableResource,
+            boolean bPublished )
     {
         List<ICommentListener> listListeners = _mapListeners.get( strExtendableResourceType );
         if ( listListeners != null )
         {
             for ( ICommentListener listener : listListeners )
             {
-                listener.updateComment( strIdExtendableResource );
+                listener.publishComment( strIdExtendableResource, bPublished );
+            }
+        }
+        listListeners = _mapListeners.get( CONSTANT_EVERY_EXTENDABLE_RESOURCE_TYPE );
+        if ( listListeners != null )
+        {
+            for ( ICommentListener listener : listListeners )
+            {
+                listener.publishComment( strIdExtendableResource, bPublished );
             }
         }
     }
@@ -105,10 +147,20 @@ public class CommentListenerService
      */
     public static void deleteComment( int nIdComment )
     {
-        if ( _mapListeners.size( ) > 0 )
+        try
         {
-            Comment comment = _commentDAO.load( nIdComment, CommentPlugin.getPlugin( ) );
-            deleteComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ) );
+            if ( _mapListeners.size( ) > 0 )
+            {
+                Comment comment = _commentDAO.load( nIdComment, CommentPlugin.getPlugin( ) );
+                List<Integer> listRemovedCommenIntegers = new ArrayList<Integer>( 1 );
+                listRemovedCommenIntegers.add( nIdComment );
+                deleteComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ),
+                        listRemovedCommenIntegers );
+            }
+        }
+        catch ( Exception e )
+        {
+            AppLogService.error( e.getMessage( ), e );
         }
     }
 
@@ -118,16 +170,33 @@ public class CommentListenerService
      * @param strExtendableResourceType The extendable resource type of the
      *            removed comment
      * @param strIdExtendableResource The extendable resource id of the comment
+     * @param listIdRemovedComment The list of ids of removed comments
      */
-    public static void deleteComment( String strExtendableResourceType, String strIdExtendableResource )
+    public static void deleteComment( String strExtendableResourceType, String strIdExtendableResource,
+            List<Integer> listIdRemovedComment )
     {
-        List<ICommentListener> listListeners = _mapListeners.get( strExtendableResourceType );
-        if ( listListeners != null )
+        try
         {
-            for ( ICommentListener listener : listListeners )
+            List<ICommentListener> listListeners = _mapListeners.get( strExtendableResourceType );
+            if ( listListeners != null )
             {
-                listener.deleteComment( strIdExtendableResource );
+                for ( ICommentListener listener : listListeners )
+                {
+                    listener.deleteComment( strIdExtendableResource, listIdRemovedComment );
+                }
             }
+            listListeners = _mapListeners.get( CONSTANT_EVERY_EXTENDABLE_RESOURCE_TYPE );
+            if ( listListeners != null )
+            {
+                for ( ICommentListener listener : listListeners )
+                {
+                    listener.deleteComment( strIdExtendableResource, listIdRemovedComment );
+                }
+            }
+        }
+        catch ( Exception e )
+        {
+            AppLogService.error( e.getMessage( ), e );
         }
     }
 }

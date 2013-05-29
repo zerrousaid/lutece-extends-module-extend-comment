@@ -28,5 +28,12 @@
             <application-class>fr.paris.lutece.plugins.extend.modules.comment.web.CommentApp</application-class>
         </application>
     </applications>
+    <applications>
+        <application>
+            <application-id>commenttest</application-id>
+            <application-class>fr.paris.lutece.plugins.extend.modules.comment.web.CommentAppTest</application-class>
+        </application>
+    </applications>
+    
 
 </plug-in>

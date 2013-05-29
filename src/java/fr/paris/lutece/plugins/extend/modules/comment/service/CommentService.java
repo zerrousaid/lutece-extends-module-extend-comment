@@ -75,7 +75,8 @@ public class CommentService implements ICommentService
             parentComment.setDateLastModif( currentTimestamp );
             update( parentComment );
         }
-        CommentListenerService.createComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ) );
+        CommentListenerService.createComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ),
+                comment.isPublished( ) );
     }
 
     /**
@@ -85,9 +86,15 @@ public class CommentService implements ICommentService
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
     public void update( Comment comment )
     {
+        Comment oldComment = findByPrimaryKey( comment.getIdComment( ) );
         comment.setDateLastModif( new Timestamp( new Date( ).getTime( ) ) );
         _commentDAO.store( comment, CommentPlugin.getPlugin( ) );
-        CommentListenerService.updateComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ) );
+        if ( oldComment.isPublished( ) ^ comment.isPublished( ) )
+        {
+            CommentListenerService.publishComment( comment.getExtendableResourceType( ),
+                    comment.getIdExtendableResource( ), comment.isPublished( ) );
+        }
+        //        if ( ( oldComment.isPublished( ) && !comment.isPublished( ) ) || !oldComment.isPublished( ) && comment.isPublished( ) ) )
     }
 
     /**
@@ -98,7 +105,7 @@ public class CommentService implements ICommentService
     public void updateCommentStatus( int nIdComment, boolean bPublished )
     {
         _commentDAO.updateCommentStatus( nIdComment, bPublished, CommentPlugin.getPlugin( ) );
-        CommentListenerService.updateComment( nIdComment );
+        CommentListenerService.publishComment( nIdComment, bPublished );
     }
 
     /**
@@ -119,6 +126,13 @@ public class CommentService implements ICommentService
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
     public void removeByResource( String strIdExtendableResource, String strExtendableResourceType )
     {
+        if ( CommentListenerService.hasListener( ) )
+        {
+            List<Integer> listRemovedComments = findIdsByResource( strIdExtendableResource, strExtendableResourceType,
+                    false );
+            CommentListenerService.deleteComment( strExtendableResourceType, strIdExtendableResource,
+                    listRemovedComments );
+        }
         _commentDAO.deleteByResource( strIdExtendableResource, strExtendableResourceType, CommentPlugin.getPlugin( ) );
     }
 
@@ -131,6 +145,17 @@ public class CommentService implements ICommentService
     public Comment findByPrimaryKey( int nIdComment )
     {
         return _commentDAO.load( nIdComment, CommentPlugin.getPlugin( ) );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Integer> findIdsByResource( String strIdExtendableResource, String strExtendableResourceType,
+            boolean bPublishedOnly )
+    {
+        return _commentDAO.findIdsByResource( strIdExtendableResource, strExtendableResourceType, bPublishedOnly,
+                CommentPlugin.getPlugin( ) );
     }
 
     /**

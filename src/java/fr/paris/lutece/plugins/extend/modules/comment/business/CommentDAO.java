@@ -56,6 +56,7 @@ public class CommentDAO implements ICommentDAO
     private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_ALL + " WHERE id_comment = ? ";
     private static final String SQL_QUERY_SELECT_BY_RESOURCE = SQL_QUERY_SELECT_ALL
             + " WHERE id_resource = ? AND resource_type = ? ";
+    private static final String SQL_QUERY_SELECT_ID_BY_RESOURCE = "SELECT id_comment FROM extend_comment WHERE id_resource = ? AND resource_type = ? ";
     private static final String SQL_QUERY_SELECT_NB_COMMENT_BY_RESOURCE = " SELECT count(id_comment) FROM extend_comment WHERE id_resource = ? AND resource_type = ? ";
     private static final String SQL_QUERY_DELETE = " DELETE FROM extend_comment WHERE id_comment = ? ";
     private static final String SQL_QUERY_DELETE_BY_ID_RESOURCE = " DELETE FROM extend_comment WHERE resource_type = ? ";
@@ -468,6 +469,39 @@ public class CommentDAO implements ICommentDAO
         daoUtil.free( );
 
         return nResult;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Integer> findIdsByResource( String strIdExtendableResource, String strExtendableResourceType,
+            boolean bPublishedOnly, Plugin plugin )
+    {
+        List<Integer> listResult = new ArrayList<Integer>( );
+
+        int nIndex = 1;
+        StringBuilder sbSQL = new StringBuilder( SQL_QUERY_SELECT_ID_BY_RESOURCE );
+        if ( bPublishedOnly )
+        {
+            // We remove non published comments
+            sbSQL.append( SQL_AND ).append( SQL_FILTER_STATUS_PUBLISHED );
+        }
+
+        DAOUtil daoUtil = new DAOUtil( sbSQL.toString( ), plugin );
+        daoUtil.setString( nIndex++, strIdExtendableResource );
+        daoUtil.setString( nIndex, strExtendableResourceType );
+        daoUtil.executeQuery( );
+
+        while ( daoUtil.next( ) )
+        {
+            int nIdComment = daoUtil.getInt( 1 );
+            listResult.add( nIdComment );
+        }
+
+        daoUtil.free( );
+
+        return listResult;
     }
 
     /**
