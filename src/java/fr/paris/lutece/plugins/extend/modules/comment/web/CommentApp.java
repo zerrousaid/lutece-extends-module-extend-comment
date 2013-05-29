@@ -116,6 +116,8 @@ public class CommentApp implements XPageApplication
     private static final String TEMPLATE_XPAGE_MESSAGE_COMMENT_CREATED = "skin/plugins/extend/modules/comment/message_comment_created.html";
     private static final String TEMPLATE_COMMENT_NOTIFY_MESSAGE = "skin/plugins/extend/modules/comment/comment_notify_message.html";
 
+    private static final String JSP_URL_DEFAULT_POST_BACK = "jsp/site/Portal.jsp?page=extend-comment";
+
     private static final String PARAMETER_PAGE = "page";
 
     // CONSTANTS
@@ -129,16 +131,12 @@ public class CommentApp implements XPageApplication
     private static final boolean _bIsCaptchaEnabled = PluginService.isPluginEnable( JCAPTCHA_PLUGIN )
             && Boolean
                     .parseBoolean( AppPropertiesService.getProperty( PROPERTY_USE_CAPTCHA, Boolean.TRUE.toString( ) ) );
-    private ICommentService _commentService = SpringContextService.getBean( CommentService.BEAN_SERVICE );
-    private IResourceExtenderConfigService _configService = SpringContextService
-            .getBean( CommentConstants.BEAN_CONFIG_SERVICE );
-    private IResourceExtenderService _resourceExtenderService = SpringContextService
-            .getBean( ResourceExtenderService.BEAN_SERVICE );
-    private IResourceExtenderHistoryService _resourceHistoryService = SpringContextService
-            .getBean( ResourceExtenderHistoryService.BEAN_SERVICE );
+    private static ICommentService _commentService;
+    private static IResourceExtenderConfigService _configService;
+    private static IResourceExtenderService _resourceExtenderService;
+    private static IResourceExtenderHistoryService _resourceHistoryService;
 
-    private int _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt(
-            CommentConstants.PROPERTY_DEFAULT_LIST_COMMENTS_PER_PAGE, 50 );
+    private static int nDefaultItemsPerPage = 0;
 
     /**
      * {@inheritDoc}
@@ -186,14 +184,16 @@ public class CommentApp implements XPageApplication
      * @param request the request
      * @param strIdExtendableResource the str id extendable resource
      * @param strExtendableResourceType the str extendable resource type
+     * @param strPostBackUrl The URL to use for post backs.
      * @return the view comment page
      */
-    private XPage getViewCommentPage( HttpServletRequest request, String strIdExtendableResource,
-            String strExtendableResourceType )
+    public static String getViewCommentPageContent( HttpServletRequest request, String strIdExtendableResource,
+            String strExtendableResourceType, String strPostBackUrl )
     {
-        XPage page = new XPage( );
+        request.getSession( ).setAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_POST_BACK_URL,
+                strPostBackUrl );
 
-        Integer nItemsPerPage = _nDefaultItemsPerPage;
+        Integer nItemsPerPage = getDefaultItemsPerPage( );
         String strCurrentPageIndex = CommentConstants.CONSTANT_FIRST_PAGE_NUMBER;
         Boolean bIsAscSort = false;
         Object object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ITEMS_PER_PAGE );
@@ -211,11 +211,6 @@ public class CommentApp implements XPageApplication
         {
             bIsAscSort = (Boolean) object;
         }
-
-        page.setTitle( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_VIEW_COMMENTS_PAGE_TITLE,
-                request.getLocale( ) ) );
-        page.setPathLabel( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_VIEW_COMMENTS_PATH_LABEL,
-                request.getLocale( ) ) );
 
         String strSort = request.getParameter( CommentConstants.MARK_ASC_SORT );
         if ( !StringUtils.isEmpty( strSort ) )
@@ -237,24 +232,22 @@ public class CommentApp implements XPageApplication
         {
             strFromUrl = strFromUrl.replace( CONSTANT_AND, CONSTANT_AND_HTML );
         }
-        request.getSession( )
-                .setAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, strFromUrl );
+        request.getSession( ).setAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, strFromUrl );
 
         strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, strCurrentPageIndex );
         int nOldITemsPerPage = nItemsPerPage;
         nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, nItemsPerPage,
-                _nDefaultItemsPerPage );
+                getDefaultItemsPerPage( ) );
         if ( nItemsPerPage <= 0 )
         {
-            nItemsPerPage = _nDefaultItemsPerPage;
+            nItemsPerPage = getDefaultItemsPerPage( );
         }
         // If we changed the number of items per page, we go back to the first page
         if ( nItemsPerPage != nOldITemsPerPage )
         {
             strCurrentPageIndex = CommentConstants.CONSTANT_FIRST_PAGE_NUMBER;
         }
-        UrlItem urlSort = new UrlItem( AppPathService.getPortalUrl( ) );
-        urlSort.addParameter( PARAMETER_PAGE, CommentPlugin.PLUGIN_NAME );
+        UrlItem urlSort = new UrlItem( strPostBackUrl );
         urlSort.addParameter( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
         urlSort.addParameter( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
         urlSort.addParameter( CommentConstants.MARK_ASC_SORT, strSort );
@@ -266,7 +259,7 @@ public class CommentApp implements XPageApplication
         boolean bUseBBCodeEditor = false;
         boolean bAllowSubComments = false;
         String strAdminBadge = StringUtils.EMPTY;
-        CommentExtenderConfig config = _configService.find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
+        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
                 strIdExtendableResource, strExtendableResourceType );
         if ( config != null )
         {
@@ -277,10 +270,12 @@ public class CommentApp implements XPageApplication
         }
         int nItemsOffset = nItemsPerPage * ( Integer.parseInt( strCurrentPageIndex ) - 1 );
 
-        List<Comment> listItems = _commentService.findByResource( strIdExtendableResource, strExtendableResourceType,
+        List<Comment> listItems = getCommentService( ).findByResource( strIdExtendableResource,
+                strExtendableResourceType,
                 true, null, bIsAscSort, nItemsOffset, nItemsPerPage, bGetSubComments );
 
-        int nItemsCount = _commentService.getCommentNb( strIdExtendableResource, strExtendableResourceType, true, true );
+        int nItemsCount = getCommentService( ).getCommentNb( strIdExtendableResource, strExtendableResourceType, true,
+                true );
 
         IPaginator<Comment> paginator = new LocalizedDelegatePaginator<Comment>( listItems, nItemsPerPage,
                 urlSort.getUrl( ), Paginator.PARAMETER_PAGE_INDEX, strCurrentPageIndex, nItemsCount,
@@ -296,17 +291,38 @@ public class CommentApp implements XPageApplication
         model.put( CommentConstants.MARK_USE_BBCODE, bUseBBCodeEditor );
         model.put( CommentConstants.MARK_ALLOW_SUB_COMMENTS, bAllowSubComments );
         model.put( CommentConstants.MARK_ADMIN_BADGE, strAdminBadge );
+        model.put( CommentConstants.PARAMETER_POST_BACK_URL, strPostBackUrl );
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_XPAGE_VIEW_COMMENTS, request.getLocale( ),
                 model );
-
-        page.setContent( template.getHtml( ) );
 
         HttpSession session = request.getSession( );
         session.setAttribute( CommentConstants.SESSION_COMMENT_ITEMS_PER_PAGE, nItemsPerPage );
         session.setAttribute( CommentConstants.SESSION_COMMENT_CURRENT_PAGE_INDEX, strCurrentPageIndex );
         session.setAttribute( CommentConstants.SESSION_COMMENT_IS_ASC_SORT, bIsAscSort );
 
+        return template.getHtml( );
+    }
+
+    /**
+     * Gets the view comment page.
+     * 
+     * @param request the request
+     * @param strIdExtendableResource the str id extendable resource
+     * @param strExtendableResourceType the str extendable resource type
+     * @return the view comment page
+     */
+    public XPage getViewCommentPage( HttpServletRequest request, String strIdExtendableResource,
+            String strExtendableResourceType )
+    {
+        XPage page = new XPage( );
+        page.setTitle( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_VIEW_COMMENTS_PAGE_TITLE,
+                request.getLocale( ) ) );
+        page.setPathLabel( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_VIEW_COMMENTS_PATH_LABEL,
+                request.getLocale( ) ) );
+
+        page.setContent( getViewCommentPageContent( request, strIdExtendableResource, strExtendableResourceType,
+                JSP_URL_DEFAULT_POST_BACK ) );
         return page;
     }
 
@@ -328,7 +344,7 @@ public class CommentApp implements XPageApplication
         page.setPathLabel( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_ADD_COMMENT_PAGE_LABEL,
                 request.getLocale( ) ) );
 
-        CommentExtenderConfig config = _configService.find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
+        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
                 strIdExtendableResource, strExtendableResourceType );
 
         String strFromUrl = request.getParameter( CommentConstants.PARAMETER_FROM_URL );
@@ -345,8 +361,7 @@ public class CommentApp implements XPageApplication
         {
             strFromUrl = strFromUrl.replace( CONSTANT_AND, CONSTANT_AND_HTML );
         }
-        request.getSession( )
-                .setAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, strFromUrl );
+        request.getSession( ).setAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, strFromUrl );
 
         Map<String, Object> model = new HashMap<String, Object>( );
         model.put( CommentConstants.MARK_COMMENT_CONFIG, config );
@@ -438,7 +453,7 @@ public class CommentApp implements XPageApplication
             }
         }
 
-        CommentExtenderConfig config = _configService.find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
+        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
                 strIdExtendableResource, strExtendableResourceType );
 
         if ( config != null )
@@ -455,7 +470,7 @@ public class CommentApp implements XPageApplication
 
             try
             {
-                _commentService.create( comment );
+                getCommentService( ).create( comment );
                 bIsCreated = true;
             }
             catch ( Exception ex )
@@ -463,7 +478,7 @@ public class CommentApp implements XPageApplication
                 // Something wrong happened... a database check might be needed
                 AppLogService.error( ex.getMessage( ) + " when creating a comment ", ex );
                 // Revert
-                _commentService.remove( comment.getIdComment( ) );
+                getCommentService( ).remove( comment.getIdComment( ) );
 
                 SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE,
                         SiteMessage.TYPE_ERROR );
@@ -472,7 +487,8 @@ public class CommentApp implements XPageApplication
             if ( bIsCreated )
             {
                 // Add to the resource extender history
-                _resourceHistoryService.create( CommentResourceExtender.EXTENDER_TYPE_COMMENT, strIdExtendableResource,
+                getResourceExtenderHistoryService( ).create( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
+                        strIdExtendableResource,
                         strExtendableResourceType, request );
 
                 // Notify the mailing list
@@ -484,11 +500,15 @@ public class CommentApp implements XPageApplication
                 page.setPathLabel( I18nService.getLocalizedString(
                         CommentConstants.PROPERTY_XPAGE_ADD_COMMENT_PAGE_LABEL, request.getLocale( ) ) );
 
+                String strPostBackUrl = (String) request.getSession( ).getAttribute(
+                        ExtendPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_POST_BACK_URL );
                 Map<String, Object> model = new HashMap<String, Object>( );
                 model.put( CommentConstants.MARK_MESSAGE_COMMENT_CREATED, config.getMessageCommentCreated( ) );
                 model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
                 model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
-                model.put( CommentConstants.PARAMETER_ID_COMMENT, comment.getIdParentComment( ) );
+                model.put( CommentConstants.PARAMETER_ID_COMMENT,
+                        comment.getIdParentComment( ) == 0 ? comment.getIdComment( ) : comment.getIdParentComment( ) );
+                model.put( CommentConstants.PARAMETER_POST_BACK_URL, strPostBackUrl );
 
                 HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_XPAGE_MESSAGE_COMMENT_CREATED,
                         request.getLocale( ), model );
@@ -499,8 +519,7 @@ public class CommentApp implements XPageApplication
             }
             return null;
         }
-        SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE,
-                    SiteMessage.TYPE_ERROR );
+        SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE, SiteMessage.TYPE_ERROR );
         return null;
     }
 
@@ -545,7 +564,7 @@ public class CommentApp implements XPageApplication
 
             String strSenderEmail = comment.getEmail( );
             String strSenderName = comment.getName( );
-            String strResourceName = _resourceExtenderService.getExtendableResourceName(
+            String strResourceName = getResourceExtenderService( ).getExtendableResourceName(
                     comment.getIdExtendableResource( ), comment.getExtendableResourceType( ) );
 
             Object[] params = { strResourceName };
@@ -567,5 +586,71 @@ public class CommentApp implements XPageApplication
 
             MailService.sendMailHtml( recipient.getEmail( ), strSenderName, strSenderEmail, strSubject, strBody );
         }
+    }
+
+    /**
+     * Get the default number of items per page
+     * @return the default number of items per page
+     */
+    private static int getDefaultItemsPerPage( )
+    {
+        if ( nDefaultItemsPerPage == 0 )
+        {
+            nDefaultItemsPerPage = AppPropertiesService.getPropertyInt(
+                    CommentConstants.PROPERTY_DEFAULT_LIST_COMMENTS_PER_PAGE, 50 );
+        }
+        return nDefaultItemsPerPage;
+    }
+
+    /**
+     * Get the comment service
+     * @return the comment service
+     */
+    private static ICommentService getCommentService( )
+    {
+        if ( _commentService == null )
+        {
+            _commentService = SpringContextService.getBean( CommentService.BEAN_SERVICE );
+        }
+        return _commentService;
+    }
+
+    /**
+     * Get the config service
+     * @return the config service
+     */
+    private static IResourceExtenderConfigService getConfigService( )
+    {
+        if ( _configService == null )
+        {
+            _configService = SpringContextService.getBean( CommentConstants.BEAN_CONFIG_SERVICE );
+        }
+        return _configService;
+    }
+
+    /**
+     * Get the resource extender service
+     * @return the resource extender service
+     */
+    private static IResourceExtenderService getResourceExtenderService( )
+    {
+        if ( _resourceExtenderService == null )
+        {
+            _resourceExtenderService = SpringContextService.getBean( ResourceExtenderService.BEAN_SERVICE );
+        }
+        return _resourceExtenderService;
+    }
+
+    /**
+     * Get the resource extender history service
+     * @return the resource extender history service
+     */
+    private static IResourceExtenderHistoryService getResourceExtenderHistoryService( )
+    {
+        if ( _resourceHistoryService == null )
+        {
+            _resourceHistoryService = SpringContextService.getBean( ResourceExtenderHistoryService.BEAN_SERVICE );
+        }
+        return _resourceHistoryService;
     }
 }

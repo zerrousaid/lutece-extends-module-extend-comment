@@ -105,6 +105,8 @@ public final class CommentConstants
     public static final String SESSION_COMMENT_ADMIN_IS_ASC_SORT = "session_comment_bo_is_asc_sort";
     public static final String SESSION_COMMENT_ADMIN_SORTED_ATTRIBUTE_NAME = "session_comment_bo_sorted_attribute_name";
     public static final String MARK_ADMIN_BADGE = "adminBadge";
+    public static final String SESSION_COMMENT_POST_BACK_URL = "commentPostBackUrl";
+    public static final String PARAMETER_POST_BACK_URL = "postBackUrl";
 
     /**
      * Instantiates a new comment constants.

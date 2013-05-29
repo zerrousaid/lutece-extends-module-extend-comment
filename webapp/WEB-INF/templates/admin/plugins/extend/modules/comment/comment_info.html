@@ -17,8 +17,8 @@
 			<option <#if asc_sort?? && asc_sort>selected="selected"</#if> value="true">#i18n{portal.util.sort.asc}</option>
 			<option <#if asc_sort?? && !asc_sort>selected="selected"</#if>value="false">#i18n{portal.util.sort.desc}</option>
 		</select>
-		<button class="btn btn-small">
-			#i18n{module.extend.comment.comment_info.labelSort}
+		<button class="btn btn-primary btn-small">
+			<i class="icon-filter icon-white">&nbsp;</i>&nbsp;<span class="hidden-phone">#i18n{module.extend.comment.comment_info.labelSort}</span>
 		</button>
 		<div class="pull-right" >
 			<div class="form-inline">
@@ -82,6 +82,14 @@
 				<#else>
 					<span class="label label-important">#i18n{module.extend.comment.comment_info.stateNotPublished}</span>
 				</#if>
+				<#assign unpublishedSubComment = comment.firstUnpublishedSubComment >
+				<#if 0 < unpublishedSubComment >
+					<span class="label label-info">
+						<a style="color: white;" onclick="javascript:$('#comment_toggle_${comment.idComment!}').next().show();" href="jsp/admin/plugins/extend/ViewExtenderInfo.jsp?extenderType=comment&idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${comment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>#subcomment_${unpublishedSubComment}">
+							#i18n{module.extend.comment.comment_info.unpublishedSubComments}
+						</a>
+					</span>
+				</#if>
 			</strong>
 		</div>
 		<div>
@@ -97,6 +105,7 @@
 			</a>
 			<div <#if !idComment?? || comment.idComment?string != idComment>class="commentComments"</#if>>
 				<#list comment.listSubComments as subComment>
+					<a name="subcomment_${subComment.idComment}" ></a>
 					<blockquote>
 						<div>
 							<strong>#i18n{module.extend.comment.comment_info.labelAuthor}</strong>

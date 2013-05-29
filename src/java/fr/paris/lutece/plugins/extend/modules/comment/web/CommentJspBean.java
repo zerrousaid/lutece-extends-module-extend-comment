@@ -38,6 +38,8 @@ import fr.paris.lutece.plugins.extend.modules.comment.service.CommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.ICommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.extender.CommentResourceExtender;
 import fr.paris.lutece.plugins.extend.modules.comment.util.constants.CommentConstants;
+import fr.paris.lutece.plugins.extend.service.extender.history.IResourceExtenderHistoryService;
+import fr.paris.lutece.plugins.extend.service.extender.history.ResourceExtenderHistoryService;
 import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
@@ -84,7 +86,8 @@ public class CommentJspBean extends PluginAdminPageJspBean
     private static final String CONSTANT_SPACE = " ";
 
     private ICommentService _commentService = SpringContextService.getBean( CommentService.BEAN_SERVICE );
-
+    private IResourceExtenderHistoryService _resourceHistoryService = SpringContextService
+            .getBean( ResourceExtenderHistoryService.BEAN_SERVICE );
     /**
      * Do publish unpublish comment.
      * 
@@ -288,6 +291,8 @@ public class CommentJspBean extends PluginAdminPageJspBean
         comment.setIsAdminComment( true );
 
         _commentService.create( comment );
+        _resourceHistoryService.create( CommentResourceExtender.EXTENDER_TYPE_COMMENT, strIdExtendableResource,
+                strExtendableResourceType, request );
 
         // we redirect the user to the manage comment page
         UrlItem url = new UrlItem( JSP_VIEW_EXTENDER_INFO );

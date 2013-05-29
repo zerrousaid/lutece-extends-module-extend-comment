@@ -1,7 +1,7 @@
 <div class="span12 row-fluid">
 	<#assign listComments = paginator.pageItems>
 	<br />
-	<form class="form-inline" method="post" action="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;asc_sort=${asc_sort!}">
+	<form class="form-inline" method="post" action="${postBackUrl}<#if postBackUrl?contains('?')>&amp;<#else>?</#if>idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;asc_sort=${asc_sort!}">
 		<div class="span5">
 		<a class="btn btn-small btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
 			<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAddComment}
@@ -12,9 +12,15 @@
 			</a>
 		</#if>
 		</div>
+		<#assign commentSortUrl = postBackUrl>
+		<#if postBackUrl?contains('?')>
+			<#assign commentSortUrl = commentSortUrl + "&amp;">
+		<#else>
+			<#assign commentSortUrl = commentSortUrl + "?">
+		</#if>
 		<div class="span2">
 			<p>
-				<strong>#i18n{module.extend.comment.view_comments.sortedByDate}</strong> <@sort jsp_url="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;from_url=from_session" attribute="date" />
+				<strong>#i18n{module.extend.comment.view_comments.sortedByDate}</strong> <@sort jsp_url= commentSortUrl + "idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;from_url=from_session" attribute="date" />
 			</p>
 		</div>
 		<div class="span5">
@@ -31,8 +37,8 @@
 	<br />
 	<#if listComments?? && listComments?has_content>
 		<#list listComments as comment>
-			<a name="comment_${comment.idComment!}"></a>
 			<div class="well span11">
+				<a name="comment_${comment.idComment!}"></a>
 				<div>
 					<legend>
 						#i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}
@@ -45,9 +51,11 @@
 						</#if>
 						<#if comment.isAdminComment>${adminBadge!}</#if>
 					</legend>
-					<div>
-						<p><b>#i18n{module.extend.comment.view_comments.labelLastModified} ${comment.dateLastModif!}</b></p>
-					</div>
+					<#if comment.dateLastModif != comment.dateComment>
+						<div>
+							<p><b>#i18n{module.extend.comment.view_comments.labelLastModified} ${comment.dateLastModif!}</b></p>
+						</div>
+					</#if>
 					<div class="pull-right">
 						@Extender[${comment.idComment},Comment,rating,{show:"all"}]@
 					</div>
@@ -70,7 +78,9 @@
 									<div>
 										<strong>
 											#i18n{module.extend.comment.view_comments.labelPosted} ${subComment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${subComment.name!}</p>
-											<p>#i18n{module.extend.comment.view_comments.labelLastModified} ${comment.dateLastModif!}</p>
+											<#if comment.dateLastModif != subComment.dateComment>
+												<p>#i18n{module.extend.comment.view_comments.labelLastModified} ${subComment.dateLastModif!}</p>
+											</#if>
 											<#if subComment.isAdminComment>
 												<div>${adminBadge!}</div>
 											</#if>
@@ -93,7 +103,7 @@
 			</div>
 		</#list>
 		<@paginationSitePageLinks paginator=paginator/>
-		<form class="form-inline" method="post" action="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;asc_sort=${asc_sort!}">
+		<form class="form-inline" method="post" action="${postBackUrl}<#if postBackUrl?contains('?')>&amp;<#else>?</#if>idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;asc_sort=${asc_sort!}">
 		    <div class="pull-right" >
 		    	<@paginationItemCount paginator=paginator combo=0 nb_items_per_page=paginator.itemsPerPage?string/>
 		    </div>
@@ -110,7 +120,7 @@
 <div class="span12">
 	<br>
 	<br>
-	<form class="form-inline" method="post" action="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;asc_sort=${asc_sort!}">
+	<form class="form-inline" method="post" action="${postBackUrl}<#if postBackUrl?contains('?')>&amp;<#else>?</#if>idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;asc_sort=${asc_sort!}">
 		<a class="btn btn-small btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
 			<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAddComment}
 		</a>

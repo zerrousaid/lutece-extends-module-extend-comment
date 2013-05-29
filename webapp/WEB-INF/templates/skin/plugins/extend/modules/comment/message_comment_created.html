@@ -1,9 +1,12 @@
-<div class="alert">
-	${message_comment_created}
-	<br />
-	<div>
-		<a class="btn btn-primary btn-small" href="jsp/site/Portal.jsp?page=extend-comment&idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${idComment!}" title="#i18n{portal.util.labelBack}">
-			#i18n{portal.util.labelBack}
-		</a>
+<div class="span9" style="min-height:550px;padding-top:100px;">
+	<div class="alert">
+		<br />
+		${message_comment_created}
+		<br />
+		<div>
+			<a class="btn btn-small" href="${postBackUrl}<#if postBackUrl?contains('?')>&<#else>?</#if>idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${idComment!}&from_url=from_session<#if idComment??>#comment_${idComment!}</#if>" title="#i18n{portal.util.labelBack}">
+				<i class="icon-remove-circle">&nbsp;</i>&nbsp;#i18n{portal.util.labelBack}
+			</a>
+		</div>
 	</div>
 </div>
