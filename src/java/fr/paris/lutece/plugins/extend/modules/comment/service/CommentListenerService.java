@@ -2,14 +2,13 @@ package fr.paris.lutece.plugins.extend.modules.comment.service;
 
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.extend.modules.comment.business.ICommentDAO;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 
 /**
@@ -25,7 +24,6 @@ public class CommentListenerService
     private static Map<String, List<ICommentListener>> _mapListeners = new HashMap<String, List<ICommentListener>>( );
     private static boolean _bHasListeners;
 
-    @Inject
     private static ICommentDAO _commentDAO;
 
     /**
@@ -105,7 +103,7 @@ public class CommentListenerService
     {
         if ( _mapListeners.size( ) > 0 )
         {
-            Comment comment = _commentDAO.load( nIdComment, CommentPlugin.getPlugin( ) );
+            Comment comment = getCommentDAO( ).load( nIdComment, CommentPlugin.getPlugin( ) );
             publishComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ), bPublished );
         }
     }
@@ -151,7 +149,7 @@ public class CommentListenerService
         {
             if ( _mapListeners.size( ) > 0 )
             {
-                Comment comment = _commentDAO.load( nIdComment, CommentPlugin.getPlugin( ) );
+                Comment comment = getCommentDAO( ).load( nIdComment, CommentPlugin.getPlugin( ) );
                 List<Integer> listRemovedCommenIntegers = new ArrayList<Integer>( 1 );
                 listRemovedCommenIntegers.add( nIdComment );
                 deleteComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ),
@@ -198,5 +196,28 @@ public class CommentListenerService
         {
             AppLogService.error( e.getMessage( ), e );
         }
+    }
+
+    /**
+     * Get the comment DAO
+     * @return the comment DAO
+     */
+    private static ICommentDAO getCommentDAO( )
+    {
+        if ( _commentDAO == null )
+        {
+            synchronized ( CommentListenerService.class )
+            {
+                if ( _commentDAO == null )
+                {
+                    List<ICommentDAO> listDao = SpringContextService.getBeansOfType( ICommentDAO.class );
+                    if ( listDao != null && listDao.size( ) > 0 )
+                    {
+                        _commentDAO = listDao.get( 0 );
+                    }
+                }
+            }
+        }
+        return _commentDAO;
     }
 }
