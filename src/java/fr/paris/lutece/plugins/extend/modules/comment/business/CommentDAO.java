@@ -66,7 +66,9 @@ public class CommentDAO implements ICommentDAO
     private static final String SQL_QUERY_FIND_BY_ID_PARENT = SQL_QUERY_SELECT_ALL + " WHERE id_parent_comment = ? ";
     private static final String SQL_QUERY_COUNT_BY_ID_PARENT = " SELECT count( id_comment ) FROM extend_comment WHERE id_parent_comment = ? ";
     private static final String SQL_QUERY_UPDATE_COMMENT_PUBLISHED = " UPDATE extend_comment SET is_published = ?, date_last_modif = ? WHERE id_comment = ?  ";
+    private static final String SQL_QUERY_SELECT_DISTINCT_ID_RESOURCES = " SELECT DISTINCT(id_resource) FROM extend_comment e WHERE resource_type = ? ";
     private static final String SQL_ORDER_BY_DATE_MODIFICATION = " ORDER BY date_last_modif ";
+    private static final String SQL_COUNT_NUMBER_COMMENTS_FOR_SELECT_ID_RESOURCE = " SELECT COUNT( id_resource ) FROM extend_comment ec WHERE e.id_resource = ec.id_resource AND e.resource_type = ec.resource_type ";
     private static final String SQL_FILTER_STATUS_PUBLISHED = " is_published = 1 ";
     private static final String SQL_FILTER_SELECT_PARENTS = " id_parent_comment = 0 ";
     private static final String SQL_AND = " AND ";
@@ -80,6 +82,8 @@ public class CommentDAO implements ICommentDAO
 
     private static final String CONSTANT_COMMA = ",";
     private static final String CONSTANT_QUESTION_MARK = "?";
+    private static final String CONSTANT_OPEN_PARENTHESIS = " ( ";
+    private static final String CONSTANT_CLOSE_PARENTHESIS = " ) ";
 
     /**
      * Generates a new primary key.
@@ -316,7 +320,15 @@ public class CommentDAO implements ICommentDAO
             String strExtendableResourceType, boolean bPublishedOnly, String strSortedAttributeName, boolean bAscSort,
             int nItemsOffset, int nMaxItemsNumber, Plugin plugin )
     {
-        List<Comment> listComments = new ArrayList<Comment>( );
+        List<Comment> listComments;
+        if ( nMaxItemsNumber > 0 )
+        {
+            listComments = new ArrayList<Comment>( nMaxItemsNumber );
+        }
+        else
+        {
+            listComments = new ArrayList<Comment>( );
+        }
         StringBuilder sbSQL = new StringBuilder( SQL_QUERY_SELECT_BY_RESOURCE );
         // We only get parents
         sbSQL.append( SQL_AND ).append( SQL_FILTER_SELECT_PARENTS );
@@ -526,5 +538,62 @@ public class CommentDAO implements ICommentDAO
         comment.setIdParentComment( daoUtil.getInt( nIndex++ ) );
         comment.setIsAdminComment( daoUtil.getBoolean( nIndex++ ) );
         return comment;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Integer> findIdMostCommentedResources( String strExtendableResourceType, boolean bPublishedOnly,
+            int nItemsOffset, int nMaxItemsNumber )
+    {
+        List<Integer> listIds;
+        if ( nMaxItemsNumber > 0 )
+        {
+            listIds = new ArrayList<Integer>( nMaxItemsNumber );
+        }
+        else
+        {
+            listIds = new ArrayList<Integer>( );
+        }
+
+        StringBuilder sbSQL = new StringBuilder( SQL_QUERY_SELECT_DISTINCT_ID_RESOURCES );
+        sbSQL.append( SQL_ORDER_BY ).append( CONSTANT_OPEN_PARENTHESIS );
+        sbSQL.append( SQL_COUNT_NUMBER_COMMENTS_FOR_SELECT_ID_RESOURCE );
+        if ( bPublishedOnly )
+        {
+            sbSQL.append( SQL_AND ).append( SQL_FILTER_STATUS_PUBLISHED );
+        }
+        sbSQL.append( CONSTANT_CLOSE_PARENTHESIS );
+        if ( nMaxItemsNumber > 0 )
+        {
+            sbSQL.append( SQL_LIMIT );
+            if ( nItemsOffset > 0 )
+            {
+                sbSQL.append( CONSTANT_QUESTION_MARK ).append( CONSTANT_COMMA );
+            }
+            sbSQL.append( CONSTANT_QUESTION_MARK );
+        }
+        int nIndex = 1;
+        DAOUtil daoUtil = new DAOUtil( sbSQL.toString( ) );
+        daoUtil.setString( nIndex++, strExtendableResourceType );
+        if ( nMaxItemsNumber > 0 )
+        {
+            if ( nItemsOffset > 0 )
+            {
+                daoUtil.setInt( nIndex++, nItemsOffset );
+            }
+            daoUtil.setInt( nIndex, nMaxItemsNumber );
+        }
+        daoUtil.executeQuery( );
+
+        while ( daoUtil.next( ) )
+        {
+            listIds.add( daoUtil.getInt( 1 ) );
+        }
+
+        daoUtil.free( );
+
+        return listIds;
     }
 }

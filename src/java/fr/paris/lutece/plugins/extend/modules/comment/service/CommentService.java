@@ -260,4 +260,15 @@ public class CommentService implements ICommentService
     {
         return _commentDAO.countByIdParent( nIdParent, bPublishedOnly, CommentPlugin.getPlugin( ) );
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Integer> findIdMostCommentedResources( String strExtendableResourceType, boolean bPublishedOnly,
+            int nItemsOffset, int nMaxItemsNumber )
+    {
+        return _commentDAO.findIdMostCommentedResources( strExtendableResourceType, bPublishedOnly, nItemsOffset,
+                nMaxItemsNumber );
+    }
 }

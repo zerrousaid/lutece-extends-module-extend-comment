@@ -197,4 +197,19 @@ public interface ICommentService
      * @return The number of comments associated with the given parent
      */
     int countByIdParent( int nIdParent, boolean bPublishedOnly );
+
+    /**
+     * Get the ids of resources ordered by their number of comments
+     * @param strExtendableResourceType The type of resources to consider
+     * @param bPublishedOnly True to consider only published comments, false to
+     *            consider every comments
+     * @param nItemsOffset The offset of the items to get, or 0 to get items
+     *            from the first one
+     * @param nMaxItemsNumber The maximum number of items to return, or 0 to get
+     *            every items
+     * @return The list of ids of resources ordered by the number of associated
+     *         comments
+     */
+    public List<Integer> findIdMostCommentedResources( String strExtendableResourceType, boolean bPublishedOnly,
+            int nItemsOffset, int nMaxItemsNumber );
 }
