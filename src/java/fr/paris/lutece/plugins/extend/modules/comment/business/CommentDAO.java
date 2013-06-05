@@ -517,35 +517,11 @@ public class CommentDAO implements ICommentDAO
     }
 
     /**
-     * Fetch the attributes of a comment from a daoUtil.
-     * @param daoUtil The daoUtil to get the attributes from
-     * @return The comment with the attributes contained in the daoUtil.
-     */
-    private Comment getCommentInfo( DAOUtil daoUtil )
-    {
-        int nIndex = 1;
-        Comment comment = new Comment( );
-        comment.setIdComment( daoUtil.getInt( nIndex++ ) );
-        comment.setIdExtendableResource( daoUtil.getString( nIndex++ ) );
-        comment.setExtendableResourceType( daoUtil.getString( nIndex++ ) );
-        comment.setDateComment( daoUtil.getTimestamp( nIndex++ ) );
-        comment.setName( daoUtil.getString( nIndex++ ) );
-        comment.setEmail( daoUtil.getString( nIndex++ ) );
-        comment.setIpAddress( daoUtil.getString( nIndex++ ) );
-        comment.setComment( daoUtil.getString( nIndex++ ) );
-        comment.setPublished( daoUtil.getBoolean( nIndex++ ) );
-        comment.setDateLastModif( daoUtil.getTimestamp( nIndex++ ) );
-        comment.setIdParentComment( daoUtil.getInt( nIndex++ ) );
-        comment.setIsAdminComment( daoUtil.getBoolean( nIndex++ ) );
-        return comment;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public List<Integer> findIdMostCommentedResources( String strExtendableResourceType, boolean bPublishedOnly,
-            int nItemsOffset, int nMaxItemsNumber )
+            int nItemsOffset, int nMaxItemsNumber, Plugin plugin )
     {
         List<Integer> listIds;
         if ( nMaxItemsNumber > 0 )
@@ -575,7 +551,7 @@ public class CommentDAO implements ICommentDAO
             sbSQL.append( CONSTANT_QUESTION_MARK );
         }
         int nIndex = 1;
-        DAOUtil daoUtil = new DAOUtil( sbSQL.toString( ) );
+        DAOUtil daoUtil = new DAOUtil( sbSQL.toString( ), plugin );
         daoUtil.setString( nIndex++, strExtendableResourceType );
         if ( nMaxItemsNumber > 0 )
         {
@@ -596,4 +572,29 @@ public class CommentDAO implements ICommentDAO
 
         return listIds;
     }
+
+    /**
+     * Fetch the attributes of a comment from a daoUtil.
+     * @param daoUtil The daoUtil to get the attributes from
+     * @return The comment with the attributes contained in the daoUtil.
+     */
+    private Comment getCommentInfo( DAOUtil daoUtil )
+    {
+        int nIndex = 1;
+        Comment comment = new Comment( );
+        comment.setIdComment( daoUtil.getInt( nIndex++ ) );
+        comment.setIdExtendableResource( daoUtil.getString( nIndex++ ) );
+        comment.setExtendableResourceType( daoUtil.getString( nIndex++ ) );
+        comment.setDateComment( daoUtil.getTimestamp( nIndex++ ) );
+        comment.setName( daoUtil.getString( nIndex++ ) );
+        comment.setEmail( daoUtil.getString( nIndex++ ) );
+        comment.setIpAddress( daoUtil.getString( nIndex++ ) );
+        comment.setComment( daoUtil.getString( nIndex++ ) );
+        comment.setPublished( daoUtil.getBoolean( nIndex++ ) );
+        comment.setDateLastModif( daoUtil.getTimestamp( nIndex++ ) );
+        comment.setIdParentComment( daoUtil.getInt( nIndex++ ) );
+        comment.setIsAdminComment( daoUtil.getBoolean( nIndex++ ) );
+        return comment;
+    }
+
 }

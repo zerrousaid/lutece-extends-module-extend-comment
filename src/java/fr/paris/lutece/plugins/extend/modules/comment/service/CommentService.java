@@ -269,6 +269,6 @@ public class CommentService implements ICommentService
             int nItemsOffset, int nMaxItemsNumber )
     {
         return _commentDAO.findIdMostCommentedResources( strExtendableResourceType, bPublishedOnly, nItemsOffset,
-                nMaxItemsNumber );
+                nMaxItemsNumber, CommentPlugin.getPlugin( ) );
     }
 }

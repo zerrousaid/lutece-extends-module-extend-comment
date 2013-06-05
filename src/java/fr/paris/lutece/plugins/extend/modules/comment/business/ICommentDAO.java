@@ -187,9 +187,10 @@ public interface ICommentDAO
      *            from the first one
      * @param nMaxItemsNumber The maximum number of items to return, or 0 to get
      *            every items
+     * @param plugin The plugin
      * @return The list of ids of resources ordered by the number of associated
      *         comments
      */
     List<Integer> findIdMostCommentedResources( String strExtendableResourceType, boolean bPublishedOnly,
-            int nItemsOffset, int nMaxItemsNumber );
+            int nItemsOffset, int nMaxItemsNumber, Plugin plugin );
 }
