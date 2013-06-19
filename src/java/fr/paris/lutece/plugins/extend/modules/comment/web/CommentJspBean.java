@@ -72,6 +72,11 @@ import org.apache.commons.lang.StringUtils;
  */
 public class CommentJspBean extends PluginAdminPageJspBean
 {
+    /**
+     * Serial version UID
+     */
+    private static final long serialVersionUID = -1787559203779077088L;
+
     // JSP
     private static final String JSP_VIEW_EXTENDER_INFO = "../../ViewExtenderInfo.jsp";
     private static final String JSP_URL_DO_REMOVE_COMMENT = "jsp/admin/plugins/extend/modules/comment/DoRemoveComment.jsp";

@@ -136,7 +136,7 @@ public class CommentApp implements XPageApplication
     private static IResourceExtenderService _resourceExtenderService;
     private static IResourceExtenderHistoryService _resourceHistoryService;
 
-    private static int nDefaultItemsPerPage = 0;
+    private static int _nDefaultItemsPerPage;
 
     /**
      * {@inheritDoc}
@@ -594,12 +594,12 @@ public class CommentApp implements XPageApplication
      */
     private static int getDefaultItemsPerPage( )
     {
-        if ( nDefaultItemsPerPage == 0 )
+        if ( _nDefaultItemsPerPage == 0 )
         {
-            nDefaultItemsPerPage = AppPropertiesService.getPropertyInt(
+            _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt(
                     CommentConstants.PROPERTY_DEFAULT_LIST_COMMENTS_PER_PAGE, 50 );
         }
-        return nDefaultItemsPerPage;
+        return _nDefaultItemsPerPage;
     }
 
     /**

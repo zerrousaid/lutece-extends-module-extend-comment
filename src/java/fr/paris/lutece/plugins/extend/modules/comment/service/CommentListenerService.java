@@ -24,7 +24,7 @@ public class CommentListenerService
     private static Map<String, List<ICommentListener>> _mapListeners = new HashMap<String, List<ICommentListener>>( );
     private static boolean _bHasListeners;
 
-    private static ICommentDAO _commentDAO;
+    private static volatile ICommentDAO _commentDAO;
 
     /**
      * Private constructor

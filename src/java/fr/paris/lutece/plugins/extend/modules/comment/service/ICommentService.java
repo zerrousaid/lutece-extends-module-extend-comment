@@ -210,6 +210,6 @@ public interface ICommentService
      * @return The list of ids of resources ordered by the number of associated
      *         comments
      */
-    public List<Integer> findIdMostCommentedResources( String strExtendableResourceType, boolean bPublishedOnly,
+    List<Integer> findIdMostCommentedResources( String strExtendableResourceType, boolean bPublishedOnly,
             int nItemsOffset, int nMaxItemsNumber );
 }

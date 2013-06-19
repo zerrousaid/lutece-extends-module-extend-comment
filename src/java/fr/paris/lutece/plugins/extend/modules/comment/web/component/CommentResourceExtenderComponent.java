@@ -98,7 +98,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     private int _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt(
             CommentConstants.PROPERTY_DEFAULT_LIST_COMMENTS_PER_PAGE, 50 );
 
-    private ContentPostProcessor _contentPostProcessor;
+    private volatile ContentPostProcessor _contentPostProcessor;
 
     /**
      * {@inheritDoc}
