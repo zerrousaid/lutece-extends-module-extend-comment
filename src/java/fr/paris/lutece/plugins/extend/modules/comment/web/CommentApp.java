@@ -502,6 +502,10 @@ public class CommentApp implements XPageApplication
 
                 String strPostBackUrl = (String) request.getSession( ).getAttribute(
                         ExtendPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_POST_BACK_URL );
+                if ( strPostBackUrl == null )
+                {
+                    strPostBackUrl = JSP_URL_DEFAULT_POST_BACK;
+                }
                 Map<String, Object> model = new HashMap<String, Object>( );
                 model.put( CommentConstants.MARK_MESSAGE_COMMENT_CREATED, config.getMessageCommentCreated( ) );
                 model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
