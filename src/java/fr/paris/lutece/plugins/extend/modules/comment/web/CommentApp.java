@@ -33,6 +33,21 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.web;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.ConstraintViolation;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.extend.modules.comment.business.config.CommentExtenderConfig;
 import fr.paris.lutece.plugins.extend.modules.comment.service.CommentPlugin;
@@ -76,21 +91,6 @@ import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.http.SecurityUtil;
 import fr.paris.lutece.util.url.UrlItem;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.validation.ConstraintViolation;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
-
 
 /**
  * 
@@ -117,8 +117,6 @@ public class CommentApp implements XPageApplication
     private static final String TEMPLATE_COMMENT_NOTIFY_MESSAGE = "skin/plugins/extend/modules/comment/comment_notify_message.html";
 
     private static final String JSP_URL_DEFAULT_POST_BACK = "jsp/site/Portal.jsp?page=extend-comment";
-
-    private static final String PARAMETER_PAGE = "page";
 
     // CONSTANTS
     private static final String JCAPTCHA_PLUGIN = "jcaptcha";
@@ -271,8 +269,7 @@ public class CommentApp implements XPageApplication
         int nItemsOffset = nItemsPerPage * ( Integer.parseInt( strCurrentPageIndex ) - 1 );
 
         List<Comment> listItems = getCommentService( ).findByResource( strIdExtendableResource,
-                strExtendableResourceType,
-                true, null, bIsAscSort, nItemsOffset, nItemsPerPage, bGetSubComments );
+                strExtendableResourceType, true, null, bIsAscSort, nItemsOffset, nItemsPerPage, bGetSubComments );
 
         int nItemsCount = getCommentService( ).getCommentNb( strIdExtendableResource, strExtendableResourceType, true,
                 true );
@@ -368,6 +365,8 @@ public class CommentApp implements XPageApplication
         model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
         model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
         model.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
+        model.put( CommentConstants.MARK_RETURN_TO_COMMENT_LIST,
+                Boolean.parseBoolean( request.getParameter( CommentConstants.MARK_RETURN_TO_COMMENT_LIST ) ) );
         model.put( CommentConstants.PARAMETER_ID_COMMENT, request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
         model.put( CommentConstants.MARK_WEBAPP_URL, AppPathService.getBaseUrl( request ) );
         model.put( CommentConstants.MARK_LOCALE, Locale.getDefault( ) );
@@ -488,8 +487,7 @@ public class CommentApp implements XPageApplication
             {
                 // Add to the resource extender history
                 getResourceExtenderHistoryService( ).create( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
-                        strIdExtendableResource,
-                        strExtendableResourceType, request );
+                        strIdExtendableResource, strExtendableResourceType, request );
 
                 // Notify the mailing list
                 sendCommentNotification( request, comment, config );
@@ -506,13 +504,23 @@ public class CommentApp implements XPageApplication
                 {
                     strPostBackUrl = JSP_URL_DEFAULT_POST_BACK;
                 }
+                String strFromUrl = request.getParameter( CommentConstants.PARAMETER_FROM_URL );
+                if ( FROM_SESSION.equals( strFromUrl ) )
+                {
+                    strFromUrl = (String) request.getSession( ).getAttribute(
+                            ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
+                }
                 Map<String, Object> model = new HashMap<String, Object>( );
                 model.put( CommentConstants.MARK_MESSAGE_COMMENT_CREATED, config.getMessageCommentCreated( ) );
                 model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
                 model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
                 model.put( CommentConstants.PARAMETER_ID_COMMENT,
+
                         comment.getIdParentComment( ) == 0 ? comment.getIdComment( ) : comment.getIdParentComment( ) );
                 model.put( CommentConstants.PARAMETER_POST_BACK_URL, strPostBackUrl );
+                model.put( CommentConstants.MARK_RETURN_TO_COMMENT_LIST,
+                        Boolean.parseBoolean( request.getParameter( CommentConstants.MARK_RETURN_TO_COMMENT_LIST ) ) );
+                model.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
 
                 HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_XPAGE_MESSAGE_COMMENT_CREATED,
                         request.getLocale( ), model );

@@ -82,6 +82,9 @@
 				<#if idComment??>
 					<input type="hidden" name="idParentComment" value="${idComment}" />
 				</#if>
+				<#if returnToCommentList?? && returnToCommentList>
+					<input type="hidden" name="returnToCommentList" value="true" />
+				</#if>
 				<#if from_url?? && from_url?has_content && from_url != "null">
 					<input type="hidden" name="from_url" value="${from_url!}" />
 				</#if>
