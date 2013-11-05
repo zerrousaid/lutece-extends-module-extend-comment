@@ -33,21 +33,6 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.web;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.validation.ConstraintViolation;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
-
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.extend.modules.comment.business.config.CommentExtenderConfig;
 import fr.paris.lutece.plugins.extend.modules.comment.service.CommentPlugin;
@@ -91,6 +76,21 @@ import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.http.SecurityUtil;
 import fr.paris.lutece.util.url.UrlItem;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.ConstraintViolation;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
+
 
 /**
  * 
@@ -126,15 +126,16 @@ public class CommentApp implements XPageApplication
     private static final String CONSTANT_AND_HTML = "%26";
 
     // VARIABLES
-    private static final boolean _bIsCaptchaEnabled = PluginService.isPluginEnable( JCAPTCHA_PLUGIN )
-            && Boolean
-                    .parseBoolean( AppPropertiesService.getProperty( PROPERTY_USE_CAPTCHA, Boolean.TRUE.toString( ) ) );
     private static ICommentService _commentService;
     private static IResourceExtenderConfigService _configService;
     private static IResourceExtenderService _resourceExtenderService;
     private static IResourceExtenderHistoryService _resourceHistoryService;
 
     private static int _nDefaultItemsPerPage;
+
+    private final boolean _bIsCaptchaEnabled = PluginService.isPluginEnable( JCAPTCHA_PLUGIN )
+            && Boolean
+                    .parseBoolean( AppPropertiesService.getProperty( PROPERTY_USE_CAPTCHA, Boolean.TRUE.toString( ) ) );
 
     /**
      * {@inheritDoc}
@@ -516,7 +517,7 @@ public class CommentApp implements XPageApplication
                 model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
                 model.put( CommentConstants.PARAMETER_ID_COMMENT,
 
-                        comment.getIdParentComment( ) == 0 ? comment.getIdComment( ) : comment.getIdParentComment( ) );
+                comment.getIdParentComment( ) == 0 ? comment.getIdComment( ) : comment.getIdParentComment( ) );
                 model.put( CommentConstants.PARAMETER_POST_BACK_URL, strPostBackUrl );
                 model.put( CommentConstants.MARK_RETURN_TO_COMMENT_LIST,
                         Boolean.parseBoolean( request.getParameter( CommentConstants.MARK_RETURN_TO_COMMENT_LIST ) ) );

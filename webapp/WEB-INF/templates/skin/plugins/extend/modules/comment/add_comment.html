@@ -71,11 +71,9 @@
 					<textarea <#if commentConfig.useBBCodeEditor>class="richtext"</#if> name="comment" cols="45" rows="8"></textarea>
 				</div>
 			</div>
-			<#--  <#if properties.captchaActive>  -->
-				<#if is_active_captcha>
-					<div >${captcha!}</div>
-				</#if>
-			<#-- </#if>  -->
+			<#if is_active_captcha>
+				<div>${captcha!}</div>
+			</#if>
 			<div class="form-actions">
 				<input type="hidden" name="page" value="extend-comment" />
 				<input type="hidden" name="action" value="doAddComment" />
