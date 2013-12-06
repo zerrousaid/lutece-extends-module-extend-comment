@@ -37,5 +37,6 @@
 		
 	<!-- Actions -->
 	<bean id="extend-comment.manageCommentsAction" class="fr.paris.lutece.plugins.extend.modules.comment.web.action.ManageCommentsPluginAction" />
-	
+    <bean id="extend-comment.commentAddon" class="fr.paris.lutece.plugins.extend.modules.comment.service.CommentAddOnService" />
+
 </beans>
