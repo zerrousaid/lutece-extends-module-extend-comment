@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.business;
 
+import fr.paris.lutece.plugins.avatar.service.AvatarService;
 import fr.paris.lutece.plugins.extend.modules.comment.util.annotation.Email;
 import fr.paris.lutece.portal.service.editor.EditorBbcodeService;
 import fr.paris.lutece.portal.service.util.AppLogService;
@@ -366,5 +367,14 @@ public class Comment
             }
         }
         return 0;
+    }
+    
+    /**
+     * Display the avatar of the comment's author
+     * @return The HTML code of the avatar
+     */
+    public String getAvatar()
+    {
+        return AvatarService.getAvatar( _strEmail );
     }
 }
