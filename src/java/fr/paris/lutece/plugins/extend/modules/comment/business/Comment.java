@@ -377,4 +377,13 @@ public class Comment
     {
         return AvatarService.getAvatar( _strEmail );
     }
+
+    /**
+     * Display the avatar of the comment's author
+     * @return The HTML code of the avatar
+     */
+    public String getAvatarUrl()
+    {
+        return AvatarService.getAvatarUrl( _strEmail );
+    }
 }
