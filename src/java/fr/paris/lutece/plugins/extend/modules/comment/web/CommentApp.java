@@ -76,6 +76,9 @@ import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.http.SecurityUtil;
 import fr.paris.lutece.util.url.UrlItem;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -87,9 +90,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolation;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -510,6 +510,10 @@ public class CommentApp implements XPageApplication
                 {
                     strFromUrl = (String) request.getSession( ).getAttribute(
                             ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
+                }
+                if ( strFromUrl != null )
+                {
+                    strFromUrl = strFromUrl.replaceAll( CONSTANT_AND_HTML, CONSTANT_AND );
                 }
                 Map<String, Object> model = new HashMap<String, Object>( );
                 model.put( CommentConstants.MARK_MESSAGE_COMMENT_CREATED, config.getMessageCommentCreated( ) );
