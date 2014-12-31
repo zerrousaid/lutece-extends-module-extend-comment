@@ -55,7 +55,7 @@ public class CommentDAO implements ICommentDAO
     private static final String SQL_QUERY_SELECT_ALL = " SELECT id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment FROM extend_comment ";
     private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_ALL + " WHERE id_comment = ? ";
     private static final String SQL_QUERY_SELECT_BY_RESOURCE = SQL_QUERY_SELECT_ALL
-            + " WHERE id_resource = ? AND resource_type = ? ";
+            + " WHERE id_resource LIKE ? AND resource_type = ? ";
     private static final String SQL_QUERY_SELECT_ID_BY_RESOURCE = "SELECT id_comment FROM extend_comment WHERE id_resource = ? AND resource_type = ? ";
     private static final String SQL_QUERY_SELECT_NB_COMMENT_BY_RESOURCE = " SELECT count(id_comment) FROM extend_comment WHERE id_resource = ? AND resource_type = ? ";
     private static final String SQL_QUERY_DELETE = " DELETE FROM extend_comment WHERE id_comment = ? ";
@@ -84,6 +84,8 @@ public class CommentDAO implements ICommentDAO
     private static final String CONSTANT_QUESTION_MARK = "?";
     private static final String CONSTANT_OPEN_PARENTHESIS = " ( ";
     private static final String CONSTANT_CLOSE_PARENTHESIS = " ) ";
+    private static final String CONSTANT_ALL_RESSOURCE_ID = "*";
+    private static final String CONSTANT_SQL_ALL_RESSOURCE_ID = "%";
 
     /**
      * Generates a new primary key.
@@ -379,7 +381,15 @@ public class CommentDAO implements ICommentDAO
         // We now proceed the SQL request
         int nIndex = 1;
         DAOUtil daoUtil = new DAOUtil( sbSQL.toString( ), plugin );
-        daoUtil.setString( nIndex++, strIdExtendableResource );
+        if (strIdExtendableResource.equals(CONSTANT_ALL_RESSOURCE_ID))
+        {
+        	daoUtil.setString( nIndex++, CONSTANT_SQL_ALL_RESSOURCE_ID );
+
+        }
+        else
+        {
+        	daoUtil.setString( nIndex++, strIdExtendableResource );
+        }
         daoUtil.setString( nIndex++, strExtendableResourceType );
         if ( nMaxItemsNumber > 0 )
         {
