@@ -59,8 +59,8 @@
     </properties>
     
     <scm>
-        <connection>scm:svn:http://dev.lutece.paris.fr/svn/lutece/portal/trunk/plugins/extends/module-extend-comment</connection>
-        <developerConnection>scm:svn:https://dev.lutece.paris.fr/svn/lutece/portal/trunk/plugins/extends/module-extend-comment</developerConnection>
-        <url>http://dev.lutece.paris.fr/viewvc/lutece/portal/trunk/plugins/extends/module-extend-comment</url>
+        <connection>scm:git:https://github.com/lutece-platform/lutece-extends-module-extend-comment.git</connection>
+        <developerConnection>scm:git:https://github.com/lutece-platform/lutece-extends-module-extend-comment.git</developerConnection>
+        <url>https://github.com/lutece-platform/lutece-extends-module-extend-comment.git</url>
     </scm>
 </project>
