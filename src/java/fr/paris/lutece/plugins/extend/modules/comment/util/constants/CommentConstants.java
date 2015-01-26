@@ -48,6 +48,7 @@ public final class CommentConstants
     public static final String PROPERTY_MANAGE_COMMENTS_PAGE_TITLE = "module.extend.comment.manage_comments.pageTitle";
     public static final String PROPERTY_COMMENT_CONFIG_LABEL_NO_MAILING_LIST = "module.extend.comment.comment_config.labelNoMailingList";
     public static final String PROPERTY_DEFAULT_LIST_COMMENTS_PER_PAGE = "module.extend.comment.commentInfo.itemsPerPage";
+    public static final String PROPERTY_USE_CAPTCHA = "module.extend.comment.useCaptcha";
 
     // MESSAGES
     public static final String MESSAGE_CONFIRM_REMOVE_COMMENT = "module.extend.comment.message.confirm.removeComment";
@@ -86,6 +87,8 @@ public final class CommentConstants
     public static final String MARK_ALLOW_SUB_COMMENTS = "allowSubComments";
     public static final String MARK_MESSAGE_COMMENT_CREATED = "message_comment_created";
     public static final String MARK_RETURN_TO_COMMENT_LIST = "returnToCommentList";
+    public static final String MARK_CAPTCHA = "captcha";
+    public static final String MARK_IS_ACTIVE_CAPTCHA = "is_active_captcha";
 
     // ACTIONS
     public static final String ACTION_ADD_COMMENT = "addComment";
@@ -109,6 +112,14 @@ public final class CommentConstants
     public static final String SESSION_COMMENT_POST_BACK_URL = "commentPostBackUrl";
     public static final String PARAMETER_POST_BACK_URL = "postBackUrl";
     public static final String SESSION_COMMENT_ADMIN_POST_BACK_URL = "adminInfoPostBackUrl";
+    public static final String SESSION_COMMENT_ADD_MESSAGE_RESULT = "addCommentMessageResult";
+
+    public static final String MARK_ADD_COMMENT_POSITION = "addCommentPosition";
+    public static final String MARK_ADD_COMMENT_POSITIONS = "allPositions";
+    public static final String JCAPTCHA_PLUGIN = "jcaptcha";
+	public static final String ADD_COMMENT_MESSAGE_RESULT_ANCHOR = "message";
+	public static final String MARK_ADD_COMMENT_MESSAGE_RESULT = "addCommentMessageResult";
+	public static final String FROM_SESSION = "from_session";
 
     /**
      * Instantiates a new comment constants.

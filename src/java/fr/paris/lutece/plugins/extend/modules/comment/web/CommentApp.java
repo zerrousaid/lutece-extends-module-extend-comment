@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.web;
 
+import fr.paris.lutece.plugins.extend.modules.comment.business.AddCommentPosition;
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.extend.modules.comment.business.config.CommentExtenderConfig;
 import fr.paris.lutece.plugins.extend.modules.comment.service.CommentPlugin;
@@ -65,6 +66,7 @@ import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.web.LocalVariables;
 import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.portal.web.util.LocalizedDelegatePaginator;
 import fr.paris.lutece.portal.web.xpages.XPage;
@@ -79,6 +81,7 @@ import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -88,6 +91,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolation;
 
@@ -121,7 +125,6 @@ public class CommentApp implements XPageApplication
     // CONSTANTS
     private static final String JCAPTCHA_PLUGIN = "jcaptcha";
     private static final String HTML_BR = "<br />";
-    private static final String FROM_SESSION = "from_session";
     private static final String CONSTANT_AND = "&";
     private static final String CONSTANT_AND_HTML = "%26";
 
@@ -218,7 +221,7 @@ public class CommentApp implements XPageApplication
         }
 
         String strFromUrl = request.getParameter( CommentConstants.PARAMETER_FROM_URL );
-        if ( FROM_SESSION.equals( strFromUrl ) )
+        if ( CommentConstants.FROM_SESSION.equals( strFromUrl ) )
         {
             strFromUrl = (String) request.getSession( ).getAttribute(
                     ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
@@ -252,7 +255,7 @@ public class CommentApp implements XPageApplication
         urlSort.addParameter( CommentConstants.MARK_ASC_SORT, strSort );
         if ( StringUtils.isNotEmpty( strFromUrl ) )
         {
-            urlSort.addParameter( CommentConstants.PARAMETER_FROM_URL, FROM_SESSION );
+            urlSort.addParameter( CommentConstants.PARAMETER_FROM_URL, CommentConstants.FROM_SESSION );
         }
         boolean bGetSubComments = false;
         boolean bUseBBCodeEditor = false;
@@ -346,7 +349,7 @@ public class CommentApp implements XPageApplication
                 strIdExtendableResource, strExtendableResourceType );
 
         String strFromUrl = request.getParameter( CommentConstants.PARAMETER_FROM_URL );
-        if ( FROM_SESSION.equals( strFromUrl ) )
+        if ( CommentConstants.FROM_SESSION.equals( strFromUrl ) )
         {
             strFromUrl = (String) request.getSession( ).getAttribute(
                     ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
@@ -505,8 +508,9 @@ public class CommentApp implements XPageApplication
                 {
                     strPostBackUrl = JSP_URL_DEFAULT_POST_BACK;
                 }
+                
                 String strFromUrl = request.getParameter( CommentConstants.PARAMETER_FROM_URL );
-                if ( FROM_SESSION.equals( strFromUrl ) )
+                if ( CommentConstants.FROM_SESSION.equals( strFromUrl ) )
                 {
                     strFromUrl = (String) request.getSession( ).getAttribute(
                             ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
@@ -515,6 +519,12 @@ public class CommentApp implements XPageApplication
                 {
                     strFromUrl = strFromUrl.replaceAll( CONSTANT_AND_HTML, CONSTANT_AND );
                 }
+
+                if (config.getAddCommentPosition() != AddCommentPosition.NEW_PAGE )
+                {
+                	return redirectToLastUrl(request, config.getMessageCommentCreated() , strIdExtendableResource);
+                }
+                
                 Map<String, Object> model = new HashMap<String, Object>( );
                 model.put( CommentConstants.MARK_MESSAGE_COMMENT_CREATED, config.getMessageCommentCreated( ) );
                 model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
@@ -536,11 +546,28 @@ public class CommentApp implements XPageApplication
             }
             return null;
         }
-        SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE, SiteMessage.TYPE_ERROR );
+        redirectToLastUrl(request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE, strIdExtendableResource );
         return null;
     }
 
-    /**
+    private XPage redirectToLastUrl(HttpServletRequest request, String message, String strIdExtendableResource)
+    {
+    	request.getSession().setAttribute( CommentConstants.SESSION_COMMENT_ADD_MESSAGE_RESULT + strIdExtendableResource, message );
+    	HttpServletResponse response = LocalVariables.getResponse(  );
+    	UrlItem url = new UrlItem( (String) request.getSession( ).getAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL ) );
+    	url.setAnchor( CommentConstants.ADD_COMMENT_MESSAGE_RESULT_ANCHOR );
+    	try
+    	{
+    		response.sendRedirect( url.getUrl() );
+    	}
+    	catch (IOException e)
+    	{
+    		// log ?
+    	}
+    	return new XPage();
+    }
+
+	/**
      * Builds the stop message.
      * 
      * @param <A> the generic type

@@ -35,20 +35,26 @@ package fr.paris.lutece.plugins.extend.modules.comment.web.component;
 
 import fr.paris.lutece.plugins.extend.business.extender.ResourceExtenderDTO;
 import fr.paris.lutece.plugins.extend.business.extender.config.IExtenderConfig;
+import fr.paris.lutece.plugins.extend.modules.comment.business.AddCommentPosition;
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.extend.modules.comment.business.config.CommentExtenderConfig;
 import fr.paris.lutece.plugins.extend.modules.comment.service.CommentPlugin;
 import fr.paris.lutece.plugins.extend.modules.comment.service.ICommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.extender.CommentResourceExtender;
 import fr.paris.lutece.plugins.extend.modules.comment.util.constants.CommentConstants;
+import fr.paris.lutece.plugins.extend.service.ExtendPlugin;
 import fr.paris.lutece.plugins.extend.service.content.ExtendableContentPostProcessor;
 import fr.paris.lutece.plugins.extend.service.extender.config.IResourceExtenderConfigService;
 import fr.paris.lutece.plugins.extend.util.ExtendErrorException;
 import fr.paris.lutece.plugins.extend.web.component.AbstractResourceExtenderComponent;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
+import fr.paris.lutece.portal.service.captcha.CaptchaSecurityService;
 import fr.paris.lutece.portal.service.content.ContentPostProcessor;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mailinglist.AdminMailingListService;
+import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.security.LuteceUser;
+import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
@@ -122,11 +128,13 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         int nNbComments = 1;
         boolean bAuthorizedsubComments = true;
         boolean bUseBBCodeEditor = false;
+        int nAddCommentPosition = 0;
         String strAdminBadge = StringUtils.EMPTY;
         if ( config != null )
         {
             nNbComments = config.getNbComments( );
             bAuthorizedsubComments = config.getAuthorizeSubComments( );
+            nAddCommentPosition =config.getAddCommentPosition( ); 
             bUseBBCodeEditor = config.getUseBBCodeEditor( );
             strAdminBadge = config.getAdminBadge( );
         }
@@ -134,11 +142,47 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         List<Comment> listComments = _commentService.findLastComments( strIdExtendableResource,
                 strExtendableResourceType, nNbComments, true, true, bAuthorizedsubComments );
         Map<String, Object> model = new HashMap<String, Object>( );
+        model.put( CommentConstants.MARK_COMMENT_CONFIG, _configService.find( CommentResourceExtender.EXTENDER_TYPE_COMMENT, strIdExtendableResource, strExtendableResourceType ) );
         model.put( CommentConstants.MARK_LIST_COMMENTS, listComments );
         model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
         model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
+    model.put( CommentConstants.MARK_ADD_COMMENT_POSITION, nAddCommentPosition );
         model.put( CommentConstants.MARK_USE_BBCODE, bUseBBCodeEditor );
         model.put( CommentConstants.MARK_ADMIN_BADGE, strAdminBadge );
+        
+        if (nAddCommentPosition != AddCommentPosition.NEW_PAGE )
+        {
+            // Add Captcha		
+            boolean bIsCaptchaEnabled = PluginService.isPluginEnable( CommentConstants.JCAPTCHA_PLUGIN )
+                    && Boolean.parseBoolean( AppPropertiesService.getProperty( CommentConstants.PROPERTY_USE_CAPTCHA, Boolean.TRUE.toString( ) ) );
+            model.put( CommentConstants.MARK_IS_ACTIVE_CAPTCHA, bIsCaptchaEnabled );
+
+            if ( bIsCaptchaEnabled )
+            {
+                CaptchaSecurityService captchaService = new CaptchaSecurityService( );
+                model.put( CommentConstants.MARK_CAPTCHA, captchaService.getHtmlCode( ) );
+            }
+
+            if ( SecurityService.isAuthenticationEnable( ) )
+            {
+                LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+
+                if ( user != null )
+                {
+                    model.put( CommentConstants.MARK_MYLUTECE_USER, user );
+                }
+            }
+            
+            // display message when form was submitted
+            if ( request.getSession().getAttribute( CommentConstants.SESSION_COMMENT_ADD_MESSAGE_RESULT + strIdExtendableResource ) != null )
+            {
+            	model.put( CommentConstants.MARK_ADD_COMMENT_MESSAGE_RESULT, (String) request.getSession().getAttribute( CommentConstants.SESSION_COMMENT_ADD_MESSAGE_RESULT + strIdExtendableResource ) );
+            	request.getSession().removeAttribute( CommentConstants.SESSION_COMMENT_ADD_MESSAGE_RESULT + strIdExtendableResource );
+            }
+            // get redirect URL
+            request.getSession().setAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, request.getRequestURI() + "?" + request.getQueryString() );
+            model.put( CommentConstants.PARAMETER_FROM_URL, CommentConstants.FROM_SESSION );
+        }
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT, request.getLocale( ), model );
         String strContent = template.getHtml( );
@@ -167,9 +211,10 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         Map<String, Object> model = new HashMap<String, Object>( );
         model.put( CommentConstants.MARK_COMMENT_CONFIG, _configService.find( resourceExtender.getIdExtender( ) ) );
         model.put( CommentConstants.MARK_LIST_IDS_MAILING_LIST, listIdsMailingList );
+        model.put( CommentConstants.MARK_ADD_COMMENT_POSITIONS, AddCommentPosition.getAllPositions( ) );
         model.put( CommentConstants.MARK_WEBAPP_URL, AppPathService.getBaseUrl( request ) );
         model.put( CommentConstants.MARK_LOCALE, AdminUserService.getLocale( request ) );
-
+        
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT_CONFIG, request.getLocale( ), model );
 
         return template.getHtml( );

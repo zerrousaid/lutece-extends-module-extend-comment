@@ -4,9 +4,13 @@
 			<a href="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-small" title="#i18n{module.extend.comment.comment.labelViewComments}" >
 				<i class="icon-eye-open icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelViewComments}
 			</a>
-			<a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-small" title="#i18n{module.extend.comment.comment.labelAddComment}">
-				<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}
-			</a>
+			<#if addCommentPosition = 0>
+				<a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-small" title="#i18n{module.extend.comment.comment.labelAddComment}">
+					<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}
+				</a>
+			<#elseif addCommentPosition = 1 || addCommentPosition = 3>
+				<#include "/skin/plugins/extend/modules/comment/add_comment.html" />
+			</#if>
 		</div>
 		<#list listComments as comment>
 			<div class="well">
@@ -37,8 +41,12 @@
 		<a href="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-small" title="#i18n{module.extend.comment.comment.labelViewComments}" >
 			<i class="icon-eye-open icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelViewComments}
 		</a>
-		<a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-small" title="#i18n{module.extend.comment.comment.labelAddComment}">
-			<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}
-		</a>
+		<#if addCommentPosition = 0>
+			<a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-small" title="#i18n{module.extend.comment.comment.labelAddComment}">
+				<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}
+			</a>
+		<#elseif addCommentPosition = 1 || addCommentPosition = 3>
+			<#include "/skin/plugins/extend/modules/comment/add_comment.html" />
+		</#if>
 	</div>
 </div>

@@ -91,9 +91,11 @@
 				<button class="btn btn-primary btn-small" type="submit" name="add" value="#i18n{portal.util.labelValidate}" title="#i18n{portal.util.labelValidate}" >
 					<i class="icon-ok icon-white">&nbsp;</i>&nbsp;#i18n{portal.util.labelValidate}
 				</button>
-				<button class="btn btn-small" type="button" name="cancel" onclick="javascript:history.back();" value="#i18n{portal.util.labelBack}" title="#i18n{portal.util.labelBack}" >
-					#i18n{portal.util.labelBack}
-				</button>
+				<#if addCommentPosition = 0>
+					<button class="btn btn-small" type="button" name="cancel" onclick="javascript:history.back();" value="#i18n{portal.util.labelBack}" title="#i18n{portal.util.labelBack}" >
+						#i18n{portal.util.labelBack}
+					</button>
+				</#if>
 			</div>
 		</fieldset>
 	</form>

@@ -21,6 +21,16 @@
 	</div>
 </div>
 <div class="control-group" >
+  <label class="control-label" for="addCommentPosition">#i18n{module.extend.comment.comment_config.labelAddCommentPosition} : </label>
+	<div class="controls">
+		<select name="addCommentPosition" id="addCommentPosition" title="#i18n{module.extend.comment.comment_config.labelAddCommentPosition}">
+			<#list allPositions?keys as position>
+				<option <#if position = "${commentConfig.addCommentPosition}"> selected="selected" </#if>value="${position}">#i18n{${allPositions[position]}}</option>
+			</#list>
+		</select>
+	</div>
+</div>
+<div class="control-group" >
 	<label class="control-label" for="useBBCodeEditor">#i18n{module.extend.comment.comment_config.labelUseBBCodeEditor} : </label>
 	<div class="controls">
 		<input type="radio" name="useBBCodeEditor" value="true" <#if commentConfig.useBBCodeEditor>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelYes}

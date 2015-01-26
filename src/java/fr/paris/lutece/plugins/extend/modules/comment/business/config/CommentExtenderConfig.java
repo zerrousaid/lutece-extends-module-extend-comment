@@ -50,6 +50,7 @@ public class CommentExtenderConfig extends ExtenderConfig
     private boolean _bUseBBCodeEditor;
     private String _strAdminBadge;
     private String _strMessageCommentCreated;
+    private int _nAddCommentPosition;
 
     /**
      * Checks if is moderated.
@@ -176,5 +177,22 @@ public class CommentExtenderConfig extends ExtenderConfig
     public void setMessageCommentCreated( String strMessageCommentCreated )
     {
         this._strMessageCommentCreated = strMessageCommentCreated;
+    }
+
+    /**
+     * @returnthe position number of the add comment form
+     */
+    public int getAddCommentPosition()
+    {
+    	return _nAddCommentPosition;
+    }
+    
+    /**
+     * * @param the position number
+     * @return void
+     */
+    public void setAddCommentPosition (int nPosition)
+    {
+    	_nAddCommentPosition = nPosition;
     }
 }

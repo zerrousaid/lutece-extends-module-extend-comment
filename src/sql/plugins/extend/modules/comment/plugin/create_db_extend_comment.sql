@@ -31,5 +31,6 @@ CREATE TABLE extend_comment_config (
 	use_bbcode SMALLINT default 1 NOT NULL,
 	admin_badge LONG VARCHAR NOT NULL,
 	message_comment_created LONG VARCHAR NOT NULL,
+	add_comment_position SMALLINT NOT NULL default 0,
 	PRIMARY KEY (id_extender)
 );
