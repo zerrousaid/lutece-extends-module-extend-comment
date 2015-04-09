@@ -521,12 +521,13 @@ public class CommentApp implements XPageApplication
                     strFromUrl = strFromUrl.replaceAll( CONSTANT_AND_HTML, CONSTANT_AND );
                 }
 
-                if (config.getAddCommentPosition() != AddCommentPosition.NEW_PAGE )
+                if ( ! request.getParameter( "page" ).equals( CommentPlugin.PLUGIN_NAME ) && config.getAddCommentPosition() != AddCommentPosition.NEW_PAGE )
                 {
-                	return redirectToLastUrl(request, config.getMessageCommentCreated() , strIdExtendableResource);
+                    return redirectToLastUrl(request, config.getMessageCommentCreated() , strIdExtendableResource);
                 }
                 
                 Map<String, Object> model = new HashMap<String, Object>( );
+
                 model.put( CommentConstants.MARK_MESSAGE_COMMENT_CREATED, config.getMessageCommentCreated( ) );
                 model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
                 model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
