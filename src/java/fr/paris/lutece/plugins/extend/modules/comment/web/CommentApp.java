@@ -365,6 +365,7 @@ public class CommentApp implements XPageApplication
         request.getSession( ).setAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, strFromUrl );
 
         Map<String, Object> model = new HashMap<String, Object>( );
+        model.put( CommentConstants.MARK_ADD_COMMENT_POSITION, config.getAddCommentPosition(  ) );
         model.put( CommentConstants.MARK_COMMENT_CONFIG, config );
         model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
         model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
