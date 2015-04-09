@@ -554,19 +554,19 @@ public class CommentApp implements XPageApplication
 
     private XPage redirectToLastUrl(HttpServletRequest request, String message, String strIdExtendableResource)
     {
-    	request.getSession().setAttribute( CommentConstants.SESSION_COMMENT_ADD_MESSAGE_RESULT + strIdExtendableResource, message );
-    	HttpServletResponse response = LocalVariables.getResponse(  );
-    	UrlItem url = new UrlItem( (String) request.getSession( ).getAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL ) );
-    	url.setAnchor( CommentConstants.ADD_COMMENT_MESSAGE_RESULT_ANCHOR );
-    	try
-    	{
-    		response.sendRedirect( url.getUrl() );
-    	}
-    	catch (IOException e)
-    	{
-    		// log ?
-    	}
-    	return new XPage();
+        request.getSession().setAttribute( CommentConstants.SESSION_COMMENT_ADD_MESSAGE_RESULT + strIdExtendableResource, message );
+        HttpServletResponse response = LocalVariables.getResponse(  );
+        UrlItem url = new UrlItem( (String) request.getSession( ).getAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL ) );
+        url.setAnchor( CommentConstants.ADD_COMMENT_MESSAGE_RESULT_ANCHOR );
+        try
+        {
+            response.sendRedirect( url.getUrl() );
+        }
+        catch (IOException e)
+        {
+            // log ?
+        }
+        return new XPage();
     }
 
 	/**
