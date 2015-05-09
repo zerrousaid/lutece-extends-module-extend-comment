@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <artifactId>lutece-plugins-pom</artifactId>
-        <groupId>fr.paris.lutece.plugins</groupId>
-        <version>3.7</version>
+        <artifactId>lutece-global-pom</artifactId>
+        <groupId>fr.paris.lutece.tools</groupId>
+        <version>3.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -32,13 +32,6 @@
 	
     <dependencies>
         <dependency>
-            <groupId>fr.paris.lutece</groupId>
-            <artifactId>lutece-core</artifactId>
-            <version>[3.9.9,)</version>
-            <type>lutece-core</type>
-        </dependency>
-	  	
-        <dependency>
             <groupId>fr.paris.lutece.plugins</groupId>
             <artifactId>plugin-extend</artifactId>
             <version>[1.0.0,)</version>
@@ -47,7 +40,7 @@
         <dependency>
             <groupId>fr.paris.lutece.plugins</groupId>
             <artifactId>plugin-avatar</artifactId>
-            <version>[1.0.2-SNAPSHOT,)</version>
+            <version>[1.0.2,)</version>
             <type>lutece-plugin</type>
         </dependency>
     </dependencies>
@@ -63,4 +56,5 @@
         <developerConnection>scm:git:https://github.com/lutece-platform/lutece-extends-module-extend-comment.git</developerConnection>
         <url>https://github.com/lutece-platform/lutece-extends-module-extend-comment.git</url>
     </scm>
+    
 </project>
