@@ -1,13 +1,14 @@
-<div class="span12 row-fluid">
+<div class="row">
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 	<#assign listComments = paginator.pageItems>
 	<br />
 	<form class="form-inline" method="post" action="${postBackUrl}<#if postBackUrl?contains('?')>&amp;<#else>?</#if>idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;asc_sort=${asc_sort!}">
-		<div class="span5">
-		<a class="btn btn-small btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;returnToCommentList=true<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
-			<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAddComment}
+		<div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+		<a class="btn btn-sm btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;returnToCommentList=true<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
+			<i class="glyphicon glyphicon-plus">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAddComment}
 		</a>
 		<#if from_url?? && from_url?has_content && from_url != "null">
-			<a class="btn btn-small" href="${from_url?replace("%26","&amp;")}">
+			<a class="btn btn-sm" href="${from_url?replace("%26","&amp;")}">
 				#i18n{portal.util.labelBack}
 			</a>
 		</#if>
@@ -23,7 +24,7 @@
 				<strong>#i18n{module.extend.comment.view_comments.sortedByDate}</strong> <@sort jsp_url= commentSortUrl + "idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;from_url=from_session" attribute="date" />
 			</p>
 		</div>
-		<div class="span5">
+		<div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
 			<div class="pull-right" >
 				<@paginationSiteItemCount paginator=paginator combo=1 nb_items_per_page=paginator.itemsPerPage?string/>
 			</div>
@@ -44,8 +45,8 @@
 						#i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}
 						<#if allowSubComments>
 							<div class="pull-right">
-								<a class="btn btn-small btn-primary" title="#i18n{module.extend.comment.view_comments.labelAnswerComment}" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;idComment=${comment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
-									<i class="icon-plus icon-white">&nbsp;</i>&nbsp;<span class="hidden-phone">#i18n{module.extend.comment.view_comments.labelAnswerComment}</span>
+								<a class="btn btn-sm btn-primary" title="#i18n{module.extend.comment.view_comments.labelAnswerComment}" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;idComment=${comment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
+									<i class="glyphicon glyphicon-plus">&nbsp;</i>&nbsp;<span class="hidden-phone">#i18n{module.extend.comment.view_comments.labelAnswerComment}</span>
 								</a>
 							</div>
 						</#if>
@@ -71,7 +72,7 @@
 				<div class="span11">
 					<#if comment.listSubComments?? && 0 < comment.listSubComments?size>
 						<a class="comment_toggle" id="comment_toggle_${comment.idComment!}" href="javascript:;">
-							<i class="icon-chevron-down"></i>#i18n{module.extend.comment.comment_info.displaySubComments}
+							<i class="glyphicon glyphicon-chevron-down"></i>#i18n{module.extend.comment.comment_info.displaySubComments}
 						</a>
 						<div <#if !idComment?? || comment.idComment?string != idComment>class="commentComments"</#if>>
 							<#list comment.listSubComments as subComment>
@@ -117,16 +118,17 @@
 			#i18n{module.extend.comment.view_comments.noComments}
 		</p>
 	</#if>
+	</div>
 </div>
-<div class="span12">
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 	<br>
 	<br>
 	<form class="form-inline" method="post" action="${postBackUrl}<#if postBackUrl?contains('?')>&amp;<#else>?</#if>idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;asc_sort=${asc_sort!}">
-		<a class="btn btn-small btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;returnToCommentList=true<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
-			<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAddComment}
+		<a class="btn btn-sm btn-primary" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;returnToCommentList=true<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
+			<i class="glyphicon glyphicon-plus">&nbsp;</i>&nbsp;#i18n{module.extend.comment.view_comments.labelAddComment}
 		</a>
 		<#if from_url?? && from_url?has_content && from_url != "null">
-			<a class="btn btn-small" href="${from_url?replace("%26","&amp;")}">
+			<a class="btn btn-sm" href="${from_url?replace("%26","&amp;")}">
 				#i18n{portal.util.labelBack}
 			</a>
 		</#if>

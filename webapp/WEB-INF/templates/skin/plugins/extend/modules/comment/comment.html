@@ -1,12 +1,12 @@
-<div class="row-fluid">
+<div class="row">
 	<#if listComments?? && listComments?has_content>
-		<div class="form-actions">
-			<a href="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-small" title="#i18n{module.extend.comment.comment.labelViewComments}" >
-				<i class="icon-eye-open icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelViewComments}
+		<div class="form-group">
+			<a href="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-sm" title="#i18n{module.extend.comment.comment.labelViewComments}" >
+				<i class="glyphicon glyphicon-eye-open">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelViewComments}
 			</a>
 			<#if addCommentPosition = 0>
-				<a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-small" title="#i18n{module.extend.comment.comment.labelAddComment}">
-					<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}
+				<a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-sm" title="#i18n{module.extend.comment.comment.labelAddComment}">
+					<i class="glyphicon glyphicon-plus">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}
 				</a>
 			<#elseif addCommentPosition = 1 || addCommentPosition = 3>
 				<#include "/skin/plugins/extend/modules/comment/add_comment.html" />
@@ -23,7 +23,7 @@
 						@Extender[${comment.idComment},Comment,rating,{show:"vote"}]@
 					</div>
 					<p>
-                                                <img class="avatar" src="${comment.avatarUrl}" title="${comment.name!}" alt="${comment.name!}" />
+                        <img class="avatar" src="${comment.avatarUrl}" title="${comment.name!}" alt="${comment.name!}" />
 						<#if use_bbcode>
 							${comment.BBCodeComment!}
 						<#else>
@@ -37,13 +37,13 @@
 			</div>
 		</#list>
 	</#if>
-	<div class="form-actions">
-		<a href="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-small" title="#i18n{module.extend.comment.comment.labelViewComments}" >
-			<i class="icon-eye-open icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelViewComments}
+	<div class="form-group">
+		<a href="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-sm" title="#i18n{module.extend.comment.comment.labelViewComments}" >
+			<i class="glyphicon glyphicon-eye-open">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelViewComments}
 		</a>
 		<#if addCommentPosition = 0>
-			<a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-small" title="#i18n{module.extend.comment.comment.labelAddComment}">
-				<i class="icon-plus icon-white">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}
+			<a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-sm" title="#i18n{module.extend.comment.comment.labelAddComment}">
+				<i class="glyphicon glyphicon-plus">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}
 			</a>
 		<#elseif addCommentPosition = 2 || addCommentPosition = 3>
 			<#include "/skin/plugins/extend/modules/comment/add_comment.html" />
