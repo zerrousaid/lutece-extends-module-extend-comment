@@ -33,15 +33,15 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.business;
 
-import fr.paris.lutece.plugins.avatar.service.AvatarService;
-import fr.paris.lutece.plugins.extend.modules.comment.util.annotation.Email;
-import fr.paris.lutece.portal.service.editor.EditorBbcodeService;
-import fr.paris.lutece.portal.service.util.AppLogService;
-
 import java.sql.Timestamp;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
+
+import fr.paris.lutece.plugins.extend.modules.comment.service.CommentAvatarService;
+import fr.paris.lutece.plugins.extend.modules.comment.util.annotation.Email;
+import fr.paris.lutece.portal.service.editor.EditorBbcodeService;
+import fr.paris.lutece.portal.service.util.AppLogService;
 
 
 /**
@@ -51,7 +51,8 @@ import javax.validation.constraints.NotNull;
  */
 public class Comment
 {
-    private int _nIdComment;
+	private String _strLuteceUserName;
+	private int _nIdComment;
     @NotNull
     private String _strIdExtendableResource;
     @NotNull
@@ -375,7 +376,7 @@ public class Comment
      */
     public String getAvatar()
     {
-        return AvatarService.getAvatar( _strEmail );
+        return CommentAvatarService.getInstance().getAvatar( this );
     }
 
     /**
@@ -384,6 +385,21 @@ public class Comment
      */
     public String getAvatarUrl()
     {
-        return AvatarService.getAvatarUrl( _strEmail );
+        return CommentAvatarService.getInstance().getAvatarUrl( this );
     }
+    /**
+     * 
+     * @return the lutece user name
+     */
+	public String getLuteceUserName() {
+		return _strLuteceUserName;
+	}
+
+	/**
+	 * set the lutece user name
+	 * @param _strLuteceUserName the lutece user name
+	 */
+	public void setLuteceUserName(String _strLuteceUserName) {
+		this._strLuteceUserName = _strLuteceUserName;
+	}
 }

@@ -51,6 +51,7 @@ public class CommentExtenderConfig extends ExtenderConfig
     private String _strAdminBadge;
     private String _strMessageCommentCreated;
     private int _nAddCommentPosition;
+    private boolean _bEnabledAuthMode;
 
     /**
      * Checks if is moderated.
@@ -195,4 +196,20 @@ public class CommentExtenderConfig extends ExtenderConfig
     {
     	_nAddCommentPosition = nPosition;
     }
+    
+    /**
+     * 
+     * @return isEnableAuthMode true if the authentication mode is enable
+     */
+	public boolean isEnabledAuthMode() {
+		return _bEnabledAuthMode;
+	}
+	
+	/**
+	 * 
+	 * @param bEnableAuthMode  true if the authentication mode is enable
+	 */
+	public void setEnabledAuthMode(boolean bEnableAuthMode) {
+		this._bEnabledAuthMode = bEnableAuthMode;
+	}
 }

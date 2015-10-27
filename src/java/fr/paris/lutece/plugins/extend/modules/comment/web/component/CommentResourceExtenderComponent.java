@@ -33,6 +33,19 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.web.component;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.extend.business.extender.ResourceExtenderDTO;
 import fr.paris.lutece.plugins.extend.business.extender.config.IExtenderConfig;
 import fr.paris.lutece.plugins.extend.modules.comment.business.AddCommentPosition;
@@ -44,6 +57,9 @@ import fr.paris.lutece.plugins.extend.modules.comment.service.extender.CommentRe
 import fr.paris.lutece.plugins.extend.modules.comment.util.constants.CommentConstants;
 import fr.paris.lutece.plugins.extend.service.ExtendPlugin;
 import fr.paris.lutece.plugins.extend.service.content.ExtendableContentPostProcessor;
+import fr.paris.lutece.plugins.extend.service.extender.IResourceExtender;
+import fr.paris.lutece.plugins.extend.service.extender.IResourceExtenderService;
+import fr.paris.lutece.plugins.extend.service.extender.ResourceExtenderService;
 import fr.paris.lutece.plugins.extend.service.extender.config.IResourceExtenderConfigService;
 import fr.paris.lutece.plugins.extend.util.ExtendErrorException;
 import fr.paris.lutece.plugins.extend.web.component.AbstractResourceExtenderComponent;
@@ -53,6 +69,8 @@ import fr.paris.lutece.portal.service.content.ContentPostProcessor;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mailinglist.AdminMailingListService;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.prefs.UserPreferencesService;
+import fr.paris.lutece.portal.service.resource.IExtendableResource;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -66,19 +84,6 @@ import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.html.IPaginator;
 import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.url.UrlItem;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -100,6 +105,9 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     @Inject
     @Named( CommentConstants.BEAN_CONFIG_SERVICE )
     private IResourceExtenderConfigService _configService;
+    @Inject
+    @Named(ResourceExtenderService.BEAN_SERVICE)
+    private IResourceExtenderService _resourceExtenderService;
 
     private int _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt(
             CommentConstants.PROPERTY_DEFAULT_LIST_COMMENTS_PER_PAGE, 50 );
@@ -125,7 +133,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     {
         CommentExtenderConfig config = _configService.find( getResourceExtender( ).getKey( ), strIdExtendableResource,
                 strExtendableResourceType );
-        int nNbComments = 1;
+                 
+     	int nNbComments = 1;
         boolean bAuthorizedsubComments = true;
         boolean bUseBBCodeEditor = false;
         int nAddCommentPosition = 0;
@@ -146,7 +155,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         model.put( CommentConstants.MARK_LIST_COMMENTS, listComments );
         model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
         model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
-    model.put( CommentConstants.MARK_ADD_COMMENT_POSITION, nAddCommentPosition );
+        model.put( CommentConstants.MARK_ADD_COMMENT_POSITION, nAddCommentPosition );
         model.put( CommentConstants.MARK_USE_BBCODE, bUseBBCodeEditor );
         model.put( CommentConstants.MARK_ADMIN_BADGE, strAdminBadge );
         
@@ -162,6 +171,16 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
                 CaptchaSecurityService captchaService = new CaptchaSecurityService( );
                 model.put( CommentConstants.MARK_CAPTCHA, captchaService.getHtmlCode( ) );
             }
+            //Add NickName if auth mod enable
+            if(config != null && config.isEnabledAuthMode())
+	        {
+            	LuteceUser  user=SecurityService.getInstance().getRegisteredUser(request);
+	     	   	if(user!=null)
+	     	   	{
+	     	   		model.put(CommentConstants.MARK_NICKNAME, UserPreferencesService.instance().getNickname(user) );
+	     	   	}
+	     	
+	        }
 
             if ( SecurityService.isAuthenticationEnable( ) )
             {
@@ -192,8 +211,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         {
             strContent = postProcessor.process( request, strContent );
         }
-
-        return strContent;
+	
+	        return strContent;
     }
 
     /**
@@ -237,7 +256,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     {
         if ( resourceExtender != null )
         {
-            // We save in session the post back URL
+        	
+        	// We save in session the post back URL
             String strPostBackUrl = getPostBackUrl( request );
             request.getSession( ).setAttribute(
                     CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL, strPostBackUrl );
@@ -314,11 +334,37 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             IPaginator<Comment> paginator = new LocalizedDelegatePaginator<Comment>( listComments, nItemsPerPage,
                     url.getUrl( ), Paginator.PARAMETER_PAGE_INDEX, strCurrentPageIndex, nItemsCount,
                     AdminUserService.getLocale( request ) );
-
+            	
             Map<String, Object> model = new HashMap<String, Object>( );
-            model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, resourceExtender.getIdExtendableResource( ) );
+            List<Comment> listCommentDisplay=paginator.getPageItems( );
+            
+            if(!CommentConstants.CONSTANT_ALL_RESSOURCE_ID.equals( resourceExtender.getIdExtendableResource()))
+        	{
+        	
+        		IExtendableResource resourceExtenderInfo=_resourceExtenderService.getExtendableResource(resourceExtender);
+        		 model.put( CommentConstants.MARK_RESOURCE_EXTENDER,  resourceExtenderInfo);
+        		 model.put(CommentConstants.MARK_ALL_RESOURCES, false);
+        	}
+            else
+            {
+            	HashMap<String, IExtendableResource> mapResourceExtender= new HashMap<>();
+            	for(Comment comment:listCommentDisplay)
+            	{
+            		if(!mapResourceExtender.containsKey(comment.getIdExtendableResource()))
+            		{
+            			
+            			mapResourceExtender.put(comment.getIdExtendableResource(), _resourceExtenderService.getExtendableResource(comment.getIdExtendableResource(), resourceExtender.getExtendableResourceType()));
+            		}
+            		
+            	}
+            	 model.put(CommentConstants.MARK_ALL_RESOURCES, true);
+            	 model.put(CommentConstants.MARK_RESOURCE_EXTENDER_MAP, mapResourceExtender);
+            }
+            
+             model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, resourceExtender.getIdExtendableResource( ) );
             model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, resourceExtender.getExtendableResourceType( ) );
-            model.put( CommentConstants.MARK_LIST_COMMENTS, paginator.getPageItems( ) );
+           
+            model.put( CommentConstants.MARK_LIST_COMMENTS, listCommentDisplay );
             model.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
             model.put( CommentConstants.MARK_PAGINATOR, paginator );
             model.put( CommentConstants.MARK_NB_ITEMS_PER_PAGE, Integer.toString( paginator.getItemsPerPage( ) ) );
@@ -330,7 +376,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             model.put( CommentConstants.MARK_ADMIN_BADGE, config.getAdminBadge( ) );
             model.put( CommentConstants.MARK_ALLOW_SUB_COMMENTS, config.getAuthorizeSubComments( ) );
             model.put( CommentConstants.PARAMETER_POST_BACK_URL, strPostBackUrl );
-
+           	
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_COMMENTS, request.getLocale( ),
                     model );
 

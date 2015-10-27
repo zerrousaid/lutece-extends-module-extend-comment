@@ -31,10 +31,10 @@
 	</div>
 </div>
 <div class="control-group" >
-	<label class="control-label" for="useBBCodeEditor">#i18n{module.extend.comment.comment_config.labelUseBBCodeEditor} : </label>
+	<label class="control-label" for="enabledAuthMode">#i18n{module.extend.comment.comment_config.labelEnabledAuthMode} : </label>
 	<div class="controls">
-		<input type="radio" name="useBBCodeEditor" value="true" <#if commentConfig.useBBCodeEditor>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelYes}
-		<input type="radio" name="useBBCodeEditor" value="false" <#if !commentConfig.useBBCodeEditor>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelNo}
+		<input type="radio" name="enabledAuthMode" value="true" <#if commentConfig.enabledAuthMode>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelYes}
+		<input type="radio" name="enabledAuthMode" value="false" <#if !commentConfig.enabledAuthMode>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelNo}
 	</div>
 </div>
 <div class="control-group" >
@@ -50,6 +50,7 @@
 		<textarea class="richtext" name="adminBadge" >${commentConfig.adminBadge!}</textarea>
 	</div>
 </div>
+
 <div class="control-group" >
 	<label class="control-label" for="messageCommentCreated">#i18n{module.extend.comment.comment_config.labelMessageCommentCreated} : </label>
 	<div class="controls">

@@ -15,6 +15,8 @@ CREATE TABLE extend_comment (
 	date_last_modif TIMESTAMP,
 	id_parent_comment INT DEFAULT 0 NOT NULL,
 	is_admin_comment SMALLINT default 0 NOT NULL,
+	lutece_user_name VARCHAR(255) DEFAULT '' NOT NULL,
+	
 	PRIMARY KEY (id_comment)
 );
 
@@ -32,5 +34,6 @@ CREATE TABLE extend_comment_config (
 	admin_badge LONG VARCHAR NOT NULL,
 	message_comment_created LONG VARCHAR NOT NULL,
 	add_comment_position SMALLINT NOT NULL default 0,
+	is_enabled_auth_mode SMALLINT default 0 NOT NULL,
 	PRIMARY KEY (id_extender)
 );

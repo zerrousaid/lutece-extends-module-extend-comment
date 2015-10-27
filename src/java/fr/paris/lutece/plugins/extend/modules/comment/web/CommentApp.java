@@ -33,6 +33,23 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.web;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.validation.ConstraintViolation;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.extend.modules.comment.business.AddCommentPosition;
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.extend.modules.comment.business.config.CommentExtenderConfig;
@@ -58,6 +75,8 @@ import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.message.SiteMessageService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.prefs.PortalUserPreferenceServiceImpl;
+import fr.paris.lutece.portal.service.prefs.UserPreferencesService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.security.UserNotSignedException;
@@ -78,23 +97,6 @@ import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.http.SecurityUtil;
 import fr.paris.lutece.util.url.UrlItem;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
-
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.validation.ConstraintViolation;
-
 
 /**
  * 
@@ -113,6 +115,7 @@ public class CommentApp implements XPageApplication
     // MARKS
     private static final String MARK_CAPTCHA = "captcha";
     private static final String MARK_IS_ACTIVE_CAPTCHA = "is_active_captcha";
+
 
     // TEMPLATES
     private static final String TEMPLATE_XPAGE_VIEW_COMMENTS = "skin/plugins/extend/modules/comment/view_comments.html";
@@ -148,7 +151,7 @@ public class CommentApp implements XPageApplication
             SiteMessageException
     {
         XPage page = null;
-
+        
         // Check if the extender is indeed in the parameters
         String strIdExtendableResource = request.getParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE );
         String strExtendableResourceType = request.getParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE );
@@ -260,6 +263,7 @@ public class CommentApp implements XPageApplication
         boolean bGetSubComments = false;
         boolean bUseBBCodeEditor = false;
         boolean bAllowSubComments = false;
+        boolean bEnableAuthMode = false;
         String strAdminBadge = StringUtils.EMPTY;
         CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
                 strIdExtendableResource, strExtendableResourceType );
@@ -268,6 +272,7 @@ public class CommentApp implements XPageApplication
             bGetSubComments = config.getAuthorizeSubComments( );
             bUseBBCodeEditor = config.getUseBBCodeEditor( );
             bAllowSubComments = config.getAuthorizeSubComments( );
+            bEnableAuthMode=config.isEnabledAuthMode();
             strAdminBadge = config.getAdminBadge( );
         }
         int nItemsOffset = nItemsPerPage * ( Integer.parseInt( strCurrentPageIndex ) - 1 );
@@ -290,6 +295,7 @@ public class CommentApp implements XPageApplication
         model.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
         model.put( CommentConstants.PARAMETER_ID_COMMENT, request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
         model.put( CommentConstants.MARK_USE_BBCODE, bUseBBCodeEditor );
+        model.put( CommentConstants.MARK_ENABLE_AUTH_MODE, bEnableAuthMode );
         model.put( CommentConstants.MARK_ALLOW_SUB_COMMENTS, bAllowSubComments );
         model.put( CommentConstants.MARK_ADMIN_BADGE, strAdminBadge );
         model.put( CommentConstants.PARAMETER_POST_BACK_URL, strPostBackUrl );
@@ -336,7 +342,7 @@ public class CommentApp implements XPageApplication
      * @return the adds the comment page
      */
     private XPage getAddCommentPage( HttpServletRequest request, String strIdExtendableResource,
-            String strExtendableResourceType )
+            String strExtendableResourceType )throws UserNotSignedException
     {
         XPage page = new XPage( );
 
@@ -344,9 +350,6 @@ public class CommentApp implements XPageApplication
                 request.getLocale( ) ) );
         page.setPathLabel( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_ADD_COMMENT_PAGE_LABEL,
                 request.getLocale( ) ) );
-
-        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
-                strIdExtendableResource, strExtendableResourceType );
 
         String strFromUrl = request.getParameter( CommentConstants.PARAMETER_FROM_URL );
         if ( CommentConstants.FROM_SESSION.equals( strFromUrl ) )
@@ -364,42 +367,62 @@ public class CommentApp implements XPageApplication
         }
         request.getSession( ).setAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, strFromUrl );
 
-        Map<String, Object> model = new HashMap<String, Object>( );
-        model.put( CommentConstants.MARK_ADD_COMMENT_POSITION, config.getAddCommentPosition(  ) );
-        model.put( CommentConstants.MARK_COMMENT_CONFIG, config );
-        model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
-        model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
-        model.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
-        model.put( CommentConstants.MARK_RETURN_TO_COMMENT_LIST,
-                Boolean.parseBoolean( request.getParameter( CommentConstants.MARK_RETURN_TO_COMMENT_LIST ) ) );
-        model.put( CommentConstants.PARAMETER_ID_COMMENT, request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
-        model.put( CommentConstants.MARK_WEBAPP_URL, AppPathService.getBaseUrl( request ) );
-        model.put( CommentConstants.MARK_LOCALE, Locale.getDefault( ) );
-
-        // Add Captcha
-        model.put( MARK_IS_ACTIVE_CAPTCHA, _bIsCaptchaEnabled );
-
-        if ( _bIsCaptchaEnabled )
+        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
+                strIdExtendableResource, strExtendableResourceType );
+        
+        if(config != null)
         {
-            CaptchaSecurityService captchaService = new CaptchaSecurityService( );
-            model.put( MARK_CAPTCHA, captchaService.getHtmlCode( ) );
-        }
-
-        if ( SecurityService.isAuthenticationEnable( ) )
-        {
-            LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
-
-            if ( user != null )
+        	Map<String, Object> model = new HashMap<String, Object>( );
+ 	       
+        	if(config.isEnabledAuthMode())
             {
-                model.put( CommentConstants.MARK_MYLUTECE_USER, user );
+        		LuteceUser  user=SecurityService.getInstance().getRegisteredUser(request);
+         	   if(user==null)
+         	   {
+         		   throw new UserNotSignedException(  );
+         	   }
+         	  model.put(CommentConstants.MARK_NICKNAME, UserPreferencesService.instance().getNickname(user) );
             }
+	        model.put( CommentConstants.MARK_ADD_COMMENT_POSITION, config.getAddCommentPosition(  ) );
+	        model.put( CommentConstants.MARK_COMMENT_CONFIG, config );
+	        model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
+	        model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
+	        model.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
+	        model.put( CommentConstants.MARK_RETURN_TO_COMMENT_LIST,
+	                Boolean.parseBoolean( request.getParameter( CommentConstants.MARK_RETURN_TO_COMMENT_LIST ) ) );
+	        model.put( CommentConstants.PARAMETER_ID_COMMENT, request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
+	        model.put( CommentConstants.MARK_WEBAPP_URL, AppPathService.getBaseUrl( request ) );
+	        model.put( CommentConstants.MARK_LOCALE, Locale.getDefault( ) );
+	
+	        // Add Captcha
+	        model.put( MARK_IS_ACTIVE_CAPTCHA, _bIsCaptchaEnabled );
+	         
+	
+	        if ( _bIsCaptchaEnabled )
+	        {
+	            CaptchaSecurityService captchaService = new CaptchaSecurityService( );
+	            model.put( MARK_CAPTCHA, captchaService.getHtmlCode( ) );
+	        }
+	
+	        if ( SecurityService.isAuthenticationEnable( ) )
+	        {
+	            LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+	
+	            if ( user != null )
+	            {
+	                model.put( CommentConstants.MARK_MYLUTECE_USER, user );
+	            }
+	        }
+	
+	        HtmlTemplate template = AppTemplateService
+	                .getTemplate( TEMPLATE_XPAGE_ADD_COMMENT, request.getLocale( ), model );
+	
+	        page.setContent( template.getHtml( ) );
         }
-
-        HtmlTemplate template = AppTemplateService
-                .getTemplate( TEMPLATE_XPAGE_ADD_COMMENT, request.getLocale( ), model );
-
-        page.setContent( template.getHtml( ) );
-
+        else
+        {
+        	return redirectToLastUrl(request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE, strIdExtendableResource );
+        }
         return page;
     }
 
@@ -413,10 +436,13 @@ public class CommentApp implements XPageApplication
      * @throws SiteMessageException the site message exception
      */
     private XPage doAddComment( HttpServletRequest request, String strIdExtendableResource,
-            String strExtendableResourceType ) throws SiteMessageException
+            String strExtendableResourceType ) throws SiteMessageException,UserNotSignedException
     {
-        Comment comment = new Comment( );
-
+       
+    	
+    	
+    	Comment comment = new Comment( );
+        	
         try
         {
             BeanUtils.populate( comment, request.getParameterMap( ) );
@@ -462,7 +488,27 @@ public class CommentApp implements XPageApplication
 
         if ( config != null )
         {
-            comment.setIpAddress( SecurityUtil.getRealIp( request ) );
+          
+          LuteceUser user;
+           if(config.isEnabledAuthMode())
+           {
+        	   user=SecurityService.getInstance().getRegisteredUser(request);
+        	   if(user==null)
+        	   {
+        		   throw new UserNotSignedException(  );
+        	   }
+        	   comment.setEmail(user.getEmail());
+        	   comment.setLuteceUserName(user.getName());
+        	   if(!StringUtils.isEmpty(comment.getName()) )
+        	   {
+        		 if(UserPreferencesService.instance(  ).getNickname(user) == null || !UserPreferencesService.instance().getNickname(user).equals(comment.getName()))
+				 {
+        			 UserPreferencesService.instance(  ).setNickname(user.getName(), comment.getName());
+				 }
+        	   }
+        	}
+        	
+        	comment.setIpAddress( SecurityUtil.getRealIp( request ) );
             comment.setIdExtendableResource( strIdExtendableResource );
             comment.setExtendableResourceType( strExtendableResourceType );
             comment.setPublished( !config.isModerated( ) );

@@ -51,8 +51,8 @@ import org.apache.commons.lang.StringUtils;
 public class CommentDAO implements ICommentDAO
 {
     private static final String SQL_QUERY_NEW_PK = " SELECT max( id_comment ) FROM extend_comment ";
-    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment ( id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
-    private static final String SQL_QUERY_SELECT_ALL = " SELECT id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment FROM extend_comment ";
+    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment ( id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment, lutece_user_name ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_SELECT_ALL = " SELECT id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment, lutece_user_name FROM extend_comment ";
     private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_ALL + " WHERE id_comment = ? ";
     private static final String SQL_QUERY_SELECT_BY_RESOURCE = SQL_QUERY_SELECT_ALL
             + " WHERE id_resource LIKE ? AND resource_type = ? ";
@@ -134,7 +134,9 @@ public class CommentDAO implements ICommentDAO
         daoUtil.setBoolean( nIndex++, comment.isPublished( ) );
         daoUtil.setTimestamp( nIndex++, comment.getDateLastModif( ) );
         daoUtil.setInt( nIndex++, comment.getIdParentComment( ) );
-        daoUtil.setBoolean( nIndex, comment.getIsAdminComment( ) );
+        daoUtil.setBoolean( nIndex++, comment.getIsAdminComment( ) );
+        daoUtil.setString( nIndex++, comment.getLuteceUserName());
+        
 
         daoUtil.executeUpdate( );
         daoUtil.free( );
@@ -217,7 +219,6 @@ public class CommentDAO implements ICommentDAO
         daoUtil.setTimestamp( nIndex++, comment.getDateLastModif( ) );
         daoUtil.setInt( nIndex++, comment.getIdParentComment( ) );
         daoUtil.setBoolean( nIndex++, comment.getIsAdminComment( ) );
-
         daoUtil.setInt( nIndex, comment.getIdComment( ) );
 
         daoUtil.executeUpdate( );
@@ -604,6 +605,8 @@ public class CommentDAO implements ICommentDAO
         comment.setDateLastModif( daoUtil.getTimestamp( nIndex++ ) );
         comment.setIdParentComment( daoUtil.getInt( nIndex++ ) );
         comment.setIsAdminComment( daoUtil.getBoolean( nIndex++ ) );
+        comment.setLuteceUserName(daoUtil.getString( nIndex++ ));
+        
         return comment;
     }
 

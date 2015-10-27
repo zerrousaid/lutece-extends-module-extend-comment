@@ -17,6 +17,8 @@
 			<div class="form-actions">
 				<input type="hidden" name="idExtendableResource" value="${idExtendableResource}">
 				<input type="hidden" name="extendableResourceType" value="${extendableResourceType}">
+		
+				<input type="hidden" name="viewAllResources" value="${allResources?c}">
 				<#if from_url?? && from_url?has_content && from_url != "null">
 					<input type="hidden" name="from_url" value="${from_url!}" />
 				</#if>

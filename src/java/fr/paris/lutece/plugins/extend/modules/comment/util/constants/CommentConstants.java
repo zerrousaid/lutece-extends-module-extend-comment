@@ -49,6 +49,7 @@ public final class CommentConstants
     public static final String PROPERTY_COMMENT_CONFIG_LABEL_NO_MAILING_LIST = "module.extend.comment.comment_config.labelNoMailingList";
     public static final String PROPERTY_DEFAULT_LIST_COMMENTS_PER_PAGE = "module.extend.comment.commentInfo.itemsPerPage";
     public static final String PROPERTY_USE_CAPTCHA = "module.extend.comment.useCaptcha";
+    public static final String PROPERTY_USE_LUTECE_USER_NAME_AS_AVATAR_KEY = "module.extend.comment.useLuteceUserNameAsAvatarKey";
 
     // MESSAGES
     public static final String MESSAGE_CONFIRM_REMOVE_COMMENT = "module.extend.comment.message.confirm.removeComment";
@@ -65,6 +66,7 @@ public final class CommentConstants
     public static final String PARAMETER_FROM_URL = "from_url";
     public static final String PARAMETER_AUTHORIZE_SUB_COMMENTS = "authorizeSubComments";
     public static final String PARAMETER_NAME = "name";
+    public static final String PARAMETER_VIEW_ALL_RESOURCES="viewAllResources";
 
     // BEANS
     public static final String BEAN_CONFIG_SERVICE = "extend-comment.commentExtenderConfigService";
@@ -77,7 +79,10 @@ public final class CommentConstants
     public static final String MARK_MYLUTECE_USER = "myLuteceUser";
     public static final String MARK_LIST_IDS_MAILING_LIST = "listIdsMailingList";
     public static final String MARK_COMMENT = "comment";
+    public static final String MARK_RESOURCE_EXTENDER = "resourceExtender";
+    public static final String MARK_RESOURCE_EXTENDER_MAP = "resourceExtenderMap";
     public static final String MARK_RESOURCE_EXTENDER_NAME = "resourceExtenderName";
+    public static final String MARK_RESOURCE_EXTENDER_DESCRIPTION = "resourceExtenderDescription";
     public static final String MARK_RESOURCE_EXTENDER_URL = "resourceExtenderUrl";
     public static final String MARK_PAGINATOR = "paginator";
     public static final String MARK_NB_ITEMS_PER_PAGE = "nb_items_per_page";
@@ -87,6 +92,10 @@ public final class CommentConstants
     public static final String MARK_ALLOW_SUB_COMMENTS = "allowSubComments";
     public static final String MARK_MESSAGE_COMMENT_CREATED = "message_comment_created";
     public static final String MARK_RETURN_TO_COMMENT_LIST = "returnToCommentList";
+    public static final String MARK_ENABLE_AUTH_MODE="enable_auth_mode";
+    public static final String MARK_ALL_RESOURCES="allResources";
+    
+    
     public static final String MARK_CAPTCHA = "captcha";
     public static final String MARK_IS_ACTIVE_CAPTCHA = "is_active_captcha";
 
@@ -100,6 +109,7 @@ public final class CommentConstants
     public static final String CONSTANT_FIRST_PAGE_NUMBER = "1";
     public static final String CONSTANT_AND = "&";
     public static final String CONSTANT_AND_HTML = "%26";
+    public static final String CONSTANT_ALL_RESSOURCE_ID = "*";
 
     public static final String SESSION_COMMENT_ITEMS_PER_PAGE = "session_comment_fo_items_per_page";
     public static final String SESSION_COMMENT_CURRENT_PAGE_INDEX = "session_comment_fo_current_page_index";
@@ -116,6 +126,7 @@ public final class CommentConstants
 
     public static final String MARK_ADD_COMMENT_POSITION = "addCommentPosition";
     public static final String MARK_ADD_COMMENT_POSITIONS = "allPositions";
+    public static final String MARK_NICKNAME = "nickname";
     public static final String JCAPTCHA_PLUGIN = "jcaptcha";
 	public static final String ADD_COMMENT_MESSAGE_RESULT_ANCHOR = "message";
 	public static final String MARK_ADD_COMMENT_MESSAGE_RESULT = "addCommentMessageResult";

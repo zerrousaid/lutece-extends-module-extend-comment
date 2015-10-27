@@ -104,7 +104,7 @@ public class CommentJspBean extends PluginAdminPageJspBean
     public String doPublishUnpublishComment( HttpServletRequest request )
     {
         String strIdComment = request.getParameter( CommentConstants.PARAMETER_ID_COMMENT );
-
+       
         if ( StringUtils.isNotBlank( strIdComment ) && StringUtils.isNumeric( strIdComment ) )
         {
             int nIdComment = Integer.parseInt( strIdComment );
@@ -136,7 +136,8 @@ public class CommentJspBean extends PluginAdminPageJspBean
                 UrlItem url = new UrlItem( strPostBackUrl );
                 url.addParameter( CommentConstants.PARAMETER_EXTENDER_TYPE,
                         CommentResourceExtender.EXTENDER_TYPE_COMMENT );
-                url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, comment.getIdExtendableResource( ) );
+               addIdExtendableResourceInUrl(comment.getIdExtendableResource(), request, url);
+               
                 url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE,
                         comment.getExtendableResourceType( ) );
                 if ( comment.getIdParentComment( ) > 0 )
@@ -168,6 +169,7 @@ public class CommentJspBean extends PluginAdminPageJspBean
         url.addParameter( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace(
                 request.getParameter( CommentConstants.PARAMETER_FROM_URL ), CommentConstants.CONSTANT_AND,
                 CommentConstants.CONSTANT_AND_HTML ) );
+        addViewResourceInUrl(request, url);
 
         return AdminMessageService.getMessageUrl( request, CommentConstants.MESSAGE_CONFIRM_REMOVE_COMMENT,
                 url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
@@ -182,7 +184,7 @@ public class CommentJspBean extends PluginAdminPageJspBean
     public String doRemoveComment( HttpServletRequest request )
     {
         String strIdComment = request.getParameter( CommentConstants.PARAMETER_ID_COMMENT );
-
+      
         if ( StringUtils.isNotBlank( strIdComment ) && StringUtils.isNumeric( strIdComment ) )
         {
             int nIdComment = Integer.parseInt( strIdComment );
@@ -214,7 +216,7 @@ public class CommentJspBean extends PluginAdminPageJspBean
                 UrlItem url = new UrlItem( strPostBackUrl );
                 url.addParameter( CommentConstants.PARAMETER_EXTENDER_TYPE,
                         CommentResourceExtender.EXTENDER_TYPE_COMMENT );
-                url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, comment.getIdExtendableResource( ) );
+                addIdExtendableResourceInUrl(comment.getIdExtendableResource(), request, url);
                 url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE,
                         comment.getExtendableResourceType( ) );
                 if ( comment.getIdParentComment( ) > 0 )
@@ -244,10 +246,12 @@ public class CommentJspBean extends PluginAdminPageJspBean
         String strExtendableResourceType = request.getParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE );
         String strIdExtendableResource = request.getParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE );
         String strIdParentComment = request.getParameter( CommentConstants.PARAMETER_ID_COMMENT );
+        String strViewAllResources = request.getParameter( CommentConstants.PARAMETER_VIEW_ALL_RESOURCES);
 
         AdminUser user = AdminUserService.getAdminUser( request );
 
         Map<String, Object> model = new HashMap<String, Object>( );
+        model.put( CommentConstants.MARK_ALL_RESOURCES, !StringUtils.isEmpty(strViewAllResources) && new Boolean(strViewAllResources) );
         model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
         model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
         model.put( CommentConstants.PARAMETER_ID_COMMENT, strIdParentComment );
@@ -275,7 +279,7 @@ public class CommentJspBean extends PluginAdminPageJspBean
         String strIdExtendableResource = request.getParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE );
         String strIdParentComment = request.getParameter( CommentConstants.PARAMETER_ID_COMMENT );
         String strName = request.getParameter( CommentConstants.PARAMETER_NAME );
-
+       
         String strComment = request.getParameter( CommentConstants.MARK_COMMENT );
         if ( StringUtils.isEmpty( strComment ) || StringUtils.isEmpty( strName ) )
         {
@@ -328,8 +332,8 @@ public class CommentJspBean extends PluginAdminPageJspBean
         }
         UrlItem url = new UrlItem( strPostBackUrl );
         url.addParameter( CommentConstants.PARAMETER_EXTENDER_TYPE, CommentResourceExtender.EXTENDER_TYPE_COMMENT );
-        url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
-        url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
+        addIdExtendableResourceInUrl(strIdExtendableResource, request, url);
+         url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
 
         if ( nIdParentComment > 0 )
         {
@@ -341,4 +345,32 @@ public class CommentJspBean extends PluginAdminPageJspBean
 
         return url.getUrl( );
     }
+    
+    
+    private void addIdExtendableResourceInUrl(String strIdExtendableResource,HttpServletRequest request,UrlItem url )
+    {
+    	 String strViewAllResources = request.getParameter( CommentConstants.PARAMETER_VIEW_ALL_RESOURCES);
+    	 if(!StringUtils.isEmpty(strViewAllResources) && new Boolean(strViewAllResources))
+         {
+         	url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, CommentConstants.CONSTANT_ALL_RESSOURCE_ID);
+         }
+         else
+         {
+         	url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
+         }
+    	
+    }
+    private void addViewResourceInUrl(HttpServletRequest request,UrlItem url )
+    {
+    
+    	 String strViewAllResources = request.getParameter( CommentConstants.PARAMETER_VIEW_ALL_RESOURCES);
+         if(!StringUtils.isEmpty(strViewAllResources))
+         {
+         	url.addParameter( CommentConstants.PARAMETER_VIEW_ALL_RESOURCES, strViewAllResources);
+         }
+          
+    }
+    
+    
+    
 }
