@@ -51,6 +51,8 @@ import fr.paris.lutece.portal.service.util.AppLogService;
  */
 public class Comment
 {
+	public static final  int COMMENT_STATE_PUBLISHED =1;
+	public static final  int COMMENT_STATE_UN_PUBLISHED =0;
 	private String _strLuteceUserName;
 	private int _nIdComment;
     @NotNull

@@ -50,6 +50,7 @@ import fr.paris.lutece.plugins.extend.business.extender.ResourceExtenderDTO;
 import fr.paris.lutece.plugins.extend.business.extender.config.IExtenderConfig;
 import fr.paris.lutece.plugins.extend.modules.comment.business.AddCommentPosition;
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
+import fr.paris.lutece.plugins.extend.modules.comment.business.CommentFilter;
 import fr.paris.lutece.plugins.extend.modules.comment.business.config.CommentExtenderConfig;
 import fr.paris.lutece.plugins.extend.modules.comment.service.CommentPlugin;
 import fr.paris.lutece.plugins.extend.modules.comment.service.ICommentService;
@@ -57,7 +58,6 @@ import fr.paris.lutece.plugins.extend.modules.comment.service.extender.CommentRe
 import fr.paris.lutece.plugins.extend.modules.comment.util.constants.CommentConstants;
 import fr.paris.lutece.plugins.extend.service.ExtendPlugin;
 import fr.paris.lutece.plugins.extend.service.content.ExtendableContentPostProcessor;
-import fr.paris.lutece.plugins.extend.service.extender.IResourceExtender;
 import fr.paris.lutece.plugins.extend.service.extender.IResourceExtenderService;
 import fr.paris.lutece.plugins.extend.service.extender.ResourceExtenderService;
 import fr.paris.lutece.plugins.extend.service.extender.config.IResourceExtenderConfigService;
@@ -270,6 +270,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             String strCurrentPageIndex = CommentConstants.CONSTANT_FIRST_PAGE_NUMBER;
             Boolean bIsAscSort = false;
             String strSortedAttributeName = null;
+            String strFilterState = null;
             Object object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_ITEMS_PER_PAGE );
             if ( object != null )
             {
@@ -290,6 +291,13 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             {
                 strSortedAttributeName = (String) object;
             }
+            
+            object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_FILTER_STATE);
+            if ( object != null )
+            {
+                strFilterState = (String) object;
+            }
+
 
             int nItemsCount = _commentService.getCommentNb( resourceExtender.getIdExtendableResource( ),
                     resourceExtender.getExtendableResourceType( ), config.getAuthorizeSubComments( ), false );
@@ -315,10 +323,24 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
                 strSortedAttributeName = strNewSortedAttributeName;
                 bIsAscSort = Boolean.parseBoolean( request.getParameter( Parameters.SORTED_ASC ) );
             }
+            
+            if ( request.getParameter( CommentConstants.PARAMETER_FILTER_STATE ) != null )
+            {
+            	strFilterState=request.getParameter( CommentConstants.PARAMETER_FILTER_STATE );
+            }
             int nItemsOffset = nItemsPerPage * ( Integer.parseInt( strCurrentPageIndex ) - 1 );
 
+            
+            CommentFilter commentFilter=new CommentFilter();
+            if(StringUtils.isNotBlank( strFilterState ) && StringUtils.isNumeric( strFilterState ))
+        	{
+        		commentFilter.setCommentState(Integer.parseInt(strFilterState));
+        	}
+        	commentFilter.setSortedAttributeName(strSortedAttributeName);
+        	commentFilter.setAscSort(bIsAscSort);
+       
             List<Comment> listComments = _commentService.findByResource( resourceExtender.getIdExtendableResource( ),
-                    resourceExtender.getExtendableResourceType( ), false, strSortedAttributeName, bIsAscSort,
+                    resourceExtender.getExtendableResourceType( ), commentFilter,
                     nItemsOffset, nItemsPerPage, config.getAuthorizeSubComments( ) );
 
             // We generate the base URL for the paginator
@@ -375,6 +397,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             model.put( CommentConstants.MARK_USE_BBCODE, config.getUseBBCodeEditor( ) );
             model.put( CommentConstants.MARK_ADMIN_BADGE, config.getAdminBadge( ) );
             model.put( CommentConstants.MARK_ALLOW_SUB_COMMENTS, config.getAuthorizeSubComments( ) );
+            model.put( CommentConstants.MARK_FILTER_STATE, strFilterState);
+            model.put( CommentConstants. MARK_LIST_COMMENT_STATES,_commentService.getRefListCommentStates(locale));
             model.put( CommentConstants.PARAMETER_POST_BACK_URL, strPostBackUrl );
            	
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_COMMENTS, request.getLocale( ),
@@ -386,7 +410,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             session.setAttribute( CommentConstants.SESSION_COMMENT_ADMIN_CURRENT_PAGE_INDEX, strCurrentPageIndex );
             session.setAttribute( CommentConstants.SESSION_COMMENT_ADMIN_IS_ASC_SORT, bIsAscSort );
             session.setAttribute( CommentConstants.SESSION_COMMENT_ADMIN_SORTED_ATTRIBUTE_NAME, strSortedAttributeName );
-
+            session.setAttribute( CommentConstants.SESSION_COMMENT_ADMIN_FILTER_STATE, strFilterState);
+            
             String strContent = template.getHtml( );
 
             ContentPostProcessor postProcessor = getExtendPostProcessor( );
@@ -453,4 +478,6 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         }
         return _contentPostProcessor;
     }
+    
+    
 }

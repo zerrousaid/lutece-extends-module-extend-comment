@@ -50,6 +50,10 @@ public final class CommentConstants
     public static final String PROPERTY_DEFAULT_LIST_COMMENTS_PER_PAGE = "module.extend.comment.commentInfo.itemsPerPage";
     public static final String PROPERTY_USE_CAPTCHA = "module.extend.comment.useCaptcha";
     public static final String PROPERTY_USE_LUTECE_USER_NAME_AS_AVATAR_KEY = "module.extend.comment.useLuteceUserNameAsAvatarKey";
+    public static final String PROPERTY_COMMENT_ALL_STATE = "module.extend.comment.comment_info.commentAllState";
+    public static final String PROPERTY_COMMENT_STATE_PUBLISHED = "module.extend.comment.comment_info.statePublished";
+    public static final String PROPERTY_COMMENT_STATE_UN_PUBLISHED = "module.extend.comment.comment_info.stateNotPublished";
+    
 
     // MESSAGES
     public static final String MESSAGE_CONFIRM_REMOVE_COMMENT = "module.extend.comment.message.confirm.removeComment";
@@ -67,6 +71,7 @@ public final class CommentConstants
     public static final String PARAMETER_AUTHORIZE_SUB_COMMENTS = "authorizeSubComments";
     public static final String PARAMETER_NAME = "name";
     public static final String PARAMETER_VIEW_ALL_RESOURCES="viewAllResources";
+    public static final String PARAMETER_FILTER_STATE = "filterState";
 
     // BEANS
     public static final String BEAN_CONFIG_SERVICE = "extend-comment.commentExtenderConfigService";
@@ -94,10 +99,12 @@ public final class CommentConstants
     public static final String MARK_RETURN_TO_COMMENT_LIST = "returnToCommentList";
     public static final String MARK_ENABLE_AUTH_MODE="enable_auth_mode";
     public static final String MARK_ALL_RESOURCES="allResources";
-    
-    
+    public static final String MARK_LIST_COMMENT_STATES = "listCommentStates";
+    public static final String MARK_ADD_COMMENT_POSITION = "addCommentPosition";
+    public static final String MARK_ADD_COMMENT_POSITIONS = "allPositions";
     public static final String MARK_CAPTCHA = "captcha";
     public static final String MARK_IS_ACTIVE_CAPTCHA = "is_active_captcha";
+    public static final String MARK_FILTER_STATE = "filterState";
 
     // ACTIONS
     public static final String ACTION_ADD_COMMENT = "addComment";
@@ -118,14 +125,14 @@ public final class CommentConstants
     public static final String SESSION_COMMENT_ADMIN_CURRENT_PAGE_INDEX = "session_comment_bo_current_page_index";
     public static final String SESSION_COMMENT_ADMIN_IS_ASC_SORT = "session_comment_bo_is_asc_sort";
     public static final String SESSION_COMMENT_ADMIN_SORTED_ATTRIBUTE_NAME = "session_comment_bo_sorted_attribute_name";
+    public static final String SESSION_COMMENT_ADMIN_FILTER_STATE = "session_comment_bo_state";
     public static final String MARK_ADMIN_BADGE = "adminBadge";
     public static final String SESSION_COMMENT_POST_BACK_URL = "commentPostBackUrl";
     public static final String PARAMETER_POST_BACK_URL = "postBackUrl";
     public static final String SESSION_COMMENT_ADMIN_POST_BACK_URL = "adminInfoPostBackUrl";
     public static final String SESSION_COMMENT_ADD_MESSAGE_RESULT = "addCommentMessageResult";
 
-    public static final String MARK_ADD_COMMENT_POSITION = "addCommentPosition";
-    public static final String MARK_ADD_COMMENT_POSITIONS = "allPositions";
+   
     public static final String MARK_NICKNAME = "nickname";
     public static final String JCAPTCHA_PLUGIN = "jcaptcha";
 	public static final String ADD_COMMENT_MESSAGE_RESULT_ANCHOR = "message";

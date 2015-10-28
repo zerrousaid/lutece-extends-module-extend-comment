@@ -128,10 +128,7 @@ public interface ICommentDAO
      * Get comments of a given resource. Only parents comments are returned.
      * @param strIdExtendableResource The id of the resource
      * @param strExtendableResourceType The type of the resource
-     * @param bPublishedOnly True to consider only published comments
-     * @param strSortedAttributeName The name of the attribute to sort, or null
-     *            if no sort should be done
-     * @param bAscSort True to sort ascendantly, false otherwise
+     * @param CommentFilter The commentFilter
      * @param nItemsOffset The offset of the items to get, or 0 to get items
      *            from the first one
      * @param nMaxItemsNumber The maximum number of items to return, or 0 to get
@@ -140,21 +137,20 @@ public interface ICommentDAO
      * @return The list of comments associated with the given resource
      */
     List<Comment> findParentCommentsByResource( String strIdExtendableResource, String strExtendableResourceType,
-            boolean bPublishedOnly, String strSortedAttributeName, boolean bAscSort, int nItemsOffset,
+            CommentFilter commentFilter, int nItemsOffset,
             int nMaxItemsNumber, Plugin plugin );
+    
+    
+    
 
     /**
      * Get comments from their parent
      * @param nIdParent The id of the parent of comments to get
-     * @param bPublishedOnly True to consider only published comments
-     * @param strSortedAttributeName The name of the attribute to sort, or null
-     *            if no sort should be done
-     * @param bAscSort True to sort ascendantly, false otherwise
+     * @param commentFilter The comment filter
      * @param plugin The plugin
      * @return The list of comments associated with the given parent
      */
-    List<Comment> findByIdParent( int nIdParent, boolean bPublishedOnly, String strSortedAttributeName,
-            boolean bAscSort, Plugin plugin );
+    List<Comment> findByIdParent( int nIdParent, CommentFilter commentFilter, Plugin plugin );
 
     /**
      * Get the number of comments associated with a given parent

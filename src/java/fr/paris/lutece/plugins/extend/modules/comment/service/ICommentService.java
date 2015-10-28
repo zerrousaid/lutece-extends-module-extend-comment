@@ -33,11 +33,14 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.service;
 
-import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
-
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.transaction.annotation.Transactional;
+
+import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
+import fr.paris.lutece.plugins.extend.modules.comment.business.CommentFilter;
+import fr.paris.lutece.util.ReferenceList;
 
 
 /**
@@ -170,6 +173,23 @@ public interface ICommentService
     List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType,
             boolean bPublishedOnly, String strSortedAttributeName, boolean bAscSort, int nItemsOffset,
             int nMaxItemsNumber, boolean bLoadSubComments );
+    
+    /**
+     * Get comments of a given resource
+     * @param strIdExtendableResource The id of the resource
+     * @param strExtendableResourceType The type of the resource
+     * @param commentFilter The commentFilter Object
+     * @param nItemsOffset The offset of the items to get, or 0 to get items
+     *            from the first one
+     * @param nMaxItemsNumber The maximum number of items to return, or 0 to get
+     *            every items
+     * @param bLoadSubComments True if sub comments should be loaded, false if
+     *            they should be ignored
+     * @return The list of comments associated with the given resource
+     */
+    List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType,
+            CommentFilter commentFilter, int nItemsOffset,
+            int nMaxItemsNumber, boolean bLoadSubComments );
 
     /**
      * Get comments from their parent
@@ -212,4 +232,11 @@ public interface ICommentService
      */
     List<Integer> findIdMostCommentedResources( String strExtendableResourceType, boolean bPublishedOnly,
             int nItemsOffset, int nMaxItemsNumber );
+    
+    /**
+     * return a referenceList of comment states
+     * @param locale the locale
+     * @return a referenceList of comment states
+     */
+     ReferenceList getRefListCommentStates(Locale locale );
 }

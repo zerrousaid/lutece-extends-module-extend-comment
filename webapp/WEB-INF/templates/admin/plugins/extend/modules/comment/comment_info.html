@@ -1,6 +1,7 @@
 <#assign cumber_char_comments=200/>
 <div class="mailbox-controls">
 	<form class="form-inline" method="post" action="">
+		<@comboWithParams name="filterState" default_value="${filterState!''}" additionalParameters="class=\"form-control input-xs\"" items=listCommentStates />
 		<select class="form-control input-xs" name="sorted_attribute_name">
 			<option <#if sorted_attribute_name?? && sorted_attribute_name = "date_last_modif">selected="selected"</#if> value="date_last_modif">Date de modifications</option>
 			<option <#if sorted_attribute_name?? && sorted_attribute_name = "date_comment">selected="selected"</#if> value="date_comment">Date de création</option>
@@ -12,7 +13,7 @@
 			</select>
 			<span class="input-group-btn">
 				<button class="btn btn-primary btn-xs btn-flat">
-					<i class="fa fa-filter"></i> <span class="hidden-xs">#i18n{module.extend.comment.comment_info.labelSort}</span>
+					<i class="fa fa-filter"></i> <span class="hidden-xs">#i18n{module.extend.comment.comment_info.labelSearch}</span>
 				</button>
 			</span>
 		</div>

@@ -33,18 +33,23 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.service;
 
-import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
-import fr.paris.lutece.plugins.extend.modules.comment.business.ICommentDAO;
-import fr.paris.lutece.portal.service.plugin.Plugin;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
 import org.springframework.transaction.annotation.Transactional;
+
+import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
+import fr.paris.lutece.plugins.extend.modules.comment.business.CommentFilter;
+import fr.paris.lutece.plugins.extend.modules.comment.business.ICommentDAO;
+import fr.paris.lutece.plugins.extend.modules.comment.util.constants.CommentConstants;
+import fr.paris.lutece.portal.service.i18n.I18nService;
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.util.ReferenceList;
 
 
 /**
@@ -56,6 +61,7 @@ public class CommentService implements ICommentService
 {
     /** The Constant BEAN_SERVICE. */
     public static final String BEAN_SERVICE = "extend-comment.commentService";
+      
     @Inject
     private ICommentDAO _commentDAO;
 
@@ -173,8 +179,17 @@ public class CommentService implements ICommentService
     public List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType,
             boolean bPublishedOnly, boolean bAscSort )
     {
-        return _commentDAO.findParentCommentsByResource( strIdExtendableResource, strExtendableResourceType,
-                bPublishedOnly, null, bAscSort, 0, 0, CommentPlugin.getPlugin( ) );
+    	
+    	CommentFilter commentFilter=new CommentFilter();
+    	if(bPublishedOnly)
+    	{
+    		commentFilter.setCommentState(Comment.COMMENT_STATE_PUBLISHED);
+    	}
+    
+    	commentFilter.setAscSort(bAscSort);
+    	
+    	return _commentDAO.findParentCommentsByResource( strIdExtendableResource, strExtendableResourceType,
+        		commentFilter, 0, 0, CommentPlugin.getPlugin( ) );
     }
 
     /**
@@ -217,15 +232,36 @@ public class CommentService implements ICommentService
             boolean bPublishedOnly, String strSortedAttributeName, boolean bAscSort, int nItemsOffset,
             int nMaxItemsNumber, boolean bLoadSubComments )
     {
+    	
+    	CommentFilter commentFilter=new CommentFilter();
+    	if(bPublishedOnly)
+    	{
+    		commentFilter.setCommentState(Comment.COMMENT_STATE_PUBLISHED);
+    	}
+    	commentFilter.setSortedAttributeName(strSortedAttributeName);
+    	commentFilter.setAscSort(bAscSort);
+        return findByResource(strIdExtendableResource, strExtendableResourceType, commentFilter, nItemsOffset, nMaxItemsNumber, bLoadSubComments);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType,
+    		CommentFilter commentFilter, int nItemsOffset,
+            int nMaxItemsNumber, boolean bLoadSubComments )
+    {
+    	
+    	
         List<Comment> listComments = _commentDAO.findParentCommentsByResource( strIdExtendableResource,
-                strExtendableResourceType, bPublishedOnly, strSortedAttributeName, bAscSort, nItemsOffset,
+                strExtendableResourceType, commentFilter, nItemsOffset,
                 nMaxItemsNumber, CommentPlugin.getPlugin( ) );
         if ( bLoadSubComments )
         {
             for ( Comment comment : listComments )
             {
-                comment.setListSubComments( this.findByIdParent( comment.getIdComment( ), bPublishedOnly,
-                        strSortedAttributeName, bAscSort ) );
+                comment.setListSubComments( this.findByIdParent( comment.getIdComment( ), commentFilter.getCommentState()!= null && commentFilter.getCommentState().equals(Comment.COMMENT_STATE_PUBLISHED),
+                        commentFilter.getSortedAttributeName(), commentFilter.getAscSort() ) );
             }
         }
 
@@ -248,7 +284,16 @@ public class CommentService implements ICommentService
     public List<Comment> findByIdParent( int nIdParent, boolean bPublishedOnly, String strSortedAttributeName,
             boolean bAscSort )
     {
-        return _commentDAO.findByIdParent( nIdParent, bPublishedOnly, strSortedAttributeName, bAscSort,
+    	CommentFilter commentFilter=new CommentFilter();
+    	
+    	if(bPublishedOnly)
+    	{
+    		commentFilter.setCommentState(Comment.COMMENT_STATE_PUBLISHED);
+    	}
+    	commentFilter.setSortedAttributeName(strSortedAttributeName);
+    	commentFilter.setAscSort(bAscSort);
+       
+        return _commentDAO.findByIdParent( nIdParent,commentFilter,
                 CommentPlugin.getPlugin( ) );
     }
 
@@ -270,5 +315,20 @@ public class CommentService implements ICommentService
     {
         return _commentDAO.findIdMostCommentedResources( strExtendableResourceType, bPublishedOnly, nItemsOffset,
                 nMaxItemsNumber, CommentPlugin.getPlugin( ) );
+    }
+    
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ReferenceList getRefListCommentStates(Locale locale )
+    {
+        ReferenceList refListDiggSubmitState = new ReferenceList(  );
+        refListDiggSubmitState.addItem(  "", I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_ALL_STATE ,locale) );
+        refListDiggSubmitState.addItem( Comment.COMMENT_STATE_PUBLISHED, I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_STATE_PUBLISHED ,locale));
+        refListDiggSubmitState.addItem( Comment.COMMENT_STATE_UN_PUBLISHED, I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_STATE_UN_PUBLISHED,locale ));
+        return refListDiggSubmitState;
     }
 }
