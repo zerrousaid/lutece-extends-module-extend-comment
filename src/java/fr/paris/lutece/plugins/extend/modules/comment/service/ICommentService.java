@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -239,4 +240,12 @@ public interface ICommentService
      * @return a referenceList of comment states
      */
      ReferenceList getRefListCommentStates(Locale locale );
+     
+     /**
+      * Get comments of a given filter
+      * @param plugin the plugin
+      * @param commentFilter The comment filter
+      * @return The list of comments associated with the filter
+      */
+     public Collection<Comment> findCommentsByFilterSearch( CommentFilter commentFilter );
 }

@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.extend.modules.comment.business;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -189,4 +190,11 @@ public interface ICommentDAO
      */
     List<Integer> findIdMostCommentedResources( String strExtendableResourceType, boolean bPublishedOnly,
             int nItemsOffset, int nMaxItemsNumber, Plugin plugin );
+    /**
+     * Get comments of a given filter
+     * @param plugin the plugin
+     * @param commentFilter The comment filter
+     * @return The list of comments associated with the filter
+     */
+    public Collection<Comment> findCommentsListSearch( Plugin plugin, CommentFilter commentFilter );
 }

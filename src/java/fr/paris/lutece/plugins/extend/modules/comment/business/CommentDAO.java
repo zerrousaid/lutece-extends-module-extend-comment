@@ -39,7 +39,9 @@ import fr.paris.lutece.util.sql.DAOUtil;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -537,6 +539,36 @@ public class CommentDAO implements ICommentDAO
 
         return listIds;
     }
+    
+   
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<Comment> findCommentsListSearch( Plugin plugin, CommentFilter commentFilter )
+    {
+    	Collection<Comment> commentCollection = new ArrayList<Comment>(  );
+        DAOUtil daoUtil;
+        if (commentFilter != null) {
+            daoUtil = new DAOUtil( appendFilters( SQL_QUERY_SELECT_ALL, commentFilter ), plugin );
+            setFilterValues( daoUtil, commentFilter );
+        } else {
+            daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL, plugin );
+        }
+        daoUtil.executeQuery(  );
+
+        while ( daoUtil.next(  ) )
+        {
+        	Comment comment = getCommentInfo(daoUtil);
+        	commentCollection.add(comment );
+          
+        }
+
+        daoUtil.free( );
+        
+        return commentCollection;
+      
+        }
 
     /**
      * Fetch the attributes of a comment from a daoUtil.
@@ -624,6 +656,53 @@ public class CommentDAO implements ICommentDAO
         sbSQL.append( strSortOrder );
     
     }
+    
+    
+    
+    
+    /**
+     * Creates the preparedStatement for apply filters
+     * @param query The begining of the query
+     * @param commentFilter The commentFilter
+     * @return The sql statement
+     */
+    private String appendFilters( String query, CommentFilter commentFilter ) {
+
+       
+        StringBuilder stringBuilder = new StringBuilder();
+        if ( commentFilter.getLuteceUserName( ) != null && StringUtils.isNotEmpty(commentFilter.getLuteceUserName()) ) {
+            stringBuilder.append(" lutece_user_name = ? AND");
+        }
+        if ( commentFilter.getExtendableResourceType( ) != null ) {
+            stringBuilder.append(" resource_type = ? AND");
+        }
+       
+       
+        if (stringBuilder.length() > 0) {
+            stringBuilder.setLength( stringBuilder.length(  ) - 4 );
+            return query + " " + " WHERE " + stringBuilder.toString() ;
+        } else {
+            return query;
+        }
+    }
+
+    /**
+     * Sets the commentFilter values for export and search
+     * @param daoUtil The daoUtil
+     * @param validatedFilters The validatedFilters
+     */
+    private void setFilterValues( DAOUtil daoUtil, CommentFilter commentFilter ) {
+        
+    	int nCpt = 1;
+        if ( commentFilter.getLuteceUserName() != null && StringUtils.isNotEmpty(commentFilter.getLuteceUserName())) {
+            daoUtil.setString(nCpt++, commentFilter.getLuteceUserName());
+        }
+        if ( commentFilter.getExtendableResourceType( ) != null ) {
+        	daoUtil.setString(nCpt++, commentFilter.getExtendableResourceType( ));
+        }
+        
+    }
+    
     
     
 
