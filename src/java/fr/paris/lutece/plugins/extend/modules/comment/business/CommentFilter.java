@@ -11,6 +11,9 @@ public class CommentFilter {
 	private Boolean _bAscSort;
 	private Boolean _bPinned;
 	private Boolean _bImportant;
+	private String _strLuteceUserName;
+    private String _strExtendableResourceType;
+
 	
 	
 	
@@ -74,6 +77,7 @@ public class CommentFilter {
 	public void setPinned(Boolean _bPinned) {
 		this._bPinned = _bPinned;
 	}
+
 	
 	/**
 	 * 
@@ -91,5 +95,37 @@ public class CommentFilter {
 	public void setImportant(Boolean _bImportant) {
 		this._bImportant = _bImportant;
 	}
+
+	/**
+	 * 
+     * @return the lutece user name
+     */
+	public String getLuteceUserName() {
+		return _strLuteceUserName;
+	}
+
+	/**
+	 * set the lutece user name
+	 * @param _strLuteceUserName the lutece user name
+	 */
+	public void setLuteceUserName(String _strLuteceUserName) {
+		this._strLuteceUserName = _strLuteceUserName;
+	}
+	
+	/**
+     * @return the extendableResourceType
+     */
+    public String getExtendableResourceType( )
+    {
+        return _strExtendableResourceType;
+    }
+
+    /**
+     * @param strExtendableResourceType the extendableResourceType to set
+     */
+    public void setExtendableResourceType( String strExtendableResourceType )
+    {
+        _strExtendableResourceType = strExtendableResourceType;
+    }
 
 }

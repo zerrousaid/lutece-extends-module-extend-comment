@@ -39,7 +39,9 @@ import fr.paris.lutece.util.sql.DAOUtil;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -75,6 +77,8 @@ public class CommentDAO implements ICommentDAO
     private static final String SQL_FILTER_IS_IMPORTANT_FALSE = " is_important = 0 ";
     private static final String SQL_FILTER_IS_PINNED_TRUE = " is_pinned = 1 ";
     private static final String SQL_FILTER_IS_PINNED_FALSE = " is_pinned = 0 ";
+    private static final String SQL_FILTER_LUTECE_USER_NAME = " lutece_user_name = ? ";
+    
     
     private static final String SQL_FILTER_SELECT_PARENTS = " id_parent_comment = 0 ";
     private static final String SQL_AND = " AND ";
@@ -398,6 +402,13 @@ public class CommentDAO implements ICommentDAO
             }
             daoUtil.setInt( nIndex++, nMaxItemsNumber );
         }
+        
+        if ( StringUtils.isNotEmpty(commentFilter.getLuteceUserName()) ) {
+       		
+      		 daoUtil.setString( nIndex, commentFilter.getLuteceUserName() );
+      	 }
+        
+        
         daoUtil.executeQuery( );
 
         // We fetch results
@@ -426,7 +437,13 @@ public class CommentDAO implements ICommentDAO
      
 
         DAOUtil daoUtil = new DAOUtil( sbSQL.toString( ), plugin );
-        daoUtil.setInt( nIndex, nIdParent );
+        daoUtil.setInt( nIndex++, nIdParent );
+        
+   	 if ( StringUtils.isNotEmpty(commentFilter.getLuteceUserName()) ) {
+   		
+   		 daoUtil.setString( nIndex, commentFilter.getLuteceUserName() );
+   	 }
+        
         daoUtil.executeQuery( );
         while ( daoUtil.next( ) )
         {
@@ -554,6 +571,9 @@ public class CommentDAO implements ICommentDAO
 
         return listIds;
     }
+    
+   
+   
 
     /**
      * Fetch the attributes of a comment from a daoUtil.
@@ -628,6 +648,11 @@ public class CommentDAO implements ICommentDAO
          		 sbSQL.append( SQL_AND ).append( SQL_FILTER_IS_PINNED_FALSE);
          	}
          }
+    	 
+    	 
+    	 if ( StringUtils.isNotEmpty(commentFilter.getLuteceUserName()) ) {
+    		 sbSQL.append( SQL_AND ).append(SQL_FILTER_LUTECE_USER_NAME);
+         }
  
         
     	
@@ -668,6 +693,12 @@ public class CommentDAO implements ICommentDAO
         sbSQL.append( strSortOrder );
     
     }
+    
+    
+    
+    
+    
+    
     
     
 

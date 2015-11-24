@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.extend.modules.comment.service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -387,6 +388,7 @@ public class CommentService implements ICommentService
         refListDiggSubmitState.addItem( Comment.COMMENT_STATE_UN_PUBLISHED, I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_STATE_UN_PUBLISHED,locale ));
         return refListDiggSubmitState;
     }
+
     /**
      * {@inheritDoc}
      */
@@ -483,5 +485,5 @@ public class CommentService implements ICommentService
 		}
     
     
-    
+
 }

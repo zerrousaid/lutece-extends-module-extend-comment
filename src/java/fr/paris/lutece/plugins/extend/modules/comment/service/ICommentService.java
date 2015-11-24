@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -278,6 +279,7 @@ public interface ICommentService
      ReferenceList getRefListCommentStates(Locale locale );
      
      /**
+
       * return a referenceList  containing the filter on the flag important
       * @param locale the locale
       * @return  a referenceList  containing the filter on the flag important
@@ -296,4 +298,5 @@ public interface ICommentService
      
      
      
+
 }
