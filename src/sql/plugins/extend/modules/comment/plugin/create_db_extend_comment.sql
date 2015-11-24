@@ -15,8 +15,10 @@ CREATE TABLE extend_comment (
 	date_last_modif TIMESTAMP,
 	id_parent_comment INT DEFAULT 0 NOT NULL,
 	is_admin_comment SMALLINT default 0 NOT NULL,
-	lutece_user_name VARCHAR(255) DEFAULT '' NOT NULL,
-	
+	lutece_user_name VARCHAR(255),
+	is_pinned SMALLINT default 0 NOT NULL,
+	is_important SMALLINT default 0 NOT NULL,
+	comment_order INT DEFAULT 0 NOT NULL,
 	PRIMARY KEY (id_comment)
 );
 

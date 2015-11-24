@@ -33,7 +33,18 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.web;
 
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
+import fr.paris.lutece.plugins.extend.modules.comment.business.CommentFilter;
 import fr.paris.lutece.plugins.extend.modules.comment.service.CommentPlugin;
 import fr.paris.lutece.plugins.extend.modules.comment.service.CommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.ICommentService;
@@ -54,15 +65,6 @@ import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.http.SecurityUtil;
 import fr.paris.lutece.util.url.UrlItem;
-
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -154,6 +156,132 @@ public class CommentJspBean extends PluginAdminPageJspBean
 
         return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
     }
+    
+    
+    /**
+     * Do flag  comment as important
+     * 
+     * @param request the request
+     * @param cancelFlag true if the flag important of the comment must be cancel 
+     * @return the string
+     */
+    public String doFlagImportantComment( HttpServletRequest request,boolean cancelFlag )
+    {
+        String strIdComment = request.getParameter( CommentConstants.PARAMETER_ID_COMMENT );
+       
+        if ( StringUtils.isNotBlank( strIdComment ) && StringUtils.isNumeric( strIdComment ) )
+        {
+            int nIdComment = Integer.parseInt( strIdComment );
+            Comment comment = _commentService.findByPrimaryKey( nIdComment );
+
+            if ( comment != null )
+            {
+                try
+                {
+                	
+                    _commentService.updateFlagImportant(comment.getIdComment(), !cancelFlag);
+                }
+                catch ( Exception ex )
+                {
+                    // Something wrong happened... a database check might be needed
+                    AppLogService.error( ex.getMessage( ) + " when updating a comment", ex );
+
+                    return AdminMessageService.getMessageUrl( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE,
+                            AdminMessage.TYPE_ERROR );
+                }
+
+                String strPostBackUrl = (String) request.getSession( ).getAttribute(
+                        CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL );
+                request.getSession( ).setAttribute(
+                        CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL, null );
+                if ( StringUtils.isEmpty( strPostBackUrl ) )
+                {
+                    strPostBackUrl = JSP_VIEW_EXTENDER_INFO;
+                }
+                UrlItem url = new UrlItem( strPostBackUrl );
+                url.addParameter( CommentConstants.PARAMETER_EXTENDER_TYPE,
+                        CommentResourceExtender.EXTENDER_TYPE_COMMENT );
+               addIdExtendableResourceInUrl(comment.getIdExtendableResource(), request, url);
+               
+                url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE,
+                        comment.getExtendableResourceType( ) );
+                if ( comment.getIdParentComment( ) > 0 )
+                {
+                    url.addParameter( CommentConstants.PARAMETER_ID_COMMENT, comment.getIdParentComment( ) );
+                }
+                url.addParameter( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace(
+                        request.getParameter( CommentConstants.PARAMETER_FROM_URL ), CommentConstants.CONSTANT_AND,
+                        CommentConstants.CONSTANT_AND_HTML ) );
+
+                return url.getUrl( );
+            }
+        }
+
+        return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
+    }
+    
+    /**
+     * Do pinned a comment.
+     * 
+     * @param request the request
+     * @param cancelPinned true if the comment must be unpinned
+     * @return the string
+     */
+    public String doPinned( HttpServletRequest request,boolean cancelPinned)
+    {
+        String strIdComment = request.getParameter( CommentConstants.PARAMETER_ID_COMMENT );
+       
+        if ( StringUtils.isNotBlank( strIdComment ) && StringUtils.isNumeric( strIdComment ) )
+        {
+            int nIdComment = Integer.parseInt( strIdComment );
+            Comment comment = _commentService.findByPrimaryKey( nIdComment );
+
+            if ( comment != null )
+            {
+                try
+                {
+                	_commentService.updateCommentPinned(nIdComment, !cancelPinned);
+                }
+                catch ( Exception ex )
+                {
+                    // Something wrong happened... a database check might be needed
+                    AppLogService.error( ex.getMessage( ) + " when updating a comment", ex );
+
+                    return AdminMessageService.getMessageUrl( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE,
+                            AdminMessage.TYPE_ERROR );
+                }
+
+                String strPostBackUrl = (String) request.getSession( ).getAttribute(
+                        CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL );
+                request.getSession( ).setAttribute(
+                        CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL, null );
+                if ( StringUtils.isEmpty( strPostBackUrl ) )
+                {
+                    strPostBackUrl = JSP_VIEW_EXTENDER_INFO;
+                }
+                UrlItem url = new UrlItem( strPostBackUrl );
+                url.addParameter( CommentConstants.PARAMETER_EXTENDER_TYPE,
+                        CommentResourceExtender.EXTENDER_TYPE_COMMENT );
+               addIdExtendableResourceInUrl(comment.getIdExtendableResource(), request, url);
+               
+                url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE,
+                        comment.getExtendableResourceType( ) );
+                if ( comment.getIdParentComment( ) > 0 )
+                {
+                    url.addParameter( CommentConstants.PARAMETER_ID_COMMENT, comment.getIdParentComment( ) );
+                }
+                url.addParameter( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace(
+                        request.getParameter( CommentConstants.PARAMETER_FROM_URL ), CommentConstants.CONSTANT_AND,
+                        CommentConstants.CONSTANT_AND_HTML ) );
+
+                return url.getUrl( );
+            }
+        }
+
+        return AdminMessageService.getMessageUrl( request, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
+    }
+    
+    
 
     /**
      * Gets the confirm remove comment.

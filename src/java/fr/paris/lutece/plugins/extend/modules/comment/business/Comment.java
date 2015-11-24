@@ -71,6 +71,10 @@ public class Comment
     private List<Comment> _listSubComments;
     private int _nNumberSubComments = -1;
     private boolean _bIsAdminComment;
+    private boolean _bPinned;
+    private int _nCommentOrder;
+    private boolean _bIsImportant;
+    
 
     /**
      * @return the strIdExtendableResource
@@ -404,4 +408,53 @@ public class Comment
 	public void setLuteceUserName(String _strLuteceUserName) {
 		this._strLuteceUserName = _strLuteceUserName;
 	}
+	
+	 /**
+     * 
+     * @return true if the comment is pinned
+     */
+    public boolean isPinned( )
+    {
+        return _bPinned;
+    }
+
+    /**
+     * 
+     * @param bPinned true if the comment is pinned
+     */
+    public void setPinned( boolean bPinned )
+    {
+        this._bPinned = bPinned;
+    }
+
+    /**
+     * 
+     * @return comment order if a comment is pinned
+     */
+	public int getCommentOrder() {
+		return _nCommentOrder;
+	}
+	/**
+	 * specify comment order if a comment is pinned
+	 * @param _nCommentOrder comment order if a comment is pinned
+	 */
+	public void setCommentOrder(int _nCommentOrder) {
+		this._nCommentOrder = _nCommentOrder;
+	}
+
+	/**
+	 * 
+	 * @return true if a comment is important
+	 */
+	public boolean getIsImportant() {
+		return _bIsImportant;
+	}
+	/**
+	 * 
+	 * @param _bIsImportant btrue if a comment is important
+	 */
+	public void setIsImportant(boolean _bIsImportant) {
+		this._bIsImportant = _bIsImportant;
+	}
+
 }

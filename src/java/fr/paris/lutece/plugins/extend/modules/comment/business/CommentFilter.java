@@ -10,6 +10,7 @@ public class CommentFilter {
 	private String _strSortedAttributeName; 
 	private Boolean _bAscSort;
 	private Boolean _bPinned;
+	private Boolean _bImportant;
 	
 	
 	
@@ -72,6 +73,23 @@ public class CommentFilter {
 	 */
 	public void setPinned(Boolean _bPinned) {
 		this._bPinned = _bPinned;
+	}
+	
+	/**
+	 * 
+	 * @return true if the results must contain only the comments Important
+	 * 		   false if the results must contain only the comments not Important
+	 */
+	public Boolean getImportant() {
+		return _bImportant;
+	}
+	/**
+	 * 
+	 * @param _bImportant true if the results must contain only the comments Important
+	 * 				 	  false if the results must contain only the comments not Important
+	 */
+	public void setImportant(Boolean _bImportant) {
+		this._bImportant = _bImportant;
 	}
 
 }

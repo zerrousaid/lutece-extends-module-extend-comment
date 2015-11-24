@@ -211,16 +211,33 @@ public class CommentService implements ICommentService
             int nNbComments, boolean bPublishedOnly, boolean bParentsOnly, boolean bGetNumberSubComments )
     {
         Plugin plugin = CommentPlugin.getPlugin( );
-        List<Comment> listComments = _commentDAO.selectLastComments( strIdExtendableResource,
-                strExtendableResourceType, nNbComments, bPublishedOnly, bParentsOnly, plugin );
-        if ( bGetNumberSubComments )
+        List<Comment> listComments =new ArrayList<>();
+        
+        
+        List<Comment> listCommentsPinned = findCommentsPinned(strIdExtendableResource, strExtendableResourceType, nNbComments, bPublishedOnly?Comment.COMMENT_STATE_PUBLISHED:null, true, bGetNumberSubComments);
+        
+        listComments.addAll(listCommentsPinned);
+        
+        if(nNbComments==0 || listCommentsPinned.size()!=nNbComments)
         {
-            for ( Comment comment : listComments )
-            {
-                comment.setNumberSubComments( _commentDAO.countByIdParent( comment.getIdComment( ), bPublishedOnly,
-                        plugin ) );
-            }
-        }
+    	   if(listCommentsPinned.size()!=nNbComments)
+    	   {
+    		   nNbComments= nNbComments-listCommentsPinned.size();
+    	   }
+    	   List<Comment> listLastComments=  _commentDAO.selectLastComments( strIdExtendableResource,
+                   strExtendableResourceType, nNbComments, bPublishedOnly, bParentsOnly, plugin );
+           if ( bGetNumberSubComments )
+           {
+               for ( Comment comment : listLastComments )
+               {
+                   comment.setNumberSubComments( _commentDAO.countByIdParent( comment.getIdComment( ), bPublishedOnly,
+                           plugin ) );
+               }
+           }
+        	listComments.addAll(listLastComments);
+         }
+        
+       
         return listComments;
     }
 
@@ -252,10 +269,47 @@ public class CommentService implements ICommentService
             int nMaxItemsNumber, boolean bLoadSubComments )
     {
     	
-    	
-        List<Comment> listComments = _commentDAO.findParentCommentsByResource( strIdExtendableResource,
-                strExtendableResourceType, commentFilter, nItemsOffset,
-                nMaxItemsNumber, CommentPlugin.getPlugin( ) );
+    	List<Comment> listComments =new ArrayList<>();
+        
+    	if(commentFilter.getPinned()!=null )
+    	{
+    		
+    		
+    		listComments.addAll( _commentDAO.findParentCommentsByResource( strIdExtendableResource,
+        			strExtendableResourceType, commentFilter, nItemsOffset,
+        			nMaxItemsNumber, CommentPlugin.getPlugin( ) ) );
+        }
+       else
+    	{
+    	 
+    	    List<Comment> listCommentsPinned = findCommentsPinned(strIdExtendableResource, strExtendableResourceType, nMaxItemsNumber, commentFilter.getCommentState(), true, bLoadSubComments);
+	        int nPinnedCommentsCount = listCommentsPinned.size() - nItemsOffset;
+	        if (nPinnedCommentsCount < 0) {
+	        	nPinnedCommentsCount = 0;
+	        }
+	        
+	        if (nPinnedCommentsCount > 0) {
+	        	listComments.addAll(listCommentsPinned.subList(nItemsOffset, listCommentsPinned.size()));
+	        }
+	        
+	        int nNormalCommentsCount = nMaxItemsNumber-nPinnedCommentsCount;
+	        if (nNormalCommentsCount < 0) {
+	        	nNormalCommentsCount = 0;
+	        }
+	        
+	        if (nNormalCommentsCount > 0 ) {
+	        	//get all comment not pinned
+	        	commentFilter.setPinned(false);
+	        	int nNewOffset = nItemsOffset-listCommentsPinned.size();
+	        	if (nNewOffset < 0) {
+	        		nNewOffset = 0;
+	        	}
+	        	listComments.addAll( _commentDAO.findParentCommentsByResource( strIdExtendableResource,
+	        			strExtendableResourceType, commentFilter, nNewOffset,
+	        			nNormalCommentsCount, CommentPlugin.getPlugin( ) ) );
+	        }
+    }
+        
         if ( bLoadSubComments )
         {
             for ( Comment comment : listComments )
@@ -267,6 +321,8 @@ public class CommentService implements ICommentService
 
         return listComments;
     }
+    
+
 
     /**
      * {@inheritDoc}
@@ -331,4 +387,101 @@ public class CommentService implements ICommentService
         refListDiggSubmitState.addItem( Comment.COMMENT_STATE_UN_PUBLISHED, I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_STATE_UN_PUBLISHED,locale ));
         return refListDiggSubmitState;
     }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ReferenceList getRefListFilterAsImportant(Locale locale )
+    {
+        ReferenceList refListFilterAsImportant = new ReferenceList(  );
+        refListFilterAsImportant.addItem(  "", I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_FILTER_BY_IMPORTANT ,locale) );
+        refListFilterAsImportant.addItem( Boolean.TRUE.toString(), I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_FILTER_BY_IMPORTANT_ALL_FLAG_IMPORTANT ,locale));
+        refListFilterAsImportant.addItem( Boolean.FALSE.toString(), I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_FILTER_BY_IMPORTANT_ALL_NOT_FLAG_AS_IMPORTANT,locale ));
+        return refListFilterAsImportant;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ReferenceList getRefListFilterAsPinned(Locale locale )
+    {
+        ReferenceList refListDiggSubmitState = new ReferenceList(  );
+        refListDiggSubmitState.addItem(  "", I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_FILTER_BY_PINNED ,locale) );
+        refListDiggSubmitState.addItem(  Boolean.TRUE.toString(), I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_FILTER_BY_PINNED_ALL_PINNED ,locale));
+        refListDiggSubmitState.addItem(  Boolean.FALSE.toString(), I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_FILTER_BY_PINNED_ALL_NOT_PINNED,locale ));
+        return refListDiggSubmitState;
+    }
+
+	@Override
+	public List<Comment> findCommentsPinned(String strIdExtendableResource,
+			String strExtendableResourceType, int nNbComments,
+			Integer nCommentState, boolean bParentsOnly,
+			boolean bGetNumberSubComments) {
+			Plugin plugin = CommentPlugin.getPlugin( );
+			CommentFilter filter=new CommentFilter();
+			filter.setPinned(true);
+			filter.setAscSort(false);
+			filter.setSortedAttributeName(CommentConstants.SORT_BY_COMMENT_ORDER);
+			filter.setCommentState(nCommentState);
+	    
+			
+			List<Comment> listComments = _commentDAO.findParentCommentsByResource(strIdExtendableResource, strExtendableResourceType, filter, 0, nNbComments, plugin);
+	       
+		    if ( bGetNumberSubComments )
+	        {
+	            for ( Comment comment : listComments )
+	            {
+	                comment.setNumberSubComments( _commentDAO.countByIdParent( comment.getIdComment( ), (nCommentState != null && nCommentState.equals(Comment.COMMENT_STATE_PUBLISHED)),
+	                        plugin ) );
+	            }
+	        }
+	        return listComments;
+		
+		
+	}
+
+	 @Override
+	  @Transactional( CommentPlugin.TRANSACTION_MANAGER )
+	public void updateFlagImportant(int nIdComment, boolean bImportant) {
+			 Plugin plugin = CommentPlugin.getPlugin( );	
+			 Comment comment=findByPrimaryKey( nIdComment );
+			 	if(comment!=null)
+			 	{
+			 		comment.setIsImportant(bImportant);
+			 	}
+			 	_commentDAO.store(comment, plugin);
+		}
+
+	 @Override
+	 @Transactional( CommentPlugin.TRANSACTION_MANAGER )
+	 public void updateCommentPinned(int nIdComment, boolean bPinned) {
+		 Plugin plugin = CommentPlugin.getPlugin( );	
+		 Comment comment=findByPrimaryKey( nIdComment );
+		 	if(comment!=null)
+		 	{
+		 		comment.setPinned(bPinned);
+		 		if(bPinned)
+            	{
+            		//update comment Order
+                	CommentFilter filter=new CommentFilter();
+                	filter.setPinned(true);
+                	List<Comment> listComment=findByResource(comment.getIdExtendableResource(), comment.getExtendableResourceType(), filter, 0, 10000, false);
+                	int nOrder=1;
+                	for(Comment commentPinned:listComment)
+                	{
+                		if(commentPinned.getCommentOrder()>=nOrder) 
+                		{
+                			nOrder=commentPinned.getCommentOrder()+1;
+                		}
+                	}
+                	comment.setCommentOrder(nOrder);
+            	}
+		 		
+		 	}
+		 	_commentDAO.store(comment, plugin);
+		}
+    
+    
+    
 }

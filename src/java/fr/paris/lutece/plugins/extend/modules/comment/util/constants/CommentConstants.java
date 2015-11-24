@@ -53,7 +53,12 @@ public final class CommentConstants
     public static final String PROPERTY_COMMENT_ALL_STATE = "module.extend.comment.comment_info.commentAllState";
     public static final String PROPERTY_COMMENT_STATE_PUBLISHED = "module.extend.comment.comment_info.statePublished";
     public static final String PROPERTY_COMMENT_STATE_UN_PUBLISHED = "module.extend.comment.comment_info.stateNotPublished";
-    
+    public static final String PROPERTY_COMMENT_FILTER_BY_PINNED = "module.extend.comment.comment_info.filterByPinned";
+    public static final String PROPERTY_COMMENT_FILTER_BY_PINNED_ALL_PINNED = "module.extend.comment.comment_info.filterByPinnedAllPinned";
+    public static final String PROPERTY_COMMENT_FILTER_BY_PINNED_ALL_NOT_PINNED = "module.extend.comment.comment_info.filterByPinnedAllNotPinned";
+    public static final String PROPERTY_COMMENT_FILTER_BY_IMPORTANT = "module.extend.comment.comment_info.filterByImportant";
+    public static final String PROPERTY_COMMENT_FILTER_BY_IMPORTANT_ALL_FLAG_IMPORTANT = "module.extend.comment.comment_info.filterByImportantAllFlagAsImportant";
+    public static final String PROPERTY_COMMENT_FILTER_BY_IMPORTANT_ALL_NOT_FLAG_AS_IMPORTANT = "module.extend.comment.comment_info.filterByImportantAllNotFlagAsImportant";
 
     // MESSAGES
     public static final String MESSAGE_CONFIRM_REMOVE_COMMENT = "module.extend.comment.message.confirm.removeComment";
@@ -72,6 +77,8 @@ public final class CommentConstants
     public static final String PARAMETER_NAME = "name";
     public static final String PARAMETER_VIEW_ALL_RESOURCES="viewAllResources";
     public static final String PARAMETER_FILTER_STATE = "filterState";
+    public static final String PARAMETER_FILTER_PINNED = "filterPinned";
+    public static final String PARAMETER_FILTER_MARK_AS_IMPORTANT = "filterMarkAsImportant";
 
     // BEANS
     public static final String BEAN_CONFIG_SERVICE = "extend-comment.commentExtenderConfigService";
@@ -100,11 +107,19 @@ public final class CommentConstants
     public static final String MARK_ENABLE_AUTH_MODE="enable_auth_mode";
     public static final String MARK_ALL_RESOURCES="allResources";
     public static final String MARK_LIST_COMMENT_STATES = "listCommentStates";
+    public static final String MARK_LIST_MARK_AS_IMPORTANT_FILTER = "listMarkAsImportantFilter";
+    public static final String MARK_LIST_PINNED_FILTER = "listPinnedFilter";
+    
+    
+    
     public static final String MARK_ADD_COMMENT_POSITION = "addCommentPosition";
     public static final String MARK_ADD_COMMENT_POSITIONS = "allPositions";
     public static final String MARK_CAPTCHA = "captcha";
     public static final String MARK_IS_ACTIVE_CAPTCHA = "is_active_captcha";
     public static final String MARK_FILTER_STATE = "filterState";
+    public static final String MARK_FILTER_PINNED = "filterPinned";
+    public static final String MARK_FILTER_MARK_AS_IMPORTANT = "filterMarkAsImportant";
+  
 
     // ACTIONS
     public static final String ACTION_ADD_COMMENT = "addComment";
@@ -117,6 +132,7 @@ public final class CommentConstants
     public static final String CONSTANT_AND = "&";
     public static final String CONSTANT_AND_HTML = "%26";
     public static final String CONSTANT_ALL_RESSOURCE_ID = "*";
+  
 
     public static final String SESSION_COMMENT_ITEMS_PER_PAGE = "session_comment_fo_items_per_page";
     public static final String SESSION_COMMENT_CURRENT_PAGE_INDEX = "session_comment_fo_current_page_index";
@@ -126,6 +142,10 @@ public final class CommentConstants
     public static final String SESSION_COMMENT_ADMIN_IS_ASC_SORT = "session_comment_bo_is_asc_sort";
     public static final String SESSION_COMMENT_ADMIN_SORTED_ATTRIBUTE_NAME = "session_comment_bo_sorted_attribute_name";
     public static final String SESSION_COMMENT_ADMIN_FILTER_STATE = "session_comment_bo_state";
+    public static final String SESSION_COMMENT_ADMIN_FILTER_PINNED = "session_comment_bo_filter_pinned";
+    public static final String SESSION_COMMENT_ADMIN_FILTER_MARK_AS_IMPORTANT = "session_comment_bo_filter_mark_as_important";
+    
+    
     public static final String MARK_ADMIN_BADGE = "adminBadge";
     public static final String SESSION_COMMENT_POST_BACK_URL = "commentPostBackUrl";
     public static final String PARAMETER_POST_BACK_URL = "postBackUrl";
@@ -138,7 +158,9 @@ public final class CommentConstants
 	public static final String ADD_COMMENT_MESSAGE_RESULT_ANCHOR = "message";
 	public static final String MARK_ADD_COMMENT_MESSAGE_RESULT = "addCommentMessageResult";
 	public static final String FROM_SESSION = "from_session";
-
+	
+	public static final String  SORT_BY_COMMENT_ORDER ="comment_order" ;
+	
     /**
      * Instantiates a new comment constants.
      */

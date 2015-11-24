@@ -1,6 +1,15 @@
 <#assign cumber_char_comments=200/>
 <div class="mailbox-controls">
-	<form class="form-inline" method="post" action="">
+	<form class="form-inline" method="post" action="jsp/admin/plugins/extend/ViewExtenderInfo.jsp">
+		
+		<input type="hidden" name="idExtendableResource" value="${idExtendableResource}">
+		<input type="hidden" name="extendableResourceType" value="${extendableResourceType}">
+		<input type="hidden" name="extenderType" value="comment"/>
+		<#if from_url?? && from_url?has_content && from_url != "null">
+			<input type="hidden" name="from_url" value="${from_url}">
+		</#if>
+		<@comboWithParams name="filterPinned" default_value="${filterPinned!''}" additionalParameters="class=\"form-control input-xs\"" items=listPinnedFilter />
+		<@comboWithParams name="filterMarkAsImportant" default_value="${filterMarkAsImportant!''}" additionalParameters="class=\"form-control input-xs\"" items=listMarkAsImportantFilter />
 		<@comboWithParams name="filterState" default_value="${filterState!''}" additionalParameters="class=\"form-control input-xs\"" items=listCommentStates />
 		<select class="form-control input-xs" name="sorted_attribute_name">
 			<option <#if sorted_attribute_name?? && sorted_attribute_name = "date_last_modif">selected="selected"</#if> value="date_last_modif">Date de modifications</option>
@@ -46,21 +55,43 @@
 				<#list listComments as comment>
 				<tr>
 					<td>
+						<ul class="list-unstyled">
+						
+						
 						<#if comment.published>
-							<span class="label label-success" title="#i18n{module.extend.comment.comment_info.statePublished}">
+							<li><span class="label label-success" title="#i18n{module.extend.comment.comment_info.statePublished}">
 								<i class="fa fa-check fa-fw"></i>
-							</span>
+							</span></li>
 						<#else>
+							<li>
 							<span class="label label-important" title="#i18n{module.extend.comment.comment_info.stateNotPublished}">
 								<i class="fa fa-times fa-fw"></i>
 							</span>
+							</li>
 						</#if>
+						<#if comment.pinned>
+							<li><span class="label label-inverse spaced">
+									<i class="fa fa-thumb-tack"></i>
+							</span>
+							</li>
+						</#if>
+						<#if comment.isImportant>
+							<li>
+							<span class="label label-inverse spaced">
+								<i class="glyphicon glyphicon-thumbs-up" title="#i18n{module.extend.comment.comment_info.important}"></i>
+							</span>
+							</li>
+						</#if>
+						
+						
+						
 						<#assign unpublishedSubComment = comment.firstUnpublishedSubComment >
 						<#if 0 < unpublishedSubComment >
 								<a class="btn btn-warning btn-xs spaced"  onclick="javascript:$('#comment_toggle_${comment.idComment!}').next().show();" href="${postBackUrl!}<#if postBackUrl?contains('?')>&amp;<#else>?</#if>extenderType=comment&idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${comment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>#subcomment_${unpublishedSubComment}">
 									#i18n{module.extend.comment.comment_info.unpublishedSubComments}
 								</a>
 						</#if>
+					</ul>	
 					</td>
 					<td>
 						<a name="comment_${comment.idComment!}"></a>
@@ -119,6 +150,7 @@
 															<i class="fa fa-chain-broken"></i>
 														</button>
 													</#if>
+													
 													<a class="btn btn-xs btn-danger" title="#i18n{portal.util.labelDelete}" href="jsp/admin/plugins/extend/modules/comment/ConfirmRemoveComment.jsp?idComment=${subComment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{portal.util.labelDelete}">
 															<i class="fa fa-trash"></i>
 													</a>
@@ -180,6 +212,30 @@
 								</a>
 							</#if>
 						-->
+						   <#if comment.isImportant>
+								<a class="btn btn-danger btn-xs" href="jsp/admin/plugins/extend/modules/comment/DoCancelFlagAsImportant.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${comment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{module.extend.comment.comment_info.labelCancelFlagImportant}">
+									<i class="glyphicon glyphicon-thumbs-down"></i>
+								</a>
+							<#else>
+								<a class="btn btn-primary btn-xs" href="jsp/admin/plugins/extend/modules/comment/DoFlagAsImportant.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${comment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{module.extend.comment.comment_info.labelDoFlagImportant}">
+									<i class="glyphicon glyphicon-thumbs-up"></i>
+								</a>
+								
+							</#if>
+							<#if comment.pinned>
+								<a class="btn btn-danger btn-xs" href="jsp/admin/plugins/extend/modules/comment/DoCancelPinned.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${comment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{module.extend.comment.comment_info.labelCancelPinned}">
+									 <span class="fa-stack fa-sm">
+                                               <i class="fa fa-thumb-tack fa-stack-1x"></i>
+                                               <i class="fa fa-ban fa-stack-2x text-danger"></i>
+                               		</span>
+									
+								</a>
+							<#else>
+								<a class="btn btn-primary btn-xs" href="jsp/admin/plugins/extend/modules/comment/DoPinned.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${comment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{module.extend.comment.comment_info.labelDoPinned}">
+											<i class="fa fa-thumb-tack"></i>
+								</a>
+								
+							</#if>
 						</div>
 					</form>
 				</td>

@@ -89,6 +89,26 @@ public interface ICommentService
      */
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
     void updateCommentStatus( int nIdComment, boolean bPublished );
+    
+    /**
+     * Update flag important.
+     * 
+     * @param nIdComment the n id comment
+     * @param bImportant true if the comment is important
+     */
+    @Transactional( CommentPlugin.TRANSACTION_MANAGER )
+    void updateFlagImportant( int nIdComment, boolean bImportant);
+    
+    
+    /**
+     * Update flag important.
+     * 
+     * @param nIdComment the n id comment
+     * @param bPinned true if the comment must be pinned
+     */
+    @Transactional( CommentPlugin.TRANSACTION_MANAGER )
+    void updateCommentPinned( int nIdComment, boolean bPinned);
+    
 
     /**
      * Load.
@@ -211,6 +231,23 @@ public interface ICommentService
     List<Comment> findByIdParent( int nIdParent, boolean bPublishedOnly, String strSortedAttributeName, boolean bAscSort );
 
     /**
+     * Load comments pinned.
+     * 
+     * @param strIdExtendableResource the id of the extendable resource
+     * @param strExtendableResourceType the extendable resource type
+     * @param nNbComments the number of comments
+     * @param bPublishedOnly True to get only published comments, false to get
+     *            every comments
+     * @param bParentsOnly True to get only parent comments, false to get every
+     *            comments.
+     * @param bGetNumberSubComments True to get the number of sub comments of
+     *            each comment, false otherwise
+     * @return the list of comments pinned
+     */
+    List<Comment> findCommentsPinned( String strIdExtendableResource, String strExtendableResourceType, int nNbComments,
+            Integer nCommentState, boolean bParentsOnly, boolean bGetNumberSubComments );
+
+    /**
      * Get the number of comments associated with a given parent
      * @param nIdParent The id of the parent of comments to count.
      * @param bPublishedOnly True to consider only published comments
@@ -239,4 +276,24 @@ public interface ICommentService
      * @return a referenceList of comment states
      */
      ReferenceList getRefListCommentStates(Locale locale );
+     
+     /**
+      * return a referenceList  containing the filter on the flag important
+      * @param locale the locale
+      * @return  a referenceList  containing the filter on the flag important
+      */
+     ReferenceList getRefListFilterAsImportant(Locale locale );
+     
+     
+     
+     /**
+      * return a referenceList  containing the filter on the flag As Pinned
+      * @param locale the locale
+      * @return a referenceList  containing the filter on the flag As Pinned
+      */
+     ReferenceList getRefListFilterAsPinned(Locale locale );
+     
+     
+     
+     
 }

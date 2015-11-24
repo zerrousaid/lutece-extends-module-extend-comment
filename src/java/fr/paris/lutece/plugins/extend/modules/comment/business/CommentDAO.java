@@ -51,8 +51,8 @@ import org.apache.commons.lang.StringUtils;
 public class CommentDAO implements ICommentDAO
 {
     private static final String SQL_QUERY_NEW_PK = " SELECT max( id_comment ) FROM extend_comment ";
-    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment ( id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment, lutece_user_name ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
-    private static final String SQL_QUERY_SELECT_ALL = " SELECT id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment, lutece_user_name FROM extend_comment ";
+    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment ( id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment, lutece_user_name,is_pinned,comment_order,is_important ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+    private static final String SQL_QUERY_SELECT_ALL = " SELECT id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment, lutece_user_name,is_pinned,comment_order,is_important FROM extend_comment ";
     private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_ALL + " WHERE id_comment = ? ";
     private static final String SQL_QUERY_SELECT_BY_RESOURCE = SQL_QUERY_SELECT_ALL
             + " WHERE id_resource LIKE ? AND resource_type = ? ";
@@ -62,7 +62,7 @@ public class CommentDAO implements ICommentDAO
     private static final String SQL_QUERY_DELETE_BY_ID_RESOURCE = " DELETE FROM extend_comment WHERE resource_type = ? ";
     private static final String SQL_QUERY_FILTER_ID_RESOURCE = " AND id_resource = ? ";
     private static final String SQL_QUERY_UPDATE = " UPDATE extend_comment SET id_resource = ?, resource_type = ?, date_comment = ?, name = ?, email = ?, "
-            + " ip_address = ?, comment = ?, is_published = ?, date_last_modif = ?, id_parent_comment = ?, is_admin_comment = ? WHERE id_comment = ?  ";
+            + " ip_address = ?, comment = ?, is_published = ?, date_last_modif = ?, id_parent_comment = ?, is_admin_comment = ?,is_pinned = ?,comment_order = ?,is_important = ? WHERE id_comment = ?  ";
     private static final String SQL_QUERY_FIND_BY_ID_PARENT = SQL_QUERY_SELECT_ALL + " WHERE id_parent_comment = ? ";
     private static final String SQL_QUERY_COUNT_BY_ID_PARENT = " SELECT count( id_comment ) FROM extend_comment WHERE id_parent_comment = ? ";
     private static final String SQL_QUERY_UPDATE_COMMENT_PUBLISHED = " UPDATE extend_comment SET is_published = ?, date_last_modif = ? WHERE id_comment = ?  ";
@@ -71,6 +71,11 @@ public class CommentDAO implements ICommentDAO
     private static final String SQL_COUNT_NUMBER_COMMENTS_FOR_SELECT_ID_RESOURCE = " SELECT COUNT( id_resource ) FROM extend_comment ec WHERE e.id_resource = ec.id_resource AND e.resource_type = ec.resource_type ";
     private static final String SQL_FILTER_STATUS_PUBLISHED = " is_published = 1 ";
     private static final String SQL_FILTER_STATUS_UN_PUBLISHED = " is_published = 0 ";
+    private static final String SQL_FILTER_IS_IMPORTANT_TRUE = " is_important = 1 ";
+    private static final String SQL_FILTER_IS_IMPORTANT_FALSE = " is_important = 0 ";
+    private static final String SQL_FILTER_IS_PINNED_TRUE = " is_pinned = 1 ";
+    private static final String SQL_FILTER_IS_PINNED_FALSE = " is_pinned = 0 ";
+    
     private static final String SQL_FILTER_SELECT_PARENTS = " id_parent_comment = 0 ";
     private static final String SQL_AND = " AND ";
     private static final String SQL_ASC = " ASC ";
@@ -80,6 +85,7 @@ public class CommentDAO implements ICommentDAO
 
     private static final String SQL_SORT_BY_DATE_CREATION = "date_comment";
     private static final String SQL_SORT_BY_DATE_MODIFICATION = "date_last_modif";
+    private static final String SQL_SORT_BY_COMMENT_ORDER = "comment_order";
 
     private static final String CONSTANT_COMMA = ",";
     private static final String CONSTANT_QUESTION_MARK = "?";
@@ -137,6 +143,12 @@ public class CommentDAO implements ICommentDAO
         daoUtil.setInt( nIndex++, comment.getIdParentComment( ) );
         daoUtil.setBoolean( nIndex++, comment.getIsAdminComment( ) );
         daoUtil.setString( nIndex++, comment.getLuteceUserName());
+        daoUtil.setBoolean( nIndex++, comment.isPinned() );
+        daoUtil.setInt( nIndex++, comment.getCommentOrder());
+        daoUtil.setBoolean( nIndex++, comment.getIsImportant() );
+        
+        
+        
         
 
         daoUtil.executeUpdate( );
@@ -220,6 +232,11 @@ public class CommentDAO implements ICommentDAO
         daoUtil.setTimestamp( nIndex++, comment.getDateLastModif( ) );
         daoUtil.setInt( nIndex++, comment.getIdParentComment( ) );
         daoUtil.setBoolean( nIndex++, comment.getIsAdminComment( ) );
+        daoUtil.setBoolean( nIndex++, comment.isPinned() );
+        daoUtil.setInt( nIndex++, comment.getCommentOrder());
+        daoUtil.setBoolean( nIndex++, comment.getIsImportant() );
+        
+        
         daoUtil.setInt( nIndex, comment.getIdComment( ) );
 
         daoUtil.executeUpdate( );
@@ -304,7 +321,7 @@ public class CommentDAO implements ICommentDAO
         {
             sbSQL.append( SQL_AND ).append( SQL_FILTER_SELECT_PARENTS );
         }
-
+        sbSQL.append( SQL_AND ).append( SQL_FILTER_IS_PINNED_FALSE );
         sbSQL.append( SQL_ORDER_BY_DATE_MODIFICATION ).append( SQL_DESC );
         sbSQL.append( SQL_LIMIT ).append( nNbComments );
 
@@ -560,6 +577,9 @@ public class CommentDAO implements ICommentDAO
         comment.setIdParentComment( daoUtil.getInt( nIndex++ ) );
         comment.setIsAdminComment( daoUtil.getBoolean( nIndex++ ) );
         comment.setLuteceUserName(daoUtil.getString( nIndex++ ));
+        comment.setPinned(daoUtil.getBoolean( nIndex++ ));
+        comment.setCommentOrder(daoUtil.getInt( nIndex++ ));
+        comment.setIsImportant(daoUtil.getBoolean( nIndex++ ));
         
         return comment;
     }
@@ -584,6 +604,30 @@ public class CommentDAO implements ICommentDAO
          		 sbSQL.append( SQL_AND ).append( SQL_FILTER_STATUS_UN_PUBLISHED);
          	}
          }
+    	 if ( commentFilter.getImportant() !=null  )
+         {
+         	if(commentFilter.getImportant().equals(true))
+         	{
+ 	         
+ 	            sbSQL.append( SQL_AND ).append( SQL_FILTER_IS_IMPORTANT_TRUE );
+         	}
+         	else
+         	{
+         		 sbSQL.append( SQL_AND ).append( SQL_FILTER_IS_IMPORTANT_FALSE);
+         	}
+         }
+    	 if ( commentFilter.getPinned() !=null  )
+         {
+         	if(commentFilter.getPinned().equals(true))
+         	{
+ 	         
+ 	            sbSQL.append( SQL_AND ).append( SQL_FILTER_IS_PINNED_TRUE );
+         	}
+         	else
+         	{
+         		 sbSQL.append( SQL_AND ).append( SQL_FILTER_IS_PINNED_FALSE);
+         	}
+         }
  
         
     	
@@ -599,7 +643,7 @@ public class CommentDAO implements ICommentDAO
         if ( StringUtils.isNotEmpty( commentFilter.getSortedAttributeName() ) )
         {
             if ( StringUtils.equals( SQL_SORT_BY_DATE_CREATION,  commentFilter.getSortedAttributeName()  )
-                    || StringUtils.equals( SQL_SORT_BY_DATE_MODIFICATION,  commentFilter.getSortedAttributeName()  ) )
+                    || StringUtils.equals( SQL_SORT_BY_DATE_MODIFICATION,  commentFilter.getSortedAttributeName()  )|| StringUtils.equals( SQL_SORT_BY_COMMENT_ORDER,  commentFilter.getSortedAttributeName()  ) )
             {
                 sbSQL.append( SQL_ORDER_BY ).append(  commentFilter.getSortedAttributeName()  );
             }

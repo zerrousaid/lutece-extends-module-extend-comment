@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.web.component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -45,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrMatcher;
 
 import fr.paris.lutece.plugins.extend.business.extender.ResourceExtenderDTO;
 import fr.paris.lutece.plugins.extend.business.extender.config.IExtenderConfig;
@@ -133,12 +135,14 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     {
         CommentExtenderConfig config = _configService.find( getResourceExtender( ).getKey( ), strIdExtendableResource,
                 strExtendableResourceType );
+       
                  
      	int nNbComments = 1;
         boolean bAuthorizedsubComments = true;
         boolean bUseBBCodeEditor = false;
         int nAddCommentPosition = 0;
         String strAdminBadge = StringUtils.EMPTY;
+
         if ( config != null )
         {
             nNbComments = config.getNbComments( );
@@ -148,9 +152,12 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             strAdminBadge = config.getAdminBadge( );
         }
 
-        List<Comment> listComments = _commentService.findLastComments( strIdExtendableResource,
-                strExtendableResourceType, nNbComments, true, true, bAuthorizedsubComments );
-        Map<String, Object> model = new HashMap<String, Object>( );
+        List<Comment> listComments =_commentService.findLastComments( strIdExtendableResource,
+                    strExtendableResourceType, nNbComments, true, true, bAuthorizedsubComments );
+          
+        	
+        
+    	 Map<String, Object> model = new HashMap<String, Object>( );
         model.put( CommentConstants.MARK_COMMENT_CONFIG, _configService.find( CommentResourceExtender.EXTENDER_TYPE_COMMENT, strIdExtendableResource, strExtendableResourceType ) );
         model.put( CommentConstants.MARK_LIST_COMMENTS, listComments );
         model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
@@ -271,6 +278,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             Boolean bIsAscSort = false;
             String strSortedAttributeName = null;
             String strFilterState = null;
+            String strFilterMarkAsImportant = null;
+            String strFilterPinned = null;
             Object object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_ITEMS_PER_PAGE );
             if ( object != null )
             {
@@ -296,6 +305,18 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             if ( object != null )
             {
                 strFilterState = (String) object;
+            }
+            
+            object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_FILTER_PINNED);
+            if ( object != null )
+            {
+            	strFilterPinned = (String) object;
+            }
+            
+            object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_FILTER_MARK_AS_IMPORTANT);
+            if ( object != null )
+            {
+            	strFilterMarkAsImportant = (String) object;
             }
 
 
@@ -328,6 +349,17 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             {
             	strFilterState=request.getParameter( CommentConstants.PARAMETER_FILTER_STATE );
             }
+            
+            if ( request.getParameter( CommentConstants.PARAMETER_FILTER_PINNED) != null )
+            {
+            	strFilterPinned=request.getParameter( CommentConstants.PARAMETER_FILTER_PINNED);
+            }
+            
+            if ( request.getParameter( CommentConstants.PARAMETER_FILTER_MARK_AS_IMPORTANT) != null )
+            {
+            	strFilterMarkAsImportant=request.getParameter( CommentConstants.PARAMETER_FILTER_MARK_AS_IMPORTANT);
+            }
+         
             int nItemsOffset = nItemsPerPage * ( Integer.parseInt( strCurrentPageIndex ) - 1 );
 
             
@@ -335,6 +367,14 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             if(StringUtils.isNotBlank( strFilterState ) && StringUtils.isNumeric( strFilterState ))
         	{
         		commentFilter.setCommentState(Integer.parseInt(strFilterState));
+        	}
+            if(StringUtils.isNotBlank( strFilterPinned ))
+        	{
+        		commentFilter.setPinned(new Boolean(strFilterPinned));
+        	}
+            if(StringUtils.isNotBlank( strFilterMarkAsImportant))
+        	{
+        		commentFilter.setImportant(new Boolean(strFilterMarkAsImportant));
         	}
         	commentFilter.setSortedAttributeName(strSortedAttributeName);
         	commentFilter.setAscSort(bIsAscSort);
@@ -398,7 +438,12 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             model.put( CommentConstants.MARK_ADMIN_BADGE, config.getAdminBadge( ) );
             model.put( CommentConstants.MARK_ALLOW_SUB_COMMENTS, config.getAuthorizeSubComments( ) );
             model.put( CommentConstants.MARK_FILTER_STATE, strFilterState);
+            model.put( CommentConstants.MARK_FILTER_MARK_AS_IMPORTANT, strFilterMarkAsImportant);
+            model.put( CommentConstants.MARK_FILTER_PINNED, strFilterPinned);
             model.put( CommentConstants. MARK_LIST_COMMENT_STATES,_commentService.getRefListCommentStates(locale));
+            model.put( CommentConstants. MARK_LIST_MARK_AS_IMPORTANT_FILTER,_commentService.getRefListFilterAsImportant(locale));
+            model.put( CommentConstants. MARK_LIST_PINNED_FILTER,_commentService.getRefListFilterAsPinned(locale));
+            
             model.put( CommentConstants.PARAMETER_POST_BACK_URL, strPostBackUrl );
            	
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_COMMENTS, request.getLocale( ),
