@@ -210,7 +210,7 @@ public class CommentDAO implements ICommentDAO
         daoUtil.setString( nIndex++, strExtendableResourceType );
         if ( !ResourceExtenderDTOFilter.WILDCARD_ID_RESOURCE.equals( strIdExtendableResource ) )
         {
-            daoUtil.setString( nIndex, strIdExtendableResource );
+            daoUtil.setString( nIndex++, strIdExtendableResource );
         }
 
         daoUtil.executeUpdate( );
@@ -241,7 +241,7 @@ public class CommentDAO implements ICommentDAO
         daoUtil.setBoolean( nIndex++, comment.getIsImportant() );
         
         
-        daoUtil.setInt( nIndex, comment.getIdComment( ) );
+        daoUtil.setInt( nIndex++, comment.getIdComment( ) );
 
         daoUtil.executeUpdate( );
         daoUtil.free( );
@@ -257,7 +257,7 @@ public class CommentDAO implements ICommentDAO
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_COMMENT_PUBLISHED, plugin );
         daoUtil.setBoolean( nIndex++, bPublished );
         daoUtil.setTimestamp( nIndex++, new Timestamp( new Date( ).getTime( ) ) );
-        daoUtil.setInt( nIndex, nIdComment );
+        daoUtil.setInt( nIndex++, nIdComment );
 
         daoUtil.executeUpdate( );
         daoUtil.free( );
@@ -292,7 +292,7 @@ public class CommentDAO implements ICommentDAO
         {
         	daoUtil.setString( nIndex++, strIdExtendableResource );
         }
-        daoUtil.setString( nIndex, strExtendableResourceType );
+        daoUtil.setString( nIndex++, strExtendableResourceType );
         daoUtil.executeQuery( );
 
         int nCount = 0;
@@ -332,7 +332,7 @@ public class CommentDAO implements ICommentDAO
         int nIndex = 1;
         DAOUtil daoUtil = new DAOUtil( sbSQL.toString( ), plugin );
         daoUtil.setString( nIndex++, strIdExtendableResource );
-        daoUtil.setString( nIndex, strExtendableResourceType );
+        daoUtil.setString( nIndex++, strExtendableResourceType );
         daoUtil.executeQuery( );
 
         while ( daoUtil.next( ) )
@@ -441,7 +441,7 @@ public class CommentDAO implements ICommentDAO
         
    	 if ( StringUtils.isNotEmpty(commentFilter.getLuteceUserName()) ) {
    		
-   		 daoUtil.setString( nIndex, commentFilter.getLuteceUserName() );
+   		 daoUtil.setString( nIndex++, commentFilter.getLuteceUserName() );
    	 }
         
         daoUtil.executeQuery( );
@@ -468,7 +468,7 @@ public class CommentDAO implements ICommentDAO
         }
 
         DAOUtil daoUtil = new DAOUtil( sbSQL.toString( ), plugin );
-        daoUtil.setInt( nIndex, nIdParent );
+        daoUtil.setInt( nIndex++, nIdParent );
         daoUtil.executeQuery( );
 
         int nResult = 0;
@@ -501,7 +501,7 @@ public class CommentDAO implements ICommentDAO
 
         DAOUtil daoUtil = new DAOUtil( sbSQL.toString( ), plugin );
         daoUtil.setString( nIndex++, strIdExtendableResource );
-        daoUtil.setString( nIndex, strExtendableResourceType );
+        daoUtil.setString( nIndex++, strExtendableResourceType );
         daoUtil.executeQuery( );
 
         while ( daoUtil.next( ) )
@@ -558,7 +558,7 @@ public class CommentDAO implements ICommentDAO
             {
                 daoUtil.setInt( nIndex++, nItemsOffset );
             }
-            daoUtil.setInt( nIndex, nMaxItemsNumber );
+            daoUtil.setInt( nIndex++, nMaxItemsNumber );
         }
         daoUtil.executeQuery( );
 
