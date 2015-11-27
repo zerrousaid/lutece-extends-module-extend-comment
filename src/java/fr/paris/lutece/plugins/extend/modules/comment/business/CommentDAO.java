@@ -394,6 +394,12 @@ public class CommentDAO implements ICommentDAO
         	daoUtil.setString( nIndex++, strIdExtendableResource );
         }
         daoUtil.setString( nIndex++, strExtendableResourceType );
+
+        if ( StringUtils.isNotEmpty(commentFilter.getLuteceUserName()) ) {
+       		
+      		 daoUtil.setString( nIndex++, commentFilter.getLuteceUserName() );
+      	}
+
         if ( nMaxItemsNumber > 0 )
         {
             if ( nItemsOffset > 0 )
@@ -402,12 +408,6 @@ public class CommentDAO implements ICommentDAO
             }
             daoUtil.setInt( nIndex++, nMaxItemsNumber );
         }
-        
-        if ( StringUtils.isNotEmpty(commentFilter.getLuteceUserName()) ) {
-       		
-      		 daoUtil.setString( nIndex, commentFilter.getLuteceUserName() );
-      	 }
-        
         
         daoUtil.executeQuery( );
 
