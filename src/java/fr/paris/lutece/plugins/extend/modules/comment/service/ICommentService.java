@@ -243,10 +243,11 @@ public interface ICommentService
      *            comments.
      * @param bGetNumberSubComments True to get the number of sub comments of
      *            each comment, false otherwise
+     *  @param  add filter on user name strFilterUserName       
      * @return the list of comments pinned
      */
     List<Comment> findCommentsPinned( String strIdExtendableResource, String strExtendableResourceType, int nNbComments,
-            Integer nCommentState, boolean bParentsOnly, boolean bGetNumberSubComments );
+            Integer nCommentState, boolean bParentsOnly, boolean bGetNumberSubComments,String strFilterUserName );
 
     /**
      * Get the number of comments associated with a given parent

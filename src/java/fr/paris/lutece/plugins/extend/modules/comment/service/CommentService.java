@@ -215,7 +215,7 @@ public class CommentService implements ICommentService
         List<Comment> listComments =new ArrayList<>();
         
         
-        List<Comment> listCommentsPinned = findCommentsPinned(strIdExtendableResource, strExtendableResourceType, nNbComments, bPublishedOnly?Comment.COMMENT_STATE_PUBLISHED:null, true, bGetNumberSubComments);
+        List<Comment> listCommentsPinned = findCommentsPinned(strIdExtendableResource, strExtendableResourceType, nNbComments, bPublishedOnly?Comment.COMMENT_STATE_PUBLISHED:null, true, bGetNumberSubComments,null);
         
         listComments.addAll(listCommentsPinned);
         
@@ -283,7 +283,7 @@ public class CommentService implements ICommentService
        else
     	{
     	 
-    	    List<Comment> listCommentsPinned = findCommentsPinned(strIdExtendableResource, strExtendableResourceType, nMaxItemsNumber, commentFilter.getCommentState(), true, bLoadSubComments);
+    	    List<Comment> listCommentsPinned = findCommentsPinned(strIdExtendableResource, strExtendableResourceType, nMaxItemsNumber, commentFilter.getCommentState(), true, bLoadSubComments,commentFilter.getLuteceUserName());
 	        int nPinnedCommentsCount = listCommentsPinned.size() - nItemsOffset;
 	        if (nPinnedCommentsCount < 0) {
 	        	nPinnedCommentsCount = 0;
@@ -419,14 +419,14 @@ public class CommentService implements ICommentService
 	public List<Comment> findCommentsPinned(String strIdExtendableResource,
 			String strExtendableResourceType, int nNbComments,
 			Integer nCommentState, boolean bParentsOnly,
-			boolean bGetNumberSubComments) {
+			boolean bGetNumberSubComments,String strFilterUserName) {
 			Plugin plugin = CommentPlugin.getPlugin( );
 			CommentFilter filter=new CommentFilter();
 			filter.setPinned(true);
 			filter.setAscSort(false);
 			filter.setSortedAttributeName(CommentConstants.SORT_BY_COMMENT_ORDER);
 			filter.setCommentState(nCommentState);
-	    
+			filter.setLuteceUserName(strFilterUserName);
 			
 			List<Comment> listComments = _commentDAO.findParentCommentsByResource(strIdExtendableResource, strExtendableResourceType, filter, 0, nNbComments, plugin);
 	       
