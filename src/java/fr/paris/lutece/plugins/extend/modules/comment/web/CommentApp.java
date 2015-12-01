@@ -442,7 +442,7 @@ public class CommentApp implements XPageApplication
     	
     	
     	Comment comment = new Comment( );
-        	
+        LuteceUser user=null;	
         try
         {
             BeanUtils.populate( comment, request.getParameterMap( ) );
@@ -456,6 +456,31 @@ public class CommentApp implements XPageApplication
             AppLogService.error( "Unable to fetch data from request", e );
         }
 
+       
+
+        // Test the captcha
+        if ( _bIsCaptchaEnabled )
+        {
+            CaptchaSecurityService captchaService = new CaptchaSecurityService( );
+
+            if ( !captchaService.validate( request ) )
+            {
+                SiteMessageService.setMessage( request, MESSAGE_ERROR_BAD_JCAPTCHA, SiteMessage.TYPE_STOP );
+            }
+        }
+
+        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
+              strIdExtendableResource, strExtendableResourceType );
+        //test authentication if needed
+        if(config!=null && config.isEnabledAuthMode())
+        {
+     	   user=SecurityService.getInstance().getRegisteredUser(request);
+     	   if(user==null)
+     	   {
+     		   throw new UserNotSignedException(  );
+     	   }
+        }
+        
         // Check mandatory fields
         Set<ConstraintViolation<Comment>> constraintViolations = BeanValidationUtil.validate( comment );
 
@@ -471,32 +496,12 @@ public class CommentApp implements XPageApplication
         {
             SiteMessageService.setMessage( request, Messages.MANDATORY_FIELDS, SiteMessage.TYPE_STOP );
         }
-
-        // Test the captcha
-        if ( _bIsCaptchaEnabled )
-        {
-            CaptchaSecurityService captchaService = new CaptchaSecurityService( );
-
-            if ( !captchaService.validate( request ) )
-            {
-                SiteMessageService.setMessage( request, MESSAGE_ERROR_BAD_JCAPTCHA, SiteMessage.TYPE_STOP );
-            }
-        }
-
-        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
-                strIdExtendableResource, strExtendableResourceType );
-
         if ( config != null )
         {
           
-          LuteceUser user;
+          
            if(config.isEnabledAuthMode())
            {
-        	   user=SecurityService.getInstance().getRegisteredUser(request);
-        	   if(user==null)
-        	   {
-        		   throw new UserNotSignedException(  );
-        	   }
         	   comment.setEmail(user.getEmail());
         	   comment.setLuteceUserName(user.getName());
         	   if(!StringUtils.isEmpty(comment.getName()) )
