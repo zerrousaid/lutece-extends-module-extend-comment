@@ -525,7 +525,7 @@ public class CommentApp implements XPageApplication
 
             try
             {
-                getCommentService( ).create( comment );
+                getCommentService( ).create( comment, request );
                 bIsCreated = true;
             }
             catch ( Exception ex )

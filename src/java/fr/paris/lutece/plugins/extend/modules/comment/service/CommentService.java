@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,6 +72,26 @@ public class CommentService implements ICommentService
      */
     @Override
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
+    public void create( Comment comment, HttpServletRequest request )
+    {
+        Timestamp currentTimestamp = new Timestamp( new Date( ).getTime( ) );
+        comment.setDateComment( currentTimestamp );
+        comment.setDateLastModif( currentTimestamp );
+        _commentDAO.insert( comment, CommentPlugin.getPlugin( ) );
+        if ( comment.getIdParentComment( ) > 0 )
+        {
+            Comment parentComment = findByPrimaryKey( comment.getIdParentComment( ) );
+            parentComment.setDateLastModif( currentTimestamp );
+            update( parentComment );
+        }
+        CommentListenerService.createComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ),
+                comment.isPublished( ), request );
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional( CommentPlugin.TRANSACTION_MANAGER )
     public void create( Comment comment )
     {
         Timestamp currentTimestamp = new Timestamp( new Date( ).getTime( ) );
@@ -84,7 +105,7 @@ public class CommentService implements ICommentService
             update( parentComment );
         }
         CommentListenerService.createComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ),
-                comment.isPublished( ) );
+                comment.isPublished( ));
     }
 
     /**

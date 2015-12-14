@@ -35,6 +35,8 @@ package fr.paris.lutece.plugins.extend.modules.comment.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 
 /**
  * Interface of listeners of comments
@@ -49,7 +51,16 @@ public interface ICommentListener
      *            otherwise
      */
     void createComment( String strIdExtendableResource, boolean bPublished );
-
+    
+    /**
+     * Notify the creation of a comment
+     * @param strIdExtendableResource The id of the extendable resource
+     *            associated with the created comment
+     * @param bPublished True if the created comment is published, false
+     *            otherwise
+     * request  HttpServletRequest the Http request          
+     */
+    void createComment( String strIdExtendableResource, boolean bPublished , HttpServletRequest request);
     /**
      * Notify the publication or unpublication of a comment
      * @param strIdExtendableResource The id of the extendable resource
