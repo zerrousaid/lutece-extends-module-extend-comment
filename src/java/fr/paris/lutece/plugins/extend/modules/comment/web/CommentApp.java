@@ -522,10 +522,11 @@ public class CommentApp implements XPageApplication
                 comment.setIdParentComment( 0 );
             }
             boolean bIsCreated = false;
-
+            
+            comment.setComment( comment.getComment( ).replaceAll( "\r", "<br />" ) );
             try
             {
-                getCommentService( ).create( comment );
+                getCommentService( ).create( comment, request );
                 bIsCreated = true;
             }
             catch ( Exception ex )
