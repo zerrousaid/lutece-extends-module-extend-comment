@@ -34,12 +34,17 @@
 package fr.paris.lutece.plugins.extend.modules.comment.service;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+
+import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 
 
 /**
  * Interface of listeners of comments
+ * @param <A>
  */
 public interface ICommentListener
 {
@@ -77,4 +82,11 @@ public interface ICommentListener
      * @param listIdRemovedComment The list of ids of removed comments
      */
     void deleteComment( String strIdExtendableResource, List<Integer> listIdRemovedComment );
+    
+   /**
+    * Notify the check comment  
+    * @param listErrors
+    * @return
+    */
+   public  String  checkComment( String comment, String uidUser );
 }
