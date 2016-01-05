@@ -498,7 +498,7 @@ public class CommentApp implements XPageApplication
             SiteMessageService.setMessage( request, Messages.MANDATORY_FIELDS, SiteMessage.TYPE_STOP );
         }
         
-        String strParamError=  CommentListenerService.checkComment( comment.getComment( ), strExtendableResourceType, comment.getLuteceUserName( ) );
+        String strParamError=  CommentListenerService.checkComment( comment.getComment( ), strExtendableResourceType, user.getName( ) );
         Object[] paramsError= { strParamError };
        
         if ( strParamError != null && StringUtils.isNotEmpty( strParamError ) ){
