@@ -59,7 +59,7 @@ public class CommentDAO implements ICommentDAO
     private static final String SQL_QUERY_SELECT_BY_RESOURCE = SQL_QUERY_SELECT_ALL
             + " WHERE id_resource LIKE ? AND resource_type = ? ";
     private static final String SQL_QUERY_SELECT_ID_BY_RESOURCE = "SELECT id_comment FROM extend_comment WHERE id_resource = ? AND resource_type = ? ";
-    private static final String SQL_QUERY_SELECT_NB_COMMENT_BY_RESOURCE = " SELECT count(id_comment) FROM extend_comment WHERE id_resource = ? AND resource_type = ? ";
+    private static final String SQL_QUERY_SELECT_NB_COMMENT_BY_RESOURCE = " SELECT count(id_comment) FROM extend_comment WHERE  resource_type = ? ";
     private static final String SQL_QUERY_DELETE = " DELETE FROM extend_comment WHERE id_comment = ? ";
     private static final String SQL_QUERY_DELETE_BY_ID_RESOURCE = " DELETE FROM extend_comment WHERE resource_type = ? ";
     private static final String SQL_QUERY_FILTER_ID_RESOURCE = " AND id_resource = ? ";
@@ -80,6 +80,8 @@ public class CommentDAO implements ICommentDAO
     private static final String SQL_FILTER_LUTECE_USER_NAME = " lutece_user_name = ? ";
     
     
+    
+    private static final String SQL_FILTER_ID_RESOURCE= "id_resource = ?";
     private static final String SQL_FILTER_SELECT_PARENTS = " id_parent_comment = 0 ";
     private static final String SQL_AND = " AND ";
     private static final String SQL_ASC = " ASC ";
@@ -273,6 +275,11 @@ public class CommentDAO implements ICommentDAO
         int nIndex = 1;
         StringBuilder sbSQL = new StringBuilder( SQL_QUERY_SELECT_NB_COMMENT_BY_RESOURCE );
 
+        if (!strIdExtendableResource.equals(CONSTANT_ALL_RESSOURCE_ID))
+        {
+        	sbSQL.append( SQL_AND ).append( SQL_FILTER_ID_RESOURCE);
+        }
+        
         if ( bPublishedOnly )
         {
             sbSQL.append( SQL_AND ).append( SQL_FILTER_STATUS_PUBLISHED );
@@ -283,12 +290,7 @@ public class CommentDAO implements ICommentDAO
         }
         DAOUtil daoUtil = new DAOUtil( sbSQL.toString( ), plugin );
 
-        if (strIdExtendableResource.equals(CONSTANT_ALL_RESSOURCE_ID))
-        {
-        	daoUtil.setString( nIndex++, CONSTANT_SQL_ALL_RESSOURCE_ID );
-
-        }
-        else
+        if (!strIdExtendableResource.equals(CONSTANT_ALL_RESSOURCE_ID))
         {
         	daoUtil.setString( nIndex++, strIdExtendableResource );
         }
