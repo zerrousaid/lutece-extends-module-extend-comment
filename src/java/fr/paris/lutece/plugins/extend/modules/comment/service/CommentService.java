@@ -271,46 +271,11 @@ public class CommentService implements ICommentService
     {
     	
     	List<Comment> listComments =new ArrayList<>();
-        
-    	if(commentFilter.getPinned()!=null )
-    	{
-    		
-    		
-    		listComments.addAll( _commentDAO.findParentCommentsByResource( strIdExtendableResource,
-        			strExtendableResourceType, commentFilter, nItemsOffset,
-        			nMaxItemsNumber, CommentPlugin.getPlugin( ) ) );
-        }
-       else
-    	{
-    	 
-    	    List<Comment> listCommentsPinned = findCommentsPinned(strIdExtendableResource, strExtendableResourceType, nMaxItemsNumber, commentFilter.getCommentState(), true, bLoadSubComments,commentFilter.getLuteceUserName());
-	        int nPinnedCommentsCount = listCommentsPinned.size() - nItemsOffset;
-	        if (nPinnedCommentsCount < 0) {
-	        	nPinnedCommentsCount = 0;
-	        }
-	        
-	        if (nPinnedCommentsCount > 0) {
-	        	listComments.addAll(listCommentsPinned.subList(nItemsOffset, listCommentsPinned.size()));
-	        }
-	        
-	        int nNormalCommentsCount = nMaxItemsNumber-nPinnedCommentsCount;
-	        if (nNormalCommentsCount < 0) {
-	        	nNormalCommentsCount = 0;
-	        }
-	        
-	        if (nNormalCommentsCount > 0 ) {
-	        	//get all comment not pinned
-	        	commentFilter.setPinned(false);
-	        	int nNewOffset = nItemsOffset-listCommentsPinned.size();
-	        	if (nNewOffset < 0) {
-	        		nNewOffset = 0;
-	        	}
-	        	listComments.addAll( _commentDAO.findParentCommentsByResource( strIdExtendableResource,
-	        			strExtendableResourceType, commentFilter, nNewOffset,
-	        			nNormalCommentsCount, CommentPlugin.getPlugin( ) ) );
-	        }
-    }
-        
+        	
+    	listComments.addAll( _commentDAO.findParentCommentsByResource( strIdExtendableResource,
+        		strExtendableResourceType, commentFilter, nItemsOffset,
+        		nMaxItemsNumber, CommentPlugin.getPlugin( ) ) );
+
         if ( bLoadSubComments )
         {
             for ( Comment comment : listComments )
