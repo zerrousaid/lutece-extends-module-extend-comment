@@ -37,6 +37,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
@@ -73,7 +75,16 @@ public interface ICommentService
      */
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
     void create( Comment comment );
-
+    
+    /**
+     * Insert.
+     * 
+     * @param comment the comment
+     * @param request the HTTP request
+     */
+    @Transactional( CommentPlugin.TRANSACTION_MANAGER )
+    void create( Comment comment,HttpServletRequest request  );
+    
     /**
      * Store.
      * 
@@ -295,9 +306,6 @@ public interface ICommentService
       * @return a referenceList  containing the filter on the flag As Pinned
       */
      ReferenceList getRefListFilterAsPinned(Locale locale );
-     
-     
-     
-     
+
 
 }

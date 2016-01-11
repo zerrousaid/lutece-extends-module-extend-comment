@@ -445,7 +445,7 @@ public class CommentJspBean extends PluginAdminPageJspBean
         comment.setIpAddress( SecurityUtil.getRealIp( request ) );
         comment.setIsAdminComment( true );
 
-        _commentService.create( comment );
+        _commentService.create( comment, request );
         _resourceHistoryService.create( CommentResourceExtender.EXTENDER_TYPE_COMMENT, strIdExtendableResource,
                 strExtendableResourceType, request );
 

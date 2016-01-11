@@ -43,6 +43,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 
 /**
  * Service to manage listeners over comments
@@ -124,7 +126,37 @@ public class CommentListenerService
             }
         }
     }
-
+    
+    /**
+     * Notify to listeners the creation of a comment. Only listeners associated
+     * with the extendable resource type of the comment are notified.
+     * @param strExtendableResourceType The extendable resource type of the
+     *            created comment
+     * @param strIdExtendableResource The extendable resource id of the comment
+     * @param bPublished True if the comment is published, false otherwise
+     * @param request the HTTP request
+     */
+    public static void createComment( String strExtendableResourceType, String strIdExtendableResource,
+            boolean bPublished, HttpServletRequest request )
+    {
+        List<ICommentListener> listListeners = _mapListeners.get( strExtendableResourceType );
+        if ( listListeners != null )
+        {
+            for ( ICommentListener listener : listListeners )
+            {
+                listener.createComment( strIdExtendableResource, bPublished, request );
+            }
+        }
+        listListeners = _mapListeners.get( CONSTANT_EVERY_EXTENDABLE_RESOURCE_TYPE );
+        if ( listListeners != null )
+        {
+            for ( ICommentListener listener : listListeners )
+            {
+                listener.createComment( strIdExtendableResource, bPublished, request );
+            }
+        }
+    }
+    
     /**
      * Notify to listeners the modification of a comment. Only listeners
      * associated with the extendable resource type of the comment are notified.
@@ -206,7 +238,46 @@ public class CommentListenerService
             AppLogService.error( e.getMessage( ), e );
         }
     }
-
+    
+    /**
+     * Notify the check comment  
+     * @param listErrors
+     * @return
+     */
+    public  static  String checkComment( String comment, String strExtendableResourceType, String uidUser ){
+    	
+        StringBuilder sbError = new StringBuilder( );
+        try
+        {
+            List<ICommentListener> listListeners = _mapListeners.get( strExtendableResourceType );
+            if ( listListeners != null )
+            {
+                for ( ICommentListener listener : listListeners )
+                {
+                	String strError= listener.checkComment(comment, uidUser);
+                	if( strError!= null && !strError.isEmpty( )){
+                		sbError.append( strError );
+                	}
+                }
+            }
+            listListeners = _mapListeners.get( CONSTANT_EVERY_EXTENDABLE_RESOURCE_TYPE );
+            if ( listListeners != null )
+            {
+                for ( ICommentListener listener : listListeners )
+                {
+                	String strError=listener.checkComment(comment, uidUser);
+                	if(strError!= null && !strError.isEmpty( ) ){
+                		sbError.append( strError );
+                	}
+                }
+            }
+        }
+        catch ( Exception e )
+        {
+            AppLogService.error( e.getMessage( ), e );
+        }
+        return sbError.toString( );
+    }
     /**
      * Get the comment DAO
      * @return the comment DAO

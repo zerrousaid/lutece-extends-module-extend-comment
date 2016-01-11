@@ -53,6 +53,7 @@ import org.apache.commons.lang.StringUtils;
 import fr.paris.lutece.plugins.extend.modules.comment.business.AddCommentPosition;
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.extend.modules.comment.business.config.CommentExtenderConfig;
+import fr.paris.lutece.plugins.extend.modules.comment.service.CommentListenerService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.CommentPlugin;
 import fr.paris.lutece.plugins.extend.modules.comment.service.CommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.ICommentService;
@@ -75,7 +76,6 @@ import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.message.SiteMessageService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
-import fr.paris.lutece.portal.service.prefs.PortalUserPreferenceServiceImpl;
 import fr.paris.lutece.portal.service.prefs.UserPreferencesService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
@@ -108,6 +108,7 @@ public class CommentApp implements XPageApplication
     // MESSAGES
     private static final String MESSAGE_STOP_GENERIC_MESSAGE = "module.extend.comment.message.stop.genericMessage";
     private static final String MESSAGE_ERROR_BAD_JCAPTCHA = "module.extend.comment.message.error.badJcaptcha";
+    private static final String MESSAGE_STOP_CHECK_COMMENT = "module.extend.comment.message.stop.checkComment";
 
     // PROPERTIES
     private static final String PROPERTY_USE_CAPTCHA = "module.extend.comment.useCaptcha";
@@ -482,7 +483,7 @@ public class CommentApp implements XPageApplication
         }
         
         // Check mandatory fields
-        Set<ConstraintViolation<Comment>> constraintViolations = BeanValidationUtil.validate( comment );
+		Set<ConstraintViolation<Comment>> constraintViolations = BeanValidationUtil.validate( comment );
 
         if ( constraintViolations.size( ) > 0 )
         {
@@ -495,6 +496,14 @@ public class CommentApp implements XPageApplication
                 || StringUtils.isBlank( comment.getEmail( ) ) )
         {
             SiteMessageService.setMessage( request, Messages.MANDATORY_FIELDS, SiteMessage.TYPE_STOP );
+        }
+        
+        String strParamError=  CommentListenerService.checkComment( comment.getComment( ), strExtendableResourceType, user.getName( ) );
+        Object[] paramsError= { strParamError };
+       
+        if ( strParamError != null && StringUtils.isNotEmpty( strParamError ) ){
+        	
+        	SiteMessageService.setMessage( request, MESSAGE_STOP_CHECK_COMMENT, paramsError,SiteMessage.TYPE_STOP );
         }
         if ( config != null )
         {
@@ -522,10 +531,11 @@ public class CommentApp implements XPageApplication
                 comment.setIdParentComment( 0 );
             }
             boolean bIsCreated = false;
-
+            
+            comment.setComment( comment.getComment( ).replaceAll( "\r", "<br />" ) );
             try
             {
-                getCommentService( ).create( comment );
+                getCommentService( ).create( comment, request );
                 bIsCreated = true;
             }
             catch ( Exception ex )
