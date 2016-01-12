@@ -105,10 +105,10 @@ import fr.paris.lutece.util.url.UrlItem;
  */
 public class CommentApp implements XPageApplication
 {
-    // MESSAGES
+    // 																			
     private static final String MESSAGE_STOP_GENERIC_MESSAGE = "module.extend.comment.message.stop.genericMessage";
     private static final String MESSAGE_ERROR_BAD_JCAPTCHA = "module.extend.comment.message.error.badJcaptcha";
-    private static final String MESSAGE_STOP_CHECK_COMMENT = "module.extend.comment.message.stop.checkComment";
+   
 
     // PROPERTIES
     private static final String PROPERTY_USE_CAPTCHA = "module.extend.comment.useCaptcha";
@@ -503,7 +503,7 @@ public class CommentApp implements XPageApplication
        
         if ( strParamError != null && StringUtils.isNotEmpty( strParamError ) ){
         	
-        	SiteMessageService.setMessage( request, MESSAGE_STOP_CHECK_COMMENT, paramsError,SiteMessage.TYPE_STOP );
+        	SiteMessageService.setMessage( request, MESSAGE_STOP_GENERIC_MESSAGE, paramsError,SiteMessage.TYPE_STOP );
         }
         if ( config != null )
         {
