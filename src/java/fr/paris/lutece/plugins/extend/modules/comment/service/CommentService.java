@@ -72,7 +72,7 @@ public class CommentService implements ICommentService
      */
     @Override
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
-    public void create( Comment comment, HttpServletRequest request )
+    public synchronized void create( Comment comment, HttpServletRequest request )
     {
         Timestamp currentTimestamp = new Timestamp( new Date( ).getTime( ) );
         comment.setDateComment( currentTimestamp );
@@ -92,7 +92,7 @@ public class CommentService implements ICommentService
      */
     @Override
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
-    public void create( Comment comment )
+    public synchronized void create( Comment comment )
     {
         Timestamp currentTimestamp = new Timestamp( new Date( ).getTime( ) );
         comment.setDateComment( currentTimestamp );
