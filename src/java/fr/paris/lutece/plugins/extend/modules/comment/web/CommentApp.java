@@ -502,7 +502,7 @@ public class CommentApp implements XPageApplication
         {
            if(config.isEnabledAuthMode())
            {
-               String strParamError=  CommentListenerService.checkComment( comment.getComment( ), strExtendableResourceType, user.getName( ) );
+               String strParamError=  CommentListenerService.checkComment( comment.getComment( ), strExtendableResourceType, comment.getIdExtendableResource( ), user.getName( ) );
                Object[] paramsError= { strParamError };
 
                if ( strParamError != null && StringUtils.isNotEmpty( strParamError ) )

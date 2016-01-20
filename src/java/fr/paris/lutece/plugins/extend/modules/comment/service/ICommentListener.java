@@ -89,4 +89,14 @@ public interface ICommentListener
     * @return
     */
    public  String  checkComment( String comment, String uidUser );
+   
+   /**
+    * Notify the check comment
+    * @param comment
+    * @param uidUser
+    * @param strResourceType
+    * @param strResourceId
+    * @return
+    */
+   public String checkComment( String comment, String uidUser, String strResourceType, String strResourceId );
 }
