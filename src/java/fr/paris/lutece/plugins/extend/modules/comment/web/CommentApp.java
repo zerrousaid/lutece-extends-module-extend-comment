@@ -497,20 +497,19 @@ public class CommentApp implements XPageApplication
         {
             SiteMessageService.setMessage( request, Messages.MANDATORY_FIELDS, SiteMessage.TYPE_STOP );
         }
-        
-        String strParamError=  CommentListenerService.checkComment( comment.getComment( ), strExtendableResourceType, user.getName( ) );
-        Object[] paramsError= { strParamError };
-       
-        if ( strParamError != null && StringUtils.isNotEmpty( strParamError ) ){
-        	
-        	SiteMessageService.setMessage( request, MESSAGE_STOP_GENERIC_MESSAGE, paramsError,SiteMessage.TYPE_STOP );
-        }
+
         if ( config != null )
         {
-          
-          
            if(config.isEnabledAuthMode())
            {
+               String strParamError=  CommentListenerService.checkComment( comment.getComment( ), strExtendableResourceType, user.getName( ) );
+               Object[] paramsError= { strParamError };
+
+               if ( strParamError != null && StringUtils.isNotEmpty( strParamError ) )
+               {
+                   SiteMessageService.setMessage( request, MESSAGE_STOP_GENERIC_MESSAGE, paramsError,SiteMessage.TYPE_STOP );
+               }
+
         	   comment.setEmail(user.getEmail());
         	   comment.setLuteceUserName(user.getName());
         	   if(!StringUtils.isEmpty(comment.getName()) )
