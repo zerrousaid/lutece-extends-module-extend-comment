@@ -135,11 +135,11 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     {
         CommentExtenderConfig config = _configService.find( getResourceExtender( ).getKey( ), strIdExtendableResource,
                 strExtendableResourceType );
-       
                  
      	int nNbComments = 1;
         boolean bAuthorizedsubComments = true;
         boolean bUseBBCodeEditor = false;
+        boolean bDisplaySubComments = true;
         int nAddCommentPosition = 0;
         String strAdminBadge = StringUtils.EMPTY;
 
@@ -150,12 +150,11 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             nAddCommentPosition =config.getAddCommentPosition( ); 
             bUseBBCodeEditor = config.getUseBBCodeEditor( );
             strAdminBadge = config.getAdminBadge( );
+            bDisplaySubComments = config.isDisplaySubComments( ) ;
         }
 
         List<Comment> listComments =_commentService.findLastComments( strIdExtendableResource,
-                    strExtendableResourceType, nNbComments, true, true, bAuthorizedsubComments );
-          
-        	
+                    strExtendableResourceType, nNbComments, true, true, bAuthorizedsubComments, bDisplaySubComments );
         
     	 Map<String, Object> model = new HashMap<String, Object>( );
         model.put( CommentConstants.MARK_COMMENT_CONFIG, _configService.find( CommentResourceExtender.EXTENDER_TYPE_COMMENT, strIdExtendableResource, strExtendableResourceType ) );
@@ -165,6 +164,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         model.put( CommentConstants.MARK_ADD_COMMENT_POSITION, nAddCommentPosition );
         model.put( CommentConstants.MARK_USE_BBCODE, bUseBBCodeEditor );
         model.put( CommentConstants.MARK_ADMIN_BADGE, strAdminBadge );
+        model.put( CommentConstants.MARK_ALLOW_SUB_COMMENTS, bAuthorizedsubComments );
+        model.put( CommentConstants.MARK_DISPLAY_SUB_COMMENTS, bDisplaySubComments );
         
         if (nAddCommentPosition != AddCommentPosition.NEW_PAGE )
         {

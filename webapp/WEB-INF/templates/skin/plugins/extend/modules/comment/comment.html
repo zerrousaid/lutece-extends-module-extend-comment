@@ -1,52 +1,158 @@
 <div class="row">
-	<#if listComments?? && listComments?has_content>
-		<div class="form-group">
-			<a href="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-sm" title="#i18n{module.extend.comment.comment.labelViewComments}" >
-				<i class="glyphicon glyphicon-eye-open">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelViewComments}
-			</a>
-			<#if addCommentPosition = 0>
-				<a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-sm" title="#i18n{module.extend.comment.comment.labelAddComment}">
-					<i class="glyphicon glyphicon-plus">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}
-				</a>
-			<#elseif addCommentPosition = 1 || addCommentPosition = 3>
-				<#include "/skin/plugins/extend/modules/comment/add_comment.html" />
-			</#if>
-		</div>
-		<#list listComments as comment>
-			<div class="well">
-				<fieldset>
-					<legend>
-						#i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}
-						<#if comment.isAdminComment><div>${adminBadge!}</div></#if>
-					</legend>
-					<div class="pull-right">
-						@Extender[${comment.idComment},Comment,rating,{show:"vote"}]@
-					</div>
-					<p>
+  <#if listComments?? && listComments?has_content>
+    <div class="form-group">
+ 
+      <#if addCommentPosition = 0>
+        <a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-sm" title="#i18n{module.extend.comment.comment.labelAddComment}">
+          <i class="glyphicon glyphicon-plus">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}
+        </a>
+      <#elseif addCommentPosition = 1 || addCommentPosition = 3>
+        <#include "/skin/plugins/extend/modules/comment/add_comment.html" />
+      </#if>
+    </div>
+    <#list listComments as comment>
+      <div class="well">
+        <fieldset>
+          <legend>
+            #i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}
+            <#if comment.isAdminComment><div>${adminBadge!}</div></#if>
+          </legend>
+          <div class="pull-right">
+            @Extender[${comment.idComment},Comment,rating,{show:"vote"}]@
+          </div>
+          <p>
                         <img class="avatar" src="${comment.avatarUrl}" title="${comment.name!}" alt="${comment.name!}" />
-						<#if use_bbcode>
-							${comment.BBCodeComment!}
-						<#else>
-							${comment.comment!}
-						</#if>
-					</p>
-					<#if 0 < comment.numberSubComments >
-					<a href="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;idComment=${comment.idComment!}#comment_${comment.idComment!}">#i18n{module.extend.comment.comment.labelViewSubComments} (${comment.numberSubComments})</a>
-					</#if>
-				</fieldset>
-			</div>
-		</#list>
-	</#if>
-	<div class="form-group">
-		<a href="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-sm" title="#i18n{module.extend.comment.comment.labelViewComments}" >
-			<i class="glyphicon glyphicon-eye-open">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelViewComments}
-		</a>
-		<#if addCommentPosition = 0>
-			<a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-sm" title="#i18n{module.extend.comment.comment.labelAddComment}">
-				<i class="glyphicon glyphicon-plus">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}
-			</a>
-		<#elseif addCommentPosition = 2 || addCommentPosition = 3>
-			<#include "/skin/plugins/extend/modules/comment/add_comment.html" />
-		</#if>
-	</div>
-</div>
+            <#if use_bbcode>
+              ${comment.BBCodeComment!}
+            <#else>
+              ${comment.comment!}
+            </#if>
+          </p>
+          <#if 0 < comment.numberSubComments >
+          
+    
+          <div class="span11">
+                <#if comment.listSubComments?? && 0 < comment.listSubComments?size && displaySubComments>
+                <p> #i18n{module.extend.comment.comment_info.publishedSubComments}  (${comment.numberSubComments})</p>
+                  <div <#if !idComment?? || comment.idComment?string != idComment>class="commentComments"</#if>>
+                    <#list comment.listSubComments as subComment>
+                      <blockquote>
+                        <div>
+                          <strong>
+                            #i18n{module.extend.comment.view_comments.labelPosted} ${subComment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${subComment.name!}</p>
+                           
+                            <#if subComment.isAdminComment>
+                              <div>${adminBadge!}</div>
+                            </#if>
+                          </strong>
+                        </div>
+                        <div class="well">
+                          <p>
+                            <#if use_bbcode>
+                              ${subComment.BBCodeComment!}
+                            <#else>
+                              ${subComment.comment!}  
+                            </#if>
+                          </p>
+                        </div>
+      
+                      </blockquote>
+                    </#list>
+                  
+                  </div>
+      
+                </#if>
+          </#if>
+        </fieldset>
+      </div>
+       <#if allowSubComments && myLuteceUser??>
+    <div class="pull-right">
+    
+       <div class="col-xs-12 col-sm-5 col-md-7">
+       <button id="${comment.idComment!}"  class="btn btn-sm btn-primary" onclick="addComment(${comment.idComment!})"> <i class="glyphicon glyphicon-plus">&nbsp;</i>&nbsp;<span class="hidden-phone">#i18n{module.extend.comment.view_comments.labelAnswerComment}</span>  </button> 
+    
+    </div>
+    </div>
+
+    <div id="comment-form" class="row">
+     <div class="col-xs-12 col-sm-12" >
+    <div class="iComment" id="addComment_${comment.idComment!}">
+      <form class="form" method="post" action="jsp/site/Portal.jsp">
+        <input type="hidden" name="page" value="extend-comment">
+        <input type="hidden" name="action" value="doAddComment">
+        <input type="hidden" name="idParentComment" value="${comment.idComment!}">
+       
+        <#if returnToCommentList?? && returnToCommentList>
+            <input type="hidden" name="returnToCommentList" value="true">
+        </#if>
+        <#if from_url?? && from_url?has_content && from_url != "null">
+            <input type="hidden" name="from_url" value="${from_url!}">
+        </#if>
+        <input type="hidden" name="idExtendableResource" value="${idExtendableResource!}">
+        <input type="hidden" name="extendableResourceType" value="${extendableResourceType!}">
+        <#if !commentConfig.enabledAuthMode>
+          <div class="form-group">
+              <label  for="email">#i18n{module.extend.comment.add_comment.labelEmail} * :</label>
+              <input type="text" name="email" class="form-control" maxlength="255" value="${email!}" />
+          </div>
+        <#else>
+          <input type="hidden" name="email" class="form-control" value="${email!}">
+        </#if>
+        <#if commentConfig.enabledAuthMode>
+          <input type="hidden" id="comment-name" name="name" value="${nickname!}">
+        <#else>
+          <div class="form-group">
+            <label  for="name">#i18n{module.extend.comment.add_comment.labelName} * :</label>
+            <input type="text" id="comment-name" name="name" size="20" maxlength="255" value="${userName!}" />
+          </div>
+        </#if>
+        <div class="form-group">
+          <label for="comment" class="sr-only">#i18n{module.extend.comment.add_comment.labelComment} * :</label>
+          <textarea  name="comment" class="form-control" rows="6" placeholder="Merci d'indiquer votre commentaire"></textarea>
+        </div>
+        <#if is_active_captcha>
+          <div class="form-group">
+            ${captcha!}
+          </div>
+        </#if>
+        <div class="form-group text-center">
+          <button class="btn btn-idee" type="submit" name="add" value="#i18n{portal.util.labelValidate}" title="#i18n{portal.util.labelValidate}" >
+             #i18n{portal.util.labelValidate}
+          </button>
+          <#if addCommentPosition = 0>
+            <button class="btn btn-idee" type="button" name="cancel" onclick="javascript:history.back();" value="#i18n{portal.util.labelBack}" title="#i18n{portal.util.labelBack}" >
+              #i18n{portal.util.labelBack}
+            </button>
+          </#if>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>              
+  </#if>
+  <#if comment.isAdminComment>${adminBadge!}</#if>
+  </#list> 
+
+</#if>
+
+  <div class="form-group"> 
+   
+    <#if addCommentPosition = 0>
+      <a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-sm" title="#i18n{module.extend.comment.comment.labelAddComment}">
+        <i class="glyphicon glyphicon-plus">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}
+      </a>  
+    <#elseif addCommentPosition = 2 || addCommentPosition = 3>
+      <#include "/skin/plugins/extend/modules/comment/add_comment.html" />
+    </#if>
+  </div>
+</div> 
+<script>
+  $(document).ready( function () {
+    $( "div.iComment" ).hide();
+  });
+
+  function addComment(i)
+  {
+      $( "#addComment_"+i ).slideToggle( "slow" );   
+  }
+</script>

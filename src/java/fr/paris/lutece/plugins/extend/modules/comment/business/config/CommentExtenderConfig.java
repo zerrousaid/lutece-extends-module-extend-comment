@@ -52,8 +52,10 @@ public class CommentExtenderConfig extends ExtenderConfig
     private String _strMessageCommentCreated;
     private int _nAddCommentPosition;
     private boolean _bEnabledAuthMode;
+    private boolean _bDisplaySubComments;
 
-    /**
+
+	/**
      * Checks if is moderated.
      * 
      * @return true, if is moderated
@@ -211,5 +213,23 @@ public class CommentExtenderConfig extends ExtenderConfig
 	 */
 	public void setEnabledAuthMode(boolean bEnableAuthMode) {
 		this._bEnabledAuthMode = bEnableAuthMode;
+	}
+	
+	/**
+	 * 
+	 * @return isDisplaySubComments true if the display sub comments mode is enable 
+	 */
+	public boolean isDisplaySubComments( )
+	{
+		return _bDisplaySubComments;
+	}
+	
+	/**
+	 * 
+	 * @param bDisplaySubComments true if the display sub comments mode is enable
+	 */
+	public void setDisplaySubComments( boolean bDisplaySubComments )
+	{
+		this._bDisplaySubComments = bDisplaySubComments;
 	}
 }

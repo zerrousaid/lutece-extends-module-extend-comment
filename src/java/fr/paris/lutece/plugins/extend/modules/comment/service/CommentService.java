@@ -230,11 +230,11 @@ public class CommentService implements ICommentService
      */
     @Override
     public List<Comment> findLastComments( String strIdExtendableResource, String strExtendableResourceType,
-            int nNbComments, boolean bPublishedOnly, boolean bParentsOnly, boolean bGetNumberSubComments )
+            int nNbComments, boolean bPublishedOnly, boolean bParentsOnly, boolean bGetNumberSubComments, boolean bDisplaySubComments  )
     {
         Plugin plugin = CommentPlugin.getPlugin( );
-        List<Comment> listComments =new ArrayList<>();
-        
+        List<Comment> listComments = new ArrayList<>();
+        List <Comment> listSubComments = new ArrayList<>();
         
         List<Comment> listCommentsPinned = findCommentsPinned(strIdExtendableResource, strExtendableResourceType, nNbComments, bPublishedOnly?Comment.COMMENT_STATE_PUBLISHED:null, true, bGetNumberSubComments,null);
         
@@ -252,8 +252,13 @@ public class CommentService implements ICommentService
            {
                for ( Comment comment : listLastComments )
                {
-                   comment.setNumberSubComments( _commentDAO.countByIdParent( comment.getIdComment( ), bPublishedOnly,
-                           plugin ) );
+            	   listSubComments = findByIdParent( comment.getIdComment( ), bPublishedOnly ) ;
+
+            	   comment.setNumberSubComments( listSubComments.size( ) ) ;
+                   if ( bDisplaySubComments )
+                   {
+                	   comment.setListSubComments( listSubComments );
+                   }
                }
            }
         	listComments.addAll(listLastComments);

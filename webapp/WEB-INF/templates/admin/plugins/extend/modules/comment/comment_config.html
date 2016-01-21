@@ -21,6 +21,13 @@
 	</div>
 </div>
 <div class="control-group" >
+	<label class="control-label" for="displaySubComments">Afficher les sous-commentaires : </label>
+	<div class="controls">
+		<input type="radio" name="displaySubComments" value="true" <#if commentConfig.displaySubComments>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelYes}
+		<input type="radio" name="displaySubComments" value="false" <#if !commentConfig.displaySubComments>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelNo}
+	</div>
+</div>
+<div class="control-group" >
   <label class="control-label" for="addCommentPosition">#i18n{module.extend.comment.comment_config.labelAddCommentPosition} : </label>
 	<div class="controls">
 		<select name="addCommentPosition" id="addCommentPosition" title="#i18n{module.extend.comment.comment_config.labelAddCommentPosition}">

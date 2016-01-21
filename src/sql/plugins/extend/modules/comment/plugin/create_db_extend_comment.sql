@@ -37,5 +37,6 @@ CREATE TABLE extend_comment_config (
 	message_comment_created LONG VARCHAR NOT NULL,
 	add_comment_position SMALLINT NOT NULL default 0,
 	is_enabled_auth_mode SMALLINT default 0 NOT NULL,
+	is_enabled_display_sub_comments SMALLINT default 0 NOT NULL,
 	PRIMARY KEY (id_extender)
 );
