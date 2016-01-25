@@ -211,6 +211,13 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             model.put( CommentConstants.PARAMETER_FROM_URL, CommentConstants.FROM_SESSION );
         }
 
+        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+
+        if ( user != null )
+        {
+            model.put( CommentConstants.MARK_REGISTERED_USER_EMAIL, user.getEmail( ) );
+        }
+
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT, request.getLocale( ), model );
         String strContent = template.getHtml( );
 
@@ -446,7 +453,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             model.put( CommentConstants. MARK_LIST_PINNED_FILTER,_commentService.getRefListFilterAsPinned(locale));
             
             model.put( CommentConstants.PARAMETER_POST_BACK_URL, strPostBackUrl );
-           	
+
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_COMMENTS, request.getLocale( ),
                     model );
 

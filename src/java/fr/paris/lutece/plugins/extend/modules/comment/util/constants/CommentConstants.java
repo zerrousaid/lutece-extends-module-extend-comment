@@ -64,6 +64,7 @@ public final class CommentConstants
     public static final String MESSAGE_CONFIRM_REMOVE_COMMENT = "module.extend.comment.message.confirm.removeComment";
     public static final String MESSAGE_ERROR_GENERIC_MESSAGE = "module.extend.comment.message.error.genericMessage";
     public static final String MESSAGE_NOTIFY_SUBJECT = "module.extend.comment.message.notify.subject";
+    public static final String MESSAGE_ERROR_CANNOT_DELETE = "module.extend.comment.message.error.cannotDelete";
 
     // PARAMETERS
     public static final String PARAMETER_ACTION = "action";
@@ -79,6 +80,8 @@ public final class CommentConstants
     public static final String PARAMETER_FILTER_STATE = "filterState";
     public static final String PARAMETER_FILTER_PINNED = "filterPinned";
     public static final String PARAMETER_FILTER_MARK_AS_IMPORTANT = "filterMarkAsImportant";
+    public static final String PARAMETER_CONFIRM_REMOVE_COMMENT = "confirm_remove_comment";
+    public static final String PARAMETER_PAGE = "page";
 
     // BEANS
     public static final String BEAN_CONFIG_SERVICE = "extend-comment.commentExtenderConfigService";
@@ -110,6 +113,7 @@ public final class CommentConstants
     public static final String MARK_LIST_COMMENT_STATES = "listCommentStates";
     public static final String MARK_LIST_MARK_AS_IMPORTANT_FILTER = "listMarkAsImportantFilter";
     public static final String MARK_LIST_PINNED_FILTER = "listPinnedFilter";
+    public static final String MARK_REGISTERED_USER_EMAIL = "registeredUserEmail";
     
     
     
@@ -125,6 +129,8 @@ public final class CommentConstants
     // ACTIONS
     public static final String ACTION_ADD_COMMENT = "addComment";
     public static final String ACTION_DO_ADD_COMMENT = "doAddComment";
+    public static final String ACTION_CONFIRM_REMOVE_COMMENT = "confirmRemoveComment";
+    public static final String ACTION_REMOVE_COMMENT = "removeComment";
 
     // CONSTANTS
     public static final String MARK_ASC_SORT = "asc_sort";

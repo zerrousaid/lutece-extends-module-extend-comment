@@ -45,6 +45,14 @@
 						#i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}
 						<#if allowSubComments>
 							<div class="pull-right">
+							    <#if registeredUserEmail?? >
+                                    <#if comment.email == registeredUserEmail && comment.numberSubComments <= 0 >
+                                        <a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=confirmRemoveComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;idComment=${comment.idComment}"
+                                            class="btn btn-danger btn-sm" title="#i18n{portal.util.labelDelete}" >
+                                            <i class="glyphicon glyphicon-trash"></i>
+                                        </a>
+                                    </#if>
+                                </#if>
 								<a class="btn btn-sm btn-primary" title="#i18n{module.extend.comment.view_comments.labelAnswerComment}" href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;idComment=${comment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&amp;from_url=from_session</#if>">
 									<i class="glyphicon glyphicon-plus">&nbsp;</i>&nbsp;<span class="hidden-phone">#i18n{module.extend.comment.view_comments.labelAnswerComment}</span>
 								</a>
@@ -88,6 +96,16 @@
 											</#if>
 										</strong>
 									</div>
+                                    <#if registeredUserEmail?? >
+                                        <#if subComment.email == registeredUserEmail && subComment.numberSubComments <= 0 >
+                                        <div class="pull-right">
+                                            <a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=confirmRemoveComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;idComment=${subComment.idComment}"
+                                                class="btn btn-danger btn-xs" title="#i18n{portal.util.labelDelete}" >
+                                                <i class="glyphicon glyphicon-trash"></i>
+                                            </a>
+                                        </div>
+                                        </#if>
+                                    </#if>
 									<div class="well">
 										<p>
 											<#if use_bbcode>

@@ -1,7 +1,10 @@
 <div class="row">
   <#if listComments?? && listComments?has_content>
     <div class="form-group">
- 
+      <a href="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-sm" title="#i18n{module.extend.comment.comment.labelViewComments}" >
+        <i class="glyphicon glyphicon-eye-open">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelViewComments}
+      </a>
+
       <#if addCommentPosition = 0>
         <a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-sm" title="#i18n{module.extend.comment.comment.labelAddComment}">
           <i class="glyphicon glyphicon-plus">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}
@@ -16,6 +19,16 @@
           <legend>
             #i18n{module.extend.comment.view_comments.labelPosted} ${comment.dateComment!} #i18n{module.extend.comment.view_comments.labelBy} ${comment.name!}
             <#if comment.isAdminComment><div>${adminBadge!}</div></#if>
+            <#if registeredUserEmail?? >
+                <#if comment.email == registeredUserEmail && comment.numberSubComments <= 0 >
+                <div class="pull-right">
+                    <a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=confirmRemoveComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;idComment=${comment.idComment}"
+                        class="btn btn-danger btn-sm" title="#i18n{portal.util.labelDelete}" >
+                        <i class="glyphicon glyphicon-trash"></i>
+                    </a>
+                </div>
+                </#if>
+            </#if>
           </legend>
           <div class="pull-right">
             @Extender[${comment.idComment},Comment,rating,{show:"vote"}]@
@@ -46,6 +59,16 @@
                             </#if>
                           </strong>
                         </div>
+                        <#if registeredUserEmail?? >
+                            <#if subComment.email == registeredUserEmail && subComment.numberSubComments <= 0 >
+                            <div class="pull-right">
+                                <a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=confirmRemoveComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;idComment=${subComment.idComment}"
+                                    class="btn btn-danger btn-sm" title="#i18n{portal.util.labelDelete}" >
+                                    <i class="glyphicon glyphicon-trash"></i>
+                                </a>
+                            </div>
+                            </#if>
+                        </#if>
                         <div class="well">
                           <p>
                             <#if use_bbcode>
@@ -136,7 +159,9 @@
 </#if>
 
   <div class="form-group"> 
-   
+    <a href="jsp/site/Portal.jsp?page=extend-comment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-sm" title="#i18n{module.extend.comment.comment.labelViewComments}" >
+        <i class="glyphicon glyphicon-eye-open">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelViewComments}
+    </a>
     <#if addCommentPosition = 0>
       <a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=addComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}" class="btn btn-primary btn-sm" title="#i18n{module.extend.comment.comment.labelAddComment}">
         <i class="glyphicon glyphicon-plus">&nbsp;</i>&nbsp;#i18n{module.extend.comment.comment.labelAddComment}

@@ -45,7 +45,7 @@ import fr.paris.lutece.util.sql.DAOUtil;
  */
 public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExtenderConfig>
 {
-    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment_config ( id_extender, is_moderated, nb_comments, id_mailing_list, authorize_sub_comments, use_bbcode, admin_badge, message_comment_created , add_comment_position,is_enabled_auth_mode ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? , ? , ?, ?) ";
+    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment_config ( id_extender, is_moderated, nb_comments, id_mailing_list, authorize_sub_comments, use_bbcode, admin_badge, message_comment_created , add_comment_position,is_enabled_auth_mode, is_enabled_display_sub_comments ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? , ? , ?, ?) ";
     private static final String SQL_QUERY_UPDATE = " UPDATE extend_comment_config SET is_moderated = ?, nb_comments = ?, id_mailing_list = ?, authorize_sub_comments = ?, use_bbcode = ?, admin_badge = ?, message_comment_created = ? , add_comment_position = ? , is_enabled_auth_mode = ?, is_enabled_display_sub_comments = ?  WHERE id_extender = ? ";
     private static final String SQL_QUERY_DELETE = " DELETE FROM extend_comment_config WHERE id_extender = ? ";
     private static final String SQL_QUERY_SELECT = " SELECT id_extender, is_moderated, nb_comments, id_mailing_list, authorize_sub_comments, use_bbcode, admin_badge, message_comment_created , add_comment_position, is_enabled_auth_mode, is_enabled_display_sub_comments FROM extend_comment_config WHERE id_extender = ? ";

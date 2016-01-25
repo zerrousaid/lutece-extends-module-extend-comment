@@ -71,6 +71,8 @@ import fr.paris.lutece.portal.service.content.XPageAppService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.mail.MailService;
 import fr.paris.lutece.portal.service.mailinglist.AdminMailingListService;
+import fr.paris.lutece.portal.service.message.AdminMessage;
+import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.message.SiteMessage;
 import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.message.SiteMessageService;
@@ -85,6 +87,8 @@ import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
+import fr.paris.lutece.portal.util.mvc.utils.MVCUtils;
 import fr.paris.lutece.portal.web.LocalVariables;
 import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.portal.web.util.LocalizedDelegatePaginator;
@@ -124,6 +128,8 @@ public class CommentApp implements XPageApplication
     private static final String TEMPLATE_XPAGE_MESSAGE_COMMENT_CREATED = "skin/plugins/extend/modules/comment/message_comment_created.html";
     private static final String TEMPLATE_COMMENT_NOTIFY_MESSAGE = "skin/plugins/extend/modules/comment/comment_notify_message.html";
 
+    //Jsp redirections
+    private static final String JSP_PORTAL = "jsp/site/Portal.jsp";
     private static final String JSP_URL_DEFAULT_POST_BACK = "jsp/site/Portal.jsp?page=extend-comment";
 
     // CONSTANTS
@@ -143,6 +149,7 @@ public class CommentApp implements XPageApplication
     private final boolean _bIsCaptchaEnabled = PluginService.isPluginEnable( JCAPTCHA_PLUGIN )
             && Boolean
                     .parseBoolean( AppPropertiesService.getProperty( PROPERTY_USE_CAPTCHA, Boolean.TRUE.toString( ) ) );
+
 
     /**
      * {@inheritDoc}
@@ -173,6 +180,24 @@ public class CommentApp implements XPageApplication
             else if ( CommentConstants.ACTION_DO_ADD_COMMENT.equals( strAction ) )
             {
                 page = doAddComment( request, strIdExtendableResource, strExtendableResourceType );
+            }
+            else if ( CommentConstants.ACTION_CONFIRM_REMOVE_COMMENT.equals( strAction ) )
+            {
+                String strIdComment = String.valueOf( request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
+
+                Map<String, Object> requestParameters = new HashMap<String, Object>(  );
+                requestParameters.put( CommentConstants.PARAMETER_PAGE, "extend-comment" );
+                requestParameters.put( MVCUtils.PARAMETER_ACTION, CommentConstants.ACTION_REMOVE_COMMENT );
+                requestParameters.put( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
+                requestParameters.put( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
+                requestParameters.put( CommentConstants.PARAMETER_ID_COMMENT, strIdComment );
+                requestParameters.put( CommentConstants.PARAMETER_CONFIRM_REMOVE_COMMENT, "1" );
+                SiteMessageService.setMessage( request, CommentConstants.MESSAGE_CONFIRM_REMOVE_COMMENT, SiteMessage.TYPE_CONFIRMATION,
+                    JSP_PORTAL, requestParameters );
+            }
+            else if ( CommentConstants.ACTION_REMOVE_COMMENT.equals( strAction ) )
+            {
+                page = doRemoveComment( request, strIdExtendableResource, strExtendableResourceType );
             }
         }
 
@@ -300,6 +325,13 @@ public class CommentApp implements XPageApplication
         model.put( CommentConstants.MARK_ALLOW_SUB_COMMENTS, bAllowSubComments );
         model.put( CommentConstants.MARK_ADMIN_BADGE, strAdminBadge );
         model.put( CommentConstants.PARAMETER_POST_BACK_URL, strPostBackUrl );
+
+        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+
+        if ( user != null )
+        {
+            model.put( CommentConstants.MARK_REGISTERED_USER_EMAIL, user.getEmail( ) );
+        }
 
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_XPAGE_VIEW_COMMENTS, request.getLocale( ),
                 model );
@@ -758,5 +790,107 @@ public class CommentApp implements XPageApplication
             _resourceHistoryService = SpringContextService.getBean( ResourceExtenderHistoryService.BEAN_SERVICE );
         }
         return _resourceHistoryService;
+    }
+
+    /**
+     * Removes comment
+     * @param request
+     * @param strIdExtendableResource
+     * @param strExtendableResourceType
+     * @return
+     * @throws SiteMessageException
+     * @throws UserNotSignedException
+     */
+    private XPage doRemoveComment( HttpServletRequest request, String strIdExtendableResource,
+            String strExtendableResourceType ) throws SiteMessageException, UserNotSignedException
+    {
+        String strConfirmRemoveComment = String
+                .valueOf( request.getParameter( CommentConstants.PARAMETER_CONFIRM_REMOVE_COMMENT ) );
+        String strIdComment = String.valueOf( request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
+        int nIdComment = Integer.parseInt( strIdComment );
+        Comment comment = getCommentService( ).findByPrimaryKey( nIdComment );
+        LuteceUser user = null;
+
+        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
+                strIdExtendableResource, strExtendableResourceType );
+
+        if ( comment == null || strConfirmRemoveComment == null )
+        {
+            SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE,
+                    SiteMessage.TYPE_ERROR );
+        }
+
+        // test authentication if needed
+        if ( config != null && config.isEnabledAuthMode( ) )
+        {
+            user = SecurityService.getInstance( ).getRegisteredUser( request );
+            if ( user == null )
+            {
+                throw new UserNotSignedException( );
+            }
+            else
+            {
+                try
+                {
+                    // Remove the comment only if it does not have subcomments
+                    // and the user must be the author
+                    if ( comment.getEmail( ).equals( user.getEmail( ) )
+                            && ( comment.getListSubComments( ) == null || comment.getListSubComments( ).size( ) == 0 ) )
+                    {
+                        _commentService.remove( nIdComment );
+                    }
+                    else
+                    {
+                        Object[] params =
+                        { CommentConstants.MESSAGE_ERROR_CANNOT_DELETE };
+                        SiteMessageService.setMessage( request, MESSAGE_STOP_GENERIC_MESSAGE, params,
+                                SiteMessage.TYPE_STOP );
+                    }
+                }
+                catch ( Exception ex )
+                {
+                    // Something wrong happened... a database check might be
+                    // needed
+                    AppLogService.error( ex.getMessage( ) + " when removing a comment", ex );
+
+                    Object[] params =
+                    { CommentConstants.MESSAGE_ERROR_CANNOT_DELETE };
+                    SiteMessageService.setMessage( request, MESSAGE_STOP_GENERIC_MESSAGE, params,
+                            SiteMessage.TYPE_STOP );
+                }
+
+                String strPostBackUrl = (String) request.getSession( )
+                        .getAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_POST_BACK_URL );
+                if ( strPostBackUrl == null )
+                {
+                    strPostBackUrl = JSP_URL_DEFAULT_POST_BACK;
+                }
+
+                String strFromUrl = request.getParameter( CommentConstants.PARAMETER_FROM_URL );
+                if ( CommentConstants.FROM_SESSION.equals( strFromUrl ) )
+                {
+                    strFromUrl = (String) request.getSession( )
+                            .getAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
+                }
+                if ( strFromUrl != null )
+                {
+                    strFromUrl = strFromUrl.replaceAll( CONSTANT_AND_HTML, CONSTANT_AND );
+                }
+
+                if ( !request.getParameter( "page" ).equals( CommentPlugin.PLUGIN_NAME )
+                        && config.getAddCommentPosition( ) != AddCommentPosition.NEW_PAGE )
+                {
+                    return redirectToLastUrl( request, config.getMessageCommentCreated( ), strIdExtendableResource );
+                }
+
+                XPage page = new XPage( );
+
+                page = getViewCommentPage( request, strIdExtendableResource, strExtendableResourceType );
+
+                return page;
+            }
+        }
+        redirectToLastUrl( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE, strIdExtendableResource );
+        return null;
     }
 }
