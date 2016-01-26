@@ -184,7 +184,12 @@ public class CommentApp implements XPageApplication
             else if ( CommentConstants.ACTION_CONFIRM_REMOVE_COMMENT.equals( strAction ) )
             {
                 String strIdComment = String.valueOf( request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
-
+                String strFromUrl = (String) request.getSession( ).getAttribute(
+                        ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
+                if ( strFromUrl != null )
+                {
+                    strFromUrl = strFromUrl.replaceAll( CONSTANT_AND, CONSTANT_AND_HTML );
+                }
                 Map<String, Object> requestParameters = new HashMap<String, Object>(  );
                 requestParameters.put( CommentConstants.PARAMETER_PAGE, "extend-comment" );
                 requestParameters.put( MVCUtils.PARAMETER_ACTION, CommentConstants.ACTION_REMOVE_COMMENT );
@@ -192,6 +197,7 @@ public class CommentApp implements XPageApplication
                 requestParameters.put( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
                 requestParameters.put( CommentConstants.PARAMETER_ID_COMMENT, strIdComment );
                 requestParameters.put( CommentConstants.PARAMETER_CONFIRM_REMOVE_COMMENT, "1" );
+                requestParameters.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
                 SiteMessageService.setMessage( request, CommentConstants.MESSAGE_CONFIRM_REMOVE_COMMENT, SiteMessage.TYPE_CONFIRMATION,
                     JSP_PORTAL, requestParameters );
             }
@@ -830,6 +836,14 @@ public class CommentApp implements XPageApplication
             }
             else
             {
+                String strParamError=  CommentListenerService.checkComment( comment.getComment( ), strExtendableResourceType, comment.getIdExtendableResource( ), user.getName( ) );
+                Object[] paramsError= { strParamError };
+
+                if ( strParamError != null && StringUtils.isNotEmpty( strParamError ) )
+                {
+                    SiteMessageService.setMessage( request, MESSAGE_STOP_GENERIC_MESSAGE, paramsError,SiteMessage.TYPE_STOP );
+                }
+
                 try
                 {
                     // Remove the comment only if it does not have subcomments
@@ -841,10 +855,8 @@ public class CommentApp implements XPageApplication
                     }
                     else
                     {
-                        Object[] params =
-                        { CommentConstants.MESSAGE_ERROR_CANNOT_DELETE };
-                        SiteMessageService.setMessage( request, MESSAGE_STOP_GENERIC_MESSAGE, params,
-                                SiteMessage.TYPE_STOP );
+                        SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_CANNOT_DELETE,
+                                SiteMessage.TYPE_ERROR );
                     }
                 }
                 catch ( Exception ex )
@@ -859,13 +871,6 @@ public class CommentApp implements XPageApplication
                             SiteMessage.TYPE_STOP );
                 }
 
-                String strPostBackUrl = (String) request.getSession( )
-                        .getAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_POST_BACK_URL );
-                if ( strPostBackUrl == null )
-                {
-                    strPostBackUrl = JSP_URL_DEFAULT_POST_BACK;
-                }
-
                 String strFromUrl = request.getParameter( CommentConstants.PARAMETER_FROM_URL );
                 if ( CommentConstants.FROM_SESSION.equals( strFromUrl ) )
                 {
@@ -877,17 +882,16 @@ public class CommentApp implements XPageApplication
                     strFromUrl = strFromUrl.replaceAll( CONSTANT_AND_HTML, CONSTANT_AND );
                 }
 
-                if ( !request.getParameter( "page" ).equals( CommentPlugin.PLUGIN_NAME )
-                        && config.getAddCommentPosition( ) != AddCommentPosition.NEW_PAGE )
+                HttpServletResponse response = LocalVariables.getResponse(  );
+                try
                 {
-                    return redirectToLastUrl( request, config.getMessageCommentCreated( ), strIdExtendableResource );
+                    response.sendRedirect( strFromUrl );
                 }
-
-                XPage page = new XPage( );
-
-                page = getViewCommentPage( request, strIdExtendableResource, strExtendableResourceType );
-
-                return page;
+                catch (IOException e)
+                {
+                    // log ?
+                }
+                return new XPage();
             }
         }
         redirectToLastUrl( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE, strIdExtendableResource );
