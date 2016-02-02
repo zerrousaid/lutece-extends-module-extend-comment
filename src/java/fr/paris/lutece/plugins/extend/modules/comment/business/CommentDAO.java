@@ -289,12 +289,12 @@ public class CommentDAO implements ICommentDAO
             sbSQL.append( SQL_AND ).append( SQL_FILTER_SELECT_PARENTS );
         }
         DAOUtil daoUtil = new DAOUtil( sbSQL.toString( ), plugin );
-
+        
+        daoUtil.setString( nIndex++, strExtendableResourceType );
         if (!strIdExtendableResource.equals(CONSTANT_ALL_RESSOURCE_ID))
         {
         	daoUtil.setString( nIndex++, strIdExtendableResource );
         }
-        daoUtil.setString( nIndex++, strExtendableResourceType );
         daoUtil.executeQuery( );
 
         int nCount = 0;
