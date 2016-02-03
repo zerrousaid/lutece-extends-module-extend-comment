@@ -124,7 +124,7 @@ public final class CommentConstants
     public static final String MARK_FILTER_STATE = "filterState";
     public static final String MARK_FILTER_PINNED = "filterPinned";
     public static final String MARK_FILTER_MARK_AS_IMPORTANT = "filterMarkAsImportant";
-  
+    public static final String MARK_COMMENT_CLOSED = "commentClosed";
 
     // ACTIONS
     public static final String ACTION_ADD_COMMENT = "addComment";

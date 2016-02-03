@@ -54,6 +54,7 @@ import fr.paris.lutece.plugins.extend.modules.comment.business.AddCommentPositio
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.extend.modules.comment.business.CommentFilter;
 import fr.paris.lutece.plugins.extend.modules.comment.business.config.CommentExtenderConfig;
+import fr.paris.lutece.plugins.extend.modules.comment.service.CommentListenerService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.CommentPlugin;
 import fr.paris.lutece.plugins.extend.modules.comment.service.ICommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.extender.CommentResourceExtender;
@@ -187,7 +188,18 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
 	     	   	{
 	     	   		model.put(CommentConstants.MARK_NICKNAME, UserPreferencesService.instance().getNickname(user) );
 	     	   	}
-	     	
+                if ( listComments.size( ) > 0 )
+                {
+                    Comment firstComment = listComments.get( 0 );
+                    String strParamError = CommentListenerService
+                            .checkComment( firstComment.getComment( ), strExtendableResourceType,
+                                           firstComment.getIdExtendableResource( ), user.getName( ) );
+
+                    if ( strParamError != null && StringUtils.isNotEmpty( strParamError ) )
+                    {
+                        model.put( CommentConstants.MARK_COMMENT_CLOSED, true );
+                    }
+                }
 	        }
 
             if ( SecurityService.isAuthenticationEnable( ) )
