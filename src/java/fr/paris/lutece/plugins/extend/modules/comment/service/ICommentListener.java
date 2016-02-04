@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
+import fr.paris.lutece.portal.service.security.LuteceUser;
 
 
 /**
@@ -99,4 +100,13 @@ public interface ICommentListener
     * @return
     */
    public String checkComment( String comment, String uidUser, String strResourceType, String strResourceId );
+
+   /**
+    * Check if user can comment
+    * @param user The lutece user
+    * @param strIdExtendableResource The id of the extendable resource
+    * @param strExtendableResourceType The type of the resource
+    * @return true when the user has the rights, otherwise false
+    */
+   public boolean canComment( LuteceUser user, String strIdExtendableResource, String strExtendableResourceType );
 }

@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.extend.modules.comment.service;
 
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.extend.modules.comment.business.ICommentDAO;
+import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
@@ -318,6 +319,50 @@ public class CommentListenerService
             AppLogService.error( e.getMessage(  ), e );
         }
         return sbError.toString(  );
+    }
+    
+    /**
+     * Check if a user can comment. Call listeners.
+     * @param user The lutece user
+     * @param strIdExtendableResource The id of the extendable resource
+     * @param strExtendableResourceType The type of the resource
+     * @return true when the user has the rights, otherwise false
+     */
+    public static boolean canComment( LuteceUser user, String strIdExtendableResource,
+            String strExtendableResourceType )
+    {
+        try
+        {
+            List<ICommentListener> listListeners = _mapListeners.get( strExtendableResourceType );
+            if ( listListeners != null )
+            {
+                for ( ICommentListener listener : listListeners )
+                {
+                    if ( !listener.canComment( user, strIdExtendableResource, strExtendableResourceType ) )
+                    {
+                        return false;
+                    }
+
+                }
+            }
+            listListeners = _mapListeners.get( CONSTANT_EVERY_EXTENDABLE_RESOURCE_TYPE );
+            if ( listListeners != null )
+            {
+                for ( ICommentListener listener : listListeners )
+                {
+                    if ( !listener.canComment( user, strIdExtendableResource, strExtendableResourceType ) )
+                    {
+                        return false;
+                    }
+
+                }
+            }
+        }
+        catch ( Exception e )
+        {
+            AppLogService.error( e.getMessage( ), e );
+        }
+        return true;
     }
     /**
      * Get the comment DAO

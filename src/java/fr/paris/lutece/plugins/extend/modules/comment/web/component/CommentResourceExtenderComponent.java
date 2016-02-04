@@ -188,17 +188,10 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
 	     	   	{
 	     	   		model.put(CommentConstants.MARK_NICKNAME, UserPreferencesService.instance().getNickname(user) );
 	     	   	}
-                if ( listComments.size( ) > 0 )
-                {
-                    Comment firstComment = listComments.get( 0 );
-                    String strParamError = CommentListenerService
-                            .checkComment( firstComment.getComment( ), strExtendableResourceType,
-                                           firstComment.getIdExtendableResource( ), user.getName( ) );
 
-                    if ( strParamError != null && StringUtils.isNotEmpty( strParamError ) )
-                    {
-                        model.put( CommentConstants.MARK_COMMENT_CLOSED, true );
-                    }
+                if ( !CommentListenerService.canComment( user, strIdExtendableResource, strExtendableResourceType ) )
+                {
+                    model.put( CommentConstants.MARK_COMMENT_CLOSED, true );
                 }
 	        }
 
