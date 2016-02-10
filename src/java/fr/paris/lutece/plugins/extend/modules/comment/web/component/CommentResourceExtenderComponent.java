@@ -157,6 +157,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         List<Comment> listComments =_commentService.findLastComments( strIdExtendableResource,
                     strExtendableResourceType, nNbComments, true, true, bAuthorizedsubComments, bDisplaySubComments );
         
+        int nNbPublishedComments = _commentService.getCommentNb( strIdExtendableResource,
+                                                                 strExtendableResourceType, !bDisplaySubComments, true );
     	 Map<String, Object> model = new HashMap<String, Object>( );
         model.put( CommentConstants.MARK_COMMENT_CONFIG, _configService.find( CommentResourceExtender.EXTENDER_TYPE_COMMENT, strIdExtendableResource, strExtendableResourceType ) );
         model.put( CommentConstants.MARK_LIST_COMMENTS, listComments );
@@ -167,6 +169,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         model.put( CommentConstants.MARK_ADMIN_BADGE, strAdminBadge );
         model.put( CommentConstants.MARK_ALLOW_SUB_COMMENTS, bAuthorizedsubComments );
         model.put( CommentConstants.MARK_DISPLAY_SUB_COMMENTS, bDisplaySubComments );
+        model.put( CommentConstants.MARK_NB_PUBLISHED_COMMENTS, nNbPublishedComments );
         
         if (nAddCommentPosition != AddCommentPosition.NEW_PAGE )
         {
