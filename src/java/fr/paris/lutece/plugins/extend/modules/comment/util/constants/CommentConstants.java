@@ -115,7 +115,7 @@ public final class CommentConstants
     public static final String MARK_LIST_PINNED_FILTER = "listPinnedFilter";
     public static final String MARK_REGISTERED_USER_EMAIL = "registeredUserEmail";
     public static final String MARK_NB_PUBLISHED_COMMENTS = "nbPublishedComments";
-    
+    public static final String MARK_CAN_DELETE_COMMENTS = "canDeleteComments";
     
     
     public static final String MARK_ADD_COMMENT_POSITION = "addCommentPosition";

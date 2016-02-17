@@ -53,6 +53,7 @@ public class CommentExtenderConfig extends ExtenderConfig
     private int _nAddCommentPosition;
     private boolean _bEnabledAuthMode;
     private boolean _bDisplaySubComments;
+    private boolean _bDeleteComments;
 
 
 	/**
@@ -232,4 +233,22 @@ public class CommentExtenderConfig extends ExtenderConfig
 	{
 		this._bDisplaySubComments = bDisplaySubComments;
 	}
+
+	/**
+	 * Returns the DeleteComments option
+	 * @return True if the the option is enabled
+	 */
+    public boolean getDeleteComments()
+    {
+        return _bDeleteComments;
+    }
+
+    /**
+     * Sets the DeleteComments option
+     * @param bDeleteComments The DeleteComments option
+     */
+    public void setDeleteComments( boolean bDeleteComments )
+    {
+        _bDeleteComments = bDeleteComments;
+    }
 }

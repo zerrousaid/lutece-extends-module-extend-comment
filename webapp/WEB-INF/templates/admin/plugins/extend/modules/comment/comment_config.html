@@ -40,9 +40,16 @@
 <div class="control-group" >
 	<label class="control-label" for="enabledAuthMode">#i18n{module.extend.comment.comment_config.labelEnabledAuthMode} : </label>
 	<div class="controls">
-		<input type="radio" name="enabledAuthMode" value="true" <#if commentConfig.enabledAuthMode>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelYes}
-		<input type="radio" name="enabledAuthMode" value="false" <#if !commentConfig.enabledAuthMode>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelNo}
+		<input id="extend-comment-auth-mode-enabled" type="radio" name="enabledAuthMode" value="true" <#if commentConfig.enabledAuthMode>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelYes}
+		<input id="extend-comment-auth-mode-disabled" type="radio" name="enabledAuthMode" value="false" <#if !commentConfig.enabledAuthMode>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelNo}
 	</div>
+</div>
+<div class="control-group" id="extend-comment-delete-options">
+    <label class="control-label" for="deleteComments">#i18n{module.extend.comment.comment_config.labelEnabledDeleteComments} : </label>
+    <div class="controls">
+    <input id="extend-comment-delete-comments-enabled" type="radio" name="deleteComments" value="true" <#if commentConfig.deleteComments>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelYes}
+    <input id="extend-comment-delete-comments-disabled" type="radio" name="deleteComments" value="false" <#if !commentConfig.deleteComments>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelNo}
+    </div>
 </div>
 <div class="control-group" >
 	<label class="control-label" for="idMailingList">#i18n{module.extend.comment.comment_config.labelMailingList} : </label>
@@ -65,3 +72,20 @@
 	</div>
 </div>
 <@initEditor />
+<script type="text/javascript">
+$( document ).ready( function (  ) {
+    /* Hide the options if unique vote is selected */
+    if ( $( '#extend-comment-auth-mode-disabled' ).attr( 'checked' ) != "undefined" 
+        && $( '#extend-comment-auth-mode-disabled' ).attr( 'checked' ) == "checked" ) {
+        $( '#extend-comment-delete-options' ).hide(  );
+    }
+
+    $( '#extend-comment-auth-mode-disabled' ).click( function (  ) {
+        $( '#extend-comment-delete-options' ).hide(  );
+    } );
+    $( '#extend-comment-auth-mode-enabled' ).click( function (  ) {
+        $( '#extend-comment-delete-options' ).show(  );
+    } );
+
+} );
+</script>

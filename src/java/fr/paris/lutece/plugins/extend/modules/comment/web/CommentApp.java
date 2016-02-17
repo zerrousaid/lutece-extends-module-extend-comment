@@ -844,31 +844,18 @@ public class CommentApp implements XPageApplication
                     SiteMessageService.setMessage( request, MESSAGE_STOP_GENERIC_MESSAGE, paramsError,SiteMessage.TYPE_STOP );
                 }
 
-                try
-                {
-                    // Remove the comment only if it does not have subcomments
-                    // and the user must be the author
-                    if ( comment.getEmail( ).equals( user.getEmail( ) )
-                            && ( comment.getListSubComments( ) == null || comment.getListSubComments( ).size( ) == 0 ) )
-                    {
-                        _commentService.remove( nIdComment );
-                    }
-                    else
-                    {
-                        SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_CANNOT_DELETE,
-                                SiteMessage.TYPE_ERROR );
-                    }
-                }
-                catch ( Exception ex )
-                {
-                    // Something wrong happened... a database check might be
-                    // needed
-                    AppLogService.error( ex.getMessage( ) + " when removing a comment", ex );
 
-                    Object[] params =
-                    { CommentConstants.MESSAGE_ERROR_CANNOT_DELETE };
-                    SiteMessageService.setMessage( request, MESSAGE_STOP_GENERIC_MESSAGE, params,
-                            SiteMessage.TYPE_STOP );
+                // Remove the comment only if it does not have subcomments && the delete option is enabled
+                // and the user must be the author
+                if ( config.getDeleteComments( ) && comment.getEmail( ).equals( user.getEmail( ) )
+                        && ( comment.getListSubComments( ) == null || comment.getListSubComments( ).size( ) == 0 ) )
+                {
+                    _commentService.remove( nIdComment );
+                }
+                else
+                {
+                    SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_CANNOT_DELETE,
+                                                   SiteMessage.TYPE_ERROR );
                 }
 
                 String strFromUrl = request.getParameter( CommentConstants.PARAMETER_FROM_URL );

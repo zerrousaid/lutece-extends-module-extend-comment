@@ -21,12 +21,14 @@
             <#if comment.isAdminComment><div>${adminBadge!}</div></#if>
             <#if registeredUserEmail?? >
                 <#if comment.email == registeredUserEmail && comment.numberSubComments <= 0 >
+                    <#if canDeleteComments?has_content && canDeleteComments>
                 <div class="pull-right">
                     <a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=confirmRemoveComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;idComment=${comment.idComment}"
                         class="btn btn-danger btn-sm" title="#i18n{portal.util.labelDelete}" >
                         <i class="glyphicon glyphicon-trash"></i>
                     </a>
                 </div>
+                    </#if>
                 </#if>
             </#if>
           </legend>
@@ -61,12 +63,14 @@
                         </div>
                         <#if registeredUserEmail?? >
                             <#if subComment.email == registeredUserEmail && subComment.numberSubComments <= 0 >
+                                <#if canDeleteComments?has_content && canDeleteComments>
                             <div class="pull-right">
                                 <a href="jsp/site/Portal.jsp?page=extend-comment&amp;action=confirmRemoveComment&amp;idExtendableResource=${idExtendableResource!}&amp;extendableResourceType=${extendableResourceType!}&amp;idComment=${subComment.idComment}"
                                     class="btn btn-danger btn-sm" title="#i18n{portal.util.labelDelete}" >
                                     <i class="glyphicon glyphicon-trash"></i>
                                 </a>
                             </div>
+                                </#if>
                             </#if>
                         </#if>
                         <div class="well">

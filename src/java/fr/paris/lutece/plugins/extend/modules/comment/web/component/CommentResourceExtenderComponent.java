@@ -192,7 +192,11 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
 	     	   		model.put(CommentConstants.MARK_NICKNAME, UserPreferencesService.instance().getNickname(user) );
 	     	   	}
 
-                if ( !CommentListenerService.canComment( user, strIdExtendableResource, strExtendableResourceType ) )
+                if ( CommentListenerService.canComment( user, strIdExtendableResource, strExtendableResourceType ) )
+                {
+                    model.put( CommentConstants.MARK_CAN_DELETE_COMMENTS, config.getDeleteComments( ) );
+                }
+                else
                 {
                     model.put( CommentConstants.MARK_COMMENT_CLOSED, true );
                 }
