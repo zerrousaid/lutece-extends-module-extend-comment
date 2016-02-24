@@ -120,10 +120,11 @@ public interface ICommentDAO
      * @param bParentsOnly True to get only parent comments, false to get every
      *            comments.
      * @param plugin the plugin
+     * @param bSortedByDateCreation true if is sorted by date creation
      * @return the list
      */
     List<Comment> selectLastComments( String strIdExtendableResource, String strExtendableResourceType,
-            int nNbComments, boolean bPublishedOnly, boolean bParentsOnly, Plugin plugin );
+            int nNbComments, boolean bPublishedOnly, boolean bParentsOnly, Plugin plugin, boolean bSortedByDateCreation );
 
     /**
      * Get comments of a given resource. Only parents comments are returned.

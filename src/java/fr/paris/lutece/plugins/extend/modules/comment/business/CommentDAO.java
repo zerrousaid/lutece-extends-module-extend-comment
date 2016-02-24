@@ -70,6 +70,7 @@ public class CommentDAO implements ICommentDAO
     private static final String SQL_QUERY_UPDATE_COMMENT_PUBLISHED = " UPDATE extend_comment SET is_published = ?, date_last_modif = ? WHERE id_comment = ?  ";
     private static final String SQL_QUERY_SELECT_DISTINCT_ID_RESOURCES = " SELECT DISTINCT(id_resource) FROM extend_comment e WHERE resource_type = ? ";
     private static final String SQL_ORDER_BY_DATE_MODIFICATION = " ORDER BY date_last_modif ";
+    private static final String SQL_ORDER_BY_DATE_CREATION = " ORDER BY date_comment ";
     private static final String SQL_COUNT_NUMBER_COMMENTS_FOR_SELECT_ID_RESOURCE = " SELECT COUNT( id_resource ) FROM extend_comment ec WHERE e.id_resource = ec.id_resource AND e.resource_type = ec.resource_type ";
     private static final String SQL_FILTER_STATUS_PUBLISHED = " is_published = 1 ";
     private static final String SQL_FILTER_STATUS_UN_PUBLISHED = " is_published = 0 ";
@@ -314,7 +315,7 @@ public class CommentDAO implements ICommentDAO
      */
     @Override
     public List<Comment> selectLastComments( String strIdExtendableResource, String strExtendableResourceType,
-            int nNbComments, boolean bPublishedOnly, boolean bParentsOnly, Plugin plugin )
+            int nNbComments, boolean bPublishedOnly, boolean bParentsOnly, Plugin plugin, boolean bSortedByDateCreation )
     {
         List<Comment> listComments = new ArrayList<Comment>( );
         StringBuilder sbSQL = new StringBuilder( SQL_QUERY_SELECT_BY_RESOURCE );
@@ -327,8 +328,16 @@ public class CommentDAO implements ICommentDAO
         {
             sbSQL.append( SQL_AND ).append( SQL_FILTER_SELECT_PARENTS );
         }
+        	
         sbSQL.append( SQL_AND ).append( SQL_FILTER_IS_PINNED_FALSE );
-        sbSQL.append( SQL_ORDER_BY_DATE_MODIFICATION ).append( SQL_DESC );
+        if ( bSortedByDateCreation )
+        {
+        	sbSQL.append( SQL_ORDER_BY_DATE_CREATION ).append( SQL_DESC );
+        }
+        else
+        {
+        	sbSQL.append( SQL_ORDER_BY_DATE_MODIFICATION ).append( SQL_DESC );
+        }
         sbSQL.append( SQL_LIMIT ).append( nNbComments );
 
         int nIndex = 1;
@@ -695,13 +704,4 @@ public class CommentDAO implements ICommentDAO
         sbSQL.append( strSortOrder );
     
     }
-    
-    
-    
-    
-    
-    
-    
-    
-
 }

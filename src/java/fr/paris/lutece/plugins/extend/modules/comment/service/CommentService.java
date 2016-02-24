@@ -230,7 +230,7 @@ public class CommentService implements ICommentService
      */
     @Override
     public List<Comment> findLastComments( String strIdExtendableResource, String strExtendableResourceType,
-            int nNbComments, boolean bPublishedOnly, boolean bParentsOnly, boolean bGetNumberSubComments, boolean bDisplaySubComments  )
+            int nNbComments, boolean bPublishedOnly, boolean bParentsOnly, boolean bGetNumberSubComments, boolean bDisplaySubComments, boolean bSortedByDateCreation  )
     {
         Plugin plugin = CommentPlugin.getPlugin( );
         List<Comment> listComments = new ArrayList<>();
@@ -247,7 +247,7 @@ public class CommentService implements ICommentService
     		   nNbComments= nNbComments-listCommentsPinned.size();
     	   }
     	   List<Comment> listLastComments=  _commentDAO.selectLastComments( strIdExtendableResource,
-                   strExtendableResourceType, nNbComments, bPublishedOnly, bParentsOnly, plugin );
+                   strExtendableResourceType, nNbComments, bPublishedOnly, bParentsOnly, plugin, bSortedByDateCreation );
            if ( bGetNumberSubComments )
            {
                for ( Comment comment : listLastComments )
@@ -474,6 +474,14 @@ public class CommentService implements ICommentService
 		 	}
 		 	_commentDAO.store(comment, plugin);
 		}
+	@Override
+	public List<Comment> findLastComments(String strIdExtendableResource,
+			String strExtendableResourceType, int nNbComments,
+			boolean bPublishedOnly, boolean bParentsOnly,
+			boolean bGetNumberSubComments, boolean bDisplaySubComments) {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
     
 

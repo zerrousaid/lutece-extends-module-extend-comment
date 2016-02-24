@@ -21,12 +21,20 @@
 	</div>
 </div>
 <div class="control-group" >
-	<label class="control-label" for="displaySubComments">Afficher les sous-commentaires : </label>
+	<label class="control-label" for="displaySubComments">#i18n{module.extend.comment.comment_config.labelShowComments} : </label>
 	<div class="controls">
 		<input type="radio" name="displaySubComments" value="true" <#if commentConfig.displaySubComments>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelYes}
 		<input type="radio" name="displaySubComments" value="false" <#if !commentConfig.displaySubComments>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelNo}
 	</div>
 </div>
+<div class="control-group" >
+	<label class="control-label" for="displaySubComments"> #i18n{module.extend.comment.comment_config.labelTriComments} : </label> 
+	<div class="controls">
+		<input type="radio" name="triCommentsByCreation" value="false" <#if !commentConfig.triCommentsByCreation>checked="checked"</#if> />&nbsp;#i18n{module.extend.comment.comment_config.labelTriCommentsParDateModification}
+		<input type="radio" name="triCommentsByCreation" value="true" <#if commentConfig.triCommentsByCreation>checked="checked"</#if> />&nbsp;#i18n{module.extend.comment.comment_config.labelTriCommentsParDateCreation}
+	</div>
+</div>
+
 <div class="control-group" >
   <label class="control-label" for="addCommentPosition">#i18n{module.extend.comment.comment_config.labelAddCommentPosition} : </label>
 	<div class="controls">

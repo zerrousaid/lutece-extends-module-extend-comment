@@ -54,6 +54,7 @@ public class CommentExtenderConfig extends ExtenderConfig
     private boolean _bEnabledAuthMode;
     private boolean _bDisplaySubComments;
     private boolean _bDeleteComments;
+    private boolean _bTriCommentsByCreation;
 
 
 	/**
@@ -251,4 +252,22 @@ public class CommentExtenderConfig extends ExtenderConfig
     {
         _bDeleteComments = bDeleteComments;
     }
+
+    /**
+     * Get Tri date comments
+     * @return if tri date comments
+     */
+	public boolean isTriCommentsByCreation( ) 
+	{
+		return _bTriCommentsByCreation;
+	}
+	/**
+	 * Sets tri date comments
+	 * @param bTriDateComments tri date comments
+	 */
+	public void setTriCommentsByCreation( boolean bTriDateComments ) 
+	{
+		_bTriCommentsByCreation = bTriDateComments;
+	}
+    
 }

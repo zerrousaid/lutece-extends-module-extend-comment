@@ -141,6 +141,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         boolean bAuthorizedsubComments = true;
         boolean bUseBBCodeEditor = false;
         boolean bDisplaySubComments = true;
+        boolean bTriCommentsByDateCreation = false;
         int nAddCommentPosition = 0;
         String strAdminBadge = StringUtils.EMPTY;
 
@@ -152,10 +153,13 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             bUseBBCodeEditor = config.getUseBBCodeEditor( );
             strAdminBadge = config.getAdminBadge( );
             bDisplaySubComments = config.isDisplaySubComments( ) ;
+            bTriCommentsByDateCreation = config.isTriCommentsByCreation( );
         }
 
         List<Comment> listComments =_commentService.findLastComments( strIdExtendableResource,
-                    strExtendableResourceType, nNbComments, true, true, bAuthorizedsubComments, bDisplaySubComments );
+                    strExtendableResourceType, nNbComments, true, true, bAuthorizedsubComments, bDisplaySubComments, config.isTriCommentsByCreation( ) );
+        
+        
         
         int nNbPublishedComments = _commentService.getCommentNb( strIdExtendableResource,
                                                                  strExtendableResourceType, !bDisplaySubComments, true );
@@ -170,6 +174,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         model.put( CommentConstants.MARK_ALLOW_SUB_COMMENTS, bAuthorizedsubComments );
         model.put( CommentConstants.MARK_DISPLAY_SUB_COMMENTS, bDisplaySubComments );
         model.put( CommentConstants.MARK_NB_PUBLISHED_COMMENTS, nNbPublishedComments );
+        model.put( CommentConstants.MARK_TRI_COMMENTS_BY_DATE_CREATION, bTriCommentsByDateCreation );
+        
         
         if (nAddCommentPosition != AddCommentPosition.NEW_PAGE )
         {

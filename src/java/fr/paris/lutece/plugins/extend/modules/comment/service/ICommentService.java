@@ -182,10 +182,13 @@ public interface ICommentService
      * @param bGetNumberSubComments True to get the number of sub comments of
      *            each comment, false otherwise
      * @param bDisplaySubComments True if the mod display sub comments is enable
+     * @param bSortedByDateCreation true if the list is sorted by date creation
      * @return the list
      */
     List<Comment> findLastComments( String strIdExtendableResource, String strExtendableResourceType, int nNbComments,
-            boolean bPublishedOnly, boolean bParentsOnly, boolean bGetNumberSubComments, boolean bDisplaySubComments );
+            boolean bPublishedOnly, boolean bParentsOnly, boolean bGetNumberSubComments, boolean bDisplaySubComments, boolean bSortedByDateCreation );
+
+    
 
     /**
      * Get comments of a given resource
@@ -307,6 +310,5 @@ public interface ICommentService
       * @return a referenceList  containing the filter on the flag As Pinned
       */
      ReferenceList getRefListFilterAsPinned(Locale locale );
-
 
 }

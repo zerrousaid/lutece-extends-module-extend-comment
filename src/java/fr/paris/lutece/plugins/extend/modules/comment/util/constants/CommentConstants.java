@@ -116,6 +116,7 @@ public final class CommentConstants
     public static final String MARK_REGISTERED_USER_EMAIL = "registeredUserEmail";
     public static final String MARK_NB_PUBLISHED_COMMENTS = "nbPublishedComments";
     public static final String MARK_CAN_DELETE_COMMENTS = "canDeleteComments";
+    public static final String MARK_TRI_COMMENTS_BY_DATE_CREATION = "triCommentsByDateCreation";
     
     
     public static final String MARK_ADD_COMMENT_POSITION = "addCommentPosition";

@@ -38,6 +38,7 @@ CREATE TABLE extend_comment_config (
 	add_comment_position SMALLINT NOT NULL default 0,
 	is_enabled_auth_mode SMALLINT default 0 NOT NULL,
 	is_enabled_display_sub_comments SMALLINT default 0 NOT NULL,
-        is_enabled_delete_comments SMALLINT default 0 NOT NULL,
+    is_enabled_delete_comments SMALLINT default 0 NOT NULL,
+    is_comments_sorted_by_date_creation SMALLINT default 0 NOT NULL,
 	PRIMARY KEY (id_extender)
 );
