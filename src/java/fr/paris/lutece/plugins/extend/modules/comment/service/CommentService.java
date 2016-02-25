@@ -474,14 +474,7 @@ public class CommentService implements ICommentService
 		 	}
 		 	_commentDAO.store(comment, plugin);
 		}
-	@Override
-	public List<Comment> findLastComments(String strIdExtendableResource,
-			String strExtendableResourceType, int nNbComments,
-			boolean bPublishedOnly, boolean bParentsOnly,
-			boolean bGetNumberSubComments, boolean bDisplaySubComments) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
     
     
 
