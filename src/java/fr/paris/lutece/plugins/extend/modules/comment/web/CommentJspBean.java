@@ -536,12 +536,6 @@ public class CommentJspBean extends PluginAdminPageJspBean
     public String doModifyAdminComment( HttpServletRequest request ) throws AccessDeniedException
     {
         
-        // Validating CSRF token
-    	if ( !SecurityTokenService.getInstance( ).validate( request, TEMPLATE_MODIFY_ADMIN_COMMENT ) )
-    	{
-    		throw new AccessDeniedException( "Invalid security token" );
-    	}
-    	
     	String strExtendableResourceType = request.getParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE );
         String strIdExtendableResource   = request.getParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE );
         String strIdComment              = request.getParameter( CommentConstants.PARAMETER_ID_COMMENT );
@@ -570,6 +564,12 @@ public class CommentJspBean extends PluginAdminPageJspBean
         	 return AdminMessageService.getMessageUrl( request, MESSAGE_MANDATORY_FIELD, tabRequiredFields, AdminMessage.TYPE_STOP );
         }
 
+        // Validating CSRF token
+    	if ( !SecurityTokenService.getInstance( ).validate( request, TEMPLATE_MODIFY_ADMIN_COMMENT ) )
+    	{
+    		throw new AccessDeniedException( "Invalid security token" );
+    	}
+    	
         AdminUser user = AdminUserService.getAdminUser( request );
 
         comment.setName   ( strName );
