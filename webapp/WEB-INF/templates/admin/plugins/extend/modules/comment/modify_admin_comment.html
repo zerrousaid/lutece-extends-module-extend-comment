@@ -1,6 +1,9 @@
 <#include "/admin/util/editor/editor.html" />
 <div>
 	<form class="form-horizontal" action="jsp/admin/plugins/extend/modules/comment/DoModifyAdminComment.jsp">
+	
+		<input type="hidden" name="token" value="${token!'none'}">
+
 		<fieldset>
 			<div class="control-group">
 				<label class="control-label" for="name">#i18n{module.extend.comment.modify_admin_comment.labelName}</label>
