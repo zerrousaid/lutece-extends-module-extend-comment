@@ -720,6 +720,8 @@ public class CommentApp implements XPageApplication
             url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, comment.getIdExtendableResource( ) );
             url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE, comment.getExtendableResourceType( ) );
 
+            model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, comment.getIdExtendableResource() );
+            model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, comment.getExtendableResourceType( ) );
             model.put( CommentConstants.MARK_RESOURCE_EXTENDER_NAME, strResourceName );
             model.put( CommentConstants.MARK_RESOURCE_EXTENDER_URL, url.getUrl( ) );
             model.put( CommentConstants.MARK_COMMENT, comment );
