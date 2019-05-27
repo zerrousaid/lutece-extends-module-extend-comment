@@ -116,6 +116,7 @@ public class CommentApp implements XPageApplication
 
     // PROPERTIES
     private static final String PROPERTY_USE_CAPTCHA = "module.extend.comment.useCaptcha";
+    private static final String PROPERTY_USER_INFO_EMAIL = "module.extend.comment.userInfo.email";
 
     // MARKS
     private static final String MARK_CAPTCHA = "captcha";
@@ -548,7 +549,7 @@ public class CommentApp implements XPageApplication
                    SiteMessageService.setMessage( request, MESSAGE_STOP_GENERIC_MESSAGE, paramsError,SiteMessage.TYPE_STOP );
                }
 
-        	   comment.setEmail(user.getEmail());
+        	   comment.setEmail(user.getUserInfo(AppPropertiesService.getProperty(PROPERTY_USER_INFO_EMAIL)));
         	   comment.setLuteceUserName(user.getName());
         	   if(!StringUtils.isEmpty(comment.getName()) )
         	   {
