@@ -236,6 +236,16 @@
 								</a>
 								
 							</#if>
+														
+							<#if comment.listWorkflowActions?? && comment.listWorkflowActions?size &gt; 0>
+                                 <#list comment.listWorkflowActions as action> 
+
+								<a class="btn btn-primary btn-xs" href="jsp/admin/plugins/extend/modules/comment/DoProcessWorkflowAction.jsp?id_action=${action.id}&amp;idComment=${comment.idComment}">
+									                        <img src="image?resource_type=workflow_icon_img&id=${action.icon.id}"<#if action.icon.width!=-1> width="${action.icon.width}" </#if><#if action.icon.height!=-1> height="${action.icon.height}"</#if>title="${action.name}" alt="${action.name}" />
+
+								</a>
+								</#list>
+							</#if>
 						</div>
 					</form>
 				</td>

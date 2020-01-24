@@ -40,5 +40,6 @@ CREATE TABLE extend_comment_config (
 	is_enabled_display_sub_comments SMALLINT default 0 NOT NULL,
     is_enabled_delete_comments SMALLINT default 0 NOT NULL,
     is_comments_sorted_by_date_creation SMALLINT default 0 NOT NULL,
+    id_workflow INT DEFAULT NULL,
 	PRIMARY KEY (id_extender)
 );

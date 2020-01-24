@@ -66,6 +66,17 @@
 		<span class="help-block">#i18n{module.extend.comment.comment_config.labelMailingListComment}</span>
 	</div>
 </div>
+<#if workflow_list?has_content && workflow_list?size gt 1>
+<div class="form-group">
+
+<label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label" for="idWorkflow">#i18n{module.extend.comment.comment_config.workflow.labelWorkflow} : </label>
+	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+
+		<@select name='idWorkflow' items=workflow_list default_value='${commentConfig.idWorkflow!}' />
+						
+	</div>
+</div>					
+	</#if>
 <div class="form-group">
 	<label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label" for="adminBadge">#i18n{module.extend.comment.comment_config.labelAdminComment} : </label>
 	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">

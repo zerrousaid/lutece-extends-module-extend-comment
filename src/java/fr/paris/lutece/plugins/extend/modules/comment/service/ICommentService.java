@@ -310,5 +310,11 @@ public interface ICommentService
       * @return a referenceList  containing the filter on the flag As Pinned
       */
      ReferenceList getRefListFilterAsPinned(Locale locale );
+    /**
+     * return resource type 
+     * @param extendableResourceType
+     * @return
+     */
+     String getResourceType( String extendableResourceType);
 
 }

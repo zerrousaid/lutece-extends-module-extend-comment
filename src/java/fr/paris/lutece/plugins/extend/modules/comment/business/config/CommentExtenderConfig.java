@@ -55,6 +55,7 @@ public class CommentExtenderConfig extends ExtenderConfig
     private boolean _bDisplaySubComments;
     private boolean _bDeleteComments;
     private boolean _bTriCommentsByCreation;
+    private int _nIdWorkflow;
 
 
 	/**
@@ -269,5 +270,27 @@ public class CommentExtenderConfig extends ExtenderConfig
 	{
 		_bTriCommentsByCreation = bTriDateComments;
 	}
+
+	/**
+     * Getter for id_workflow
+     * 
+     * @return the _nIdWorkflow
+     */
+    public int getIdWorkflow( )
+    {
+        return _nIdWorkflow;
+    }
+
+    /**
+     * setter for id_workflow
+     * 
+     * @param nIdWorkflow
+     *            the Id Workflow to set
+     */
+    public void setIdWorkflow( int nIdWorkflow )
+    {
+        _nIdWorkflow = nIdWorkflow;
+    }
     
 }
+

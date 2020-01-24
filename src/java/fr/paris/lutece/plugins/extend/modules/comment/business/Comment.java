@@ -34,12 +34,14 @@
 package fr.paris.lutece.plugins.extend.modules.comment.business;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
 import fr.paris.lutece.plugins.extend.modules.comment.service.CommentAvatarService;
 import fr.paris.lutece.plugins.extend.modules.comment.util.annotation.Email;
+import fr.paris.lutece.plugins.workflowcore.business.action.Action;
 import fr.paris.lutece.portal.service.editor.EditorBbcodeService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
@@ -74,6 +76,10 @@ public class Comment
     private boolean _bPinned;
     private int _nCommentOrder;
     private boolean _bIsImportant;
+    /**
+     * List of the available action of the workflow for this appointment
+     */
+    private Collection<Action> _listWorkflowActions;
     
 
     /**
@@ -456,5 +462,27 @@ public class Comment
 	public void setIsImportant(boolean _bIsImportant) {
 		this._bIsImportant = _bIsImportant;
 	}
+	
+	 
+    /**
+     * Get the available actions of the workflow for this appointment
+     * 
+     * @return the actions
+     */
+    public Collection<Action> getListWorkflowActions( )
+    {
+        return _listWorkflowActions;
+    }
+
+    /**
+     * Set the available actions of the workflow for this appointment
+     * 
+     * @param listWorkflowActions
+     */
+    public void setListWorkflowActions( Collection<Action> listWorkflowActions )
+    {
+        _listWorkflowActions = listWorkflowActions;
+    }
+
 
 }

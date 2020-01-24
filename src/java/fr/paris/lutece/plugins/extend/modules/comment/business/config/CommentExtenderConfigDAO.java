@@ -45,10 +45,10 @@ import fr.paris.lutece.util.sql.DAOUtil;
  */
 public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExtenderConfig>
 {
-    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment_config ( id_extender, is_moderated, nb_comments, id_mailing_list, authorize_sub_comments, use_bbcode, admin_badge, message_comment_created , add_comment_position,is_enabled_auth_mode, is_enabled_display_sub_comments, is_enabled_delete_comments,is_comments_sorted_by_date_creation ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? , ? , ?, ?, ? ) ";
-    private static final String SQL_QUERY_UPDATE = " UPDATE extend_comment_config SET is_moderated = ?, nb_comments = ?, id_mailing_list = ?, authorize_sub_comments = ?, use_bbcode = ?, admin_badge = ?, message_comment_created = ? , add_comment_position = ? , is_enabled_auth_mode = ?, is_enabled_display_sub_comments = ?, is_enabled_delete_comments = ?, is_comments_sorted_by_date_creation = ? WHERE id_extender = ? ";
+    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment_config ( id_extender, is_moderated, nb_comments, id_mailing_list, authorize_sub_comments, use_bbcode, admin_badge, message_comment_created , add_comment_position,is_enabled_auth_mode, is_enabled_display_sub_comments, is_enabled_delete_comments,is_comments_sorted_by_date_creation, id_workflow ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ? , ?, ?, ? ) ";
+    private static final String SQL_QUERY_UPDATE = " UPDATE extend_comment_config SET is_moderated = ?, nb_comments = ?, id_mailing_list = ?, authorize_sub_comments = ?, use_bbcode = ?, admin_badge = ?, message_comment_created = ? , add_comment_position = ? , is_enabled_auth_mode = ?, is_enabled_display_sub_comments = ?, is_enabled_delete_comments = ?, is_comments_sorted_by_date_creation = ?, id_workflow = ? WHERE id_extender = ? ";
     private static final String SQL_QUERY_DELETE = " DELETE FROM extend_comment_config WHERE id_extender = ? ";
-    private static final String SQL_QUERY_SELECT = " SELECT id_extender, is_moderated, nb_comments, id_mailing_list, authorize_sub_comments, use_bbcode, admin_badge, message_comment_created , add_comment_position, is_enabled_auth_mode, is_enabled_display_sub_comments, is_enabled_delete_comments, is_comments_sorted_by_date_creation FROM extend_comment_config WHERE id_extender = ? ";
+    private static final String SQL_QUERY_SELECT = " SELECT id_extender, is_moderated, nb_comments, id_mailing_list, authorize_sub_comments, use_bbcode, admin_badge, message_comment_created , add_comment_position, is_enabled_auth_mode, is_enabled_display_sub_comments, is_enabled_delete_comments, is_comments_sorted_by_date_creation, id_workflow FROM extend_comment_config WHERE id_extender = ? ";
 
     /**
      * {@inheritDoc}
@@ -71,7 +71,9 @@ public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExten
         daoUtil.setBoolean( nIndex++, config.isEnabledAuthMode( ) );
         daoUtil.setBoolean( nIndex++, config.isDisplaySubComments( ) );
         daoUtil.setBoolean( nIndex++, config.getDeleteComments( ) );
-        daoUtil.setBoolean( nIndex, config.isTriCommentsByCreation( ) );
+        daoUtil.setBoolean( nIndex++, config.isTriCommentsByCreation( ) );
+        daoUtil.setInt( nIndex, config.getIdWorkflow( ) );
+
         
         daoUtil.executeUpdate( );
         daoUtil.free( );
@@ -98,7 +100,9 @@ public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExten
         daoUtil.setBoolean( nIndex++, config.isDisplaySubComments( ) );
         daoUtil.setBoolean( nIndex++, config.getDeleteComments( ) );
         daoUtil.setBoolean( nIndex++, config.isTriCommentsByCreation( ) );
+        daoUtil.setInt( nIndex++, config.getIdWorkflow( ));
 
+        
         daoUtil.setInt( nIndex, config.getIdExtender( ) );
 
         daoUtil.executeUpdate( );
@@ -146,7 +150,8 @@ public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExten
             config.setEnabledAuthMode(daoUtil.getBoolean( nIndex++ ));
             config.setDisplaySubComments(daoUtil.getBoolean( nIndex++ ));
             config.setDeleteComments( daoUtil.getBoolean( nIndex++ ) );
-            config.setTriCommentsByCreation( daoUtil.getBoolean( nIndex ) );
+            config.setTriCommentsByCreation( daoUtil.getBoolean( nIndex++ ) );
+            config.setIdWorkflow(daoUtil.getInt( nIndex ));
         }
 
         daoUtil.free( );

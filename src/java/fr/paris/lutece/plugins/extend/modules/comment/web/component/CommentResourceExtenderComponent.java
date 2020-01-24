@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.web.component;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -46,7 +45,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrMatcher;
 
 import fr.paris.lutece.plugins.extend.business.extender.ResourceExtenderDTO;
 import fr.paris.lutece.plugins.extend.business.extender.config.IExtenderConfig;
@@ -66,6 +64,7 @@ import fr.paris.lutece.plugins.extend.service.extender.ResourceExtenderService;
 import fr.paris.lutece.plugins.extend.service.extender.config.IResourceExtenderConfigService;
 import fr.paris.lutece.plugins.extend.util.ExtendErrorException;
 import fr.paris.lutece.plugins.extend.web.component.AbstractResourceExtenderComponent;
+import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
 import fr.paris.lutece.portal.service.captcha.CaptchaSecurityService;
 import fr.paris.lutece.portal.service.content.ContentPostProcessor;
@@ -80,6 +79,7 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.service.workflow.WorkflowService;
 import fr.paris.lutece.portal.web.constants.Parameters;
 import fr.paris.lutece.portal.web.util.LocalizedDelegatePaginator;
 import fr.paris.lutece.util.ReferenceList;
@@ -158,9 +158,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
 
         List<Comment> listComments =_commentService.findLastComments( strIdExtendableResource,
                     strExtendableResourceType, nNbComments, true, true, bAuthorizedsubComments, bDisplaySubComments, config.isTriCommentsByCreation( ) );
-        
-        
-        
+		
         int nNbPublishedComments = _commentService.getCommentNb( strIdExtendableResource,
                                                                  strExtendableResourceType, !bDisplaySubComments, true );
     	 Map<String, Object> model = new HashMap<String, Object>( );
@@ -236,6 +234,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             model.put( CommentConstants.MARK_REGISTERED_USER_EMAIL, user.getEmail( ) );
         }
 
+        
+        
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT, request.getLocale( ), model );
         String strContent = template.getHtml( );
 
@@ -266,6 +266,12 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         model.put( CommentConstants.MARK_ADD_COMMENT_POSITIONS, AddCommentPosition.getAllPositions( ) );
         model.put( CommentConstants.MARK_WEBAPP_URL, AppPathService.getBaseUrl( request ) );
         model.put( CommentConstants.MARK_LOCALE, AdminUserService.getLocale( request ) );
+        if ( WorkflowService.getInstance( ).isAvailable( ) )
+        {
+        	AdminUser adminUser = AdminUserService.getAdminUser( request );
+            ReferenceList referenceList = WorkflowService.getInstance( ).getWorkflowsEnabled( adminUser, locale);
+            model.put( CommentConstants.MARK_WORKFLOW_REF_LIST, referenceList );
+        }
         
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT_CONFIG, request.getLocale( ), model );
 
@@ -418,6 +424,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
                     resourceExtender.getExtendableResourceType( ) );
             url.addParameter( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
 
+           
             // We get the paginator
             IPaginator<Comment> paginator = new LocalizedDelegatePaginator<Comment>( listComments, nItemsPerPage,
                     url.getUrl( ), Paginator.PARAMETER_PAGE_INDEX, strCurrentPageIndex, nItemsCount,
@@ -425,7 +432,15 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             	
             Map<String, Object> model = new HashMap<String, Object>( );
             List<Comment> listCommentDisplay=paginator.getPageItems( );
-            
+            AdminUser adminUser = AdminUserService.getAdminUser( request );
+    		if( adminUser!= null && WorkflowService.getInstance( ).isAvailable( )){
+    	        for(Comment comment: listCommentDisplay){
+    	        	
+    	        	comment.setListWorkflowActions( WorkflowService.getInstance( ).getActions( comment.getIdComment(),
+    	        			_commentService.getResourceType( comment.getExtendableResourceType() ), config.getIdWorkflow( ), adminUser ) );
+    	            
+    	        }
+    		} 
             if(!CommentConstants.CONSTANT_ALL_RESSOURCE_ID.equals( resourceExtender.getIdExtendableResource()))
         	{
         	

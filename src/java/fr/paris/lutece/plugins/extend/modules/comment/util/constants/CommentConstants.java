@@ -82,6 +82,8 @@ public final class CommentConstants
     public static final String PARAMETER_FILTER_MARK_AS_IMPORTANT = "filterMarkAsImportant";
     public static final String PARAMETER_CONFIRM_REMOVE_COMMENT = "confirm_remove_comment";
     public static final String PARAMETER_PAGE = "page";
+    public static final String PARAMETER_ID_ACTION = "id_action";
+
 
     // BEANS
     public static final String BEAN_CONFIG_SERVICE = "extend-comment.commentExtenderConfigService";
@@ -117,6 +119,8 @@ public final class CommentConstants
     public static final String MARK_NB_PUBLISHED_COMMENTS = "nbPublishedComments";
     public static final String MARK_CAN_DELETE_COMMENTS = "canDeleteComments";
     public static final String MARK_TRI_COMMENTS_BY_DATE_CREATION = "triCommentsByDateCreation";
+    public static final String MARK_WORKFLOW_REF_LIST = "workflow_list";
+
     
     
     public static final String MARK_ADD_COMMENT_POSITION = "addCommentPosition";

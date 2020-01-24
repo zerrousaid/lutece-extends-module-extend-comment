@@ -39,17 +39,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
+import fr.paris.lutece.plugins.extend.business.extender.ResourceExtenderDTO;
+import fr.paris.lutece.plugins.extend.business.extender.ResourceExtenderDTOFilter;
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
-import fr.paris.lutece.plugins.extend.modules.comment.business.CommentFilter;
 import fr.paris.lutece.plugins.extend.modules.comment.service.CommentPlugin;
 import fr.paris.lutece.plugins.extend.modules.comment.service.CommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.ICommentService;
 import fr.paris.lutece.plugins.extend.modules.comment.service.extender.CommentResourceExtender;
 import fr.paris.lutece.plugins.extend.modules.comment.util.constants.CommentConstants;
+import fr.paris.lutece.plugins.extend.service.extender.IResourceExtenderService;
+import fr.paris.lutece.plugins.extend.service.extender.ResourceExtenderService;
+import fr.paris.lutece.plugins.extend.service.extender.config.IResourceExtenderConfigService;
 import fr.paris.lutece.plugins.extend.service.extender.history.IResourceExtenderHistoryService;
 import fr.paris.lutece.plugins.extend.service.extender.history.ResourceExtenderHistoryService;
 import fr.paris.lutece.portal.business.user.AdminUser;
@@ -60,6 +66,7 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
+import fr.paris.lutece.portal.service.workflow.WorkflowService;
 import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
 import fr.paris.lutece.portal.web.constants.Messages;
 import fr.paris.lutece.util.html.HtmlTemplate;
@@ -87,6 +94,9 @@ public class CommentJspBean extends PluginAdminPageJspBean
     private static final String MESSAGE_MANDATORY_FIELD = "portal.util.message.mandatoryField";
     private static final String MESSAGE_TITLE_CREATE_COMMENT = "module.extend.comment.create_comment.pageTitle";
 
+    
+
+    
     // TEMPLATE
     private static final String TEMPLATE_CREATE_COMMENT = "admin/plugins/extend/modules/comment/create_comment.html";
 
@@ -96,6 +106,11 @@ public class CommentJspBean extends PluginAdminPageJspBean
     private ICommentService _commentService = SpringContextService.getBean( CommentService.BEAN_SERVICE );
     private IResourceExtenderHistoryService _resourceHistoryService = SpringContextService
             .getBean( ResourceExtenderHistoryService.BEAN_SERVICE );
+
+    private IResourceExtenderService _resourceExtenderService = SpringContextService.getBean( ResourceExtenderService.BEAN_SERVICE );
+    
+    
+    
 
     /**
      * Do publish unpublish comment.
@@ -499,6 +514,87 @@ public class CommentJspBean extends PluginAdminPageJspBean
           
     }
     
+    /**
+     * Do process a workflow action over an comment
+     * 
+     * @param request
+     *            The request
+     * @return The next URL to redirect to
+     */
+    public String doProcessWorkflowAction( HttpServletRequest request )
+    {
+        String strIdAction = request.getParameter( CommentConstants.PARAMETER_ID_ACTION );
+        String strIdComment = request.getParameter( CommentConstants.PARAMETER_ID_COMMENT );
+
+        if ( StringUtils.isNotEmpty( strIdAction ) && StringUtils.isNumeric( strIdAction ) && StringUtils.isNotEmpty( strIdComment )
+                && StringUtils.isNumeric( strIdComment ) )
+        {
+            int nIdAction = Integer.parseInt( strIdAction );
+            int nIdComment = Integer.parseInt( strIdComment );
+            Comment comment = _commentService.findByPrimaryKey(nIdComment);
+            ResourceExtenderDTOFilter filter = new ResourceExtenderDTOFilter(  );
+            filter.setFilterExtendableResourceType( comment.getExtendableResourceType( ) );
+            filter.setFilterIdExtendableResource(comment.getIdExtendableResource());
+            filter.setFilterExtenderType( CommentResourceExtender.EXTENDER_TYPE_COMMENT );
+            filter.setIncludeWildcardResource(true);
+            
+            List<ResourceExtenderDTO> listResourceExtender =_resourceExtenderService.findByFilter(filter);
+            int nIdExtendable= listResourceExtender.get(0).getIdExtender();
+            String resourceType = _commentService.getResourceType( comment.getExtendableResourceType( ) );  
+            try
+            {
+                if ( WorkflowService.getInstance( ).isDisplayTasksForm( nIdAction, getLocale( ) ) )
+                 {
+                        String strError = WorkflowService.getInstance( ).doSaveTasksForm( nIdComment, resourceType, nIdAction,
+                        		nIdExtendable, request, getLocale( ) );
+                        if ( strError != null )
+                        {
+                            AppLogService.error( strError  );
+
+                            return AdminMessageService.getMessageUrl( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE,
+                                    AdminMessage.TYPE_ERROR );
+                        }
+                    }
+                    else
+                    {
+                       
+                        WorkflowService.getInstance( ).doProcessAction( nIdComment, resourceType, nIdAction, nIdExtendable,
+                                request, getLocale( ), false );
+                    }
+                }
+                catch( Exception e )
+                {
+                    AppLogService.error( "Error Workflow", e );
+                }
+                String strPostBackUrl = (String) request.getSession( ).getAttribute(
+                        CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL );
+                request.getSession( ).setAttribute(
+                        CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL, null );
+                if ( StringUtils.isEmpty( strPostBackUrl ) )
+                {
+                    strPostBackUrl = JSP_VIEW_EXTENDER_INFO;
+                }
+                UrlItem url = new UrlItem( strPostBackUrl );
+                url.addParameter( CommentConstants.PARAMETER_EXTENDER_TYPE,
+                        CommentResourceExtender.EXTENDER_TYPE_COMMENT );
+               addIdExtendableResourceInUrl(comment.getIdExtendableResource(), request, url);
+               
+                url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE,
+                        comment.getExtendableResourceType( ) );
+                if ( comment.getIdParentComment( ) > 0 )
+                {
+                    url.addParameter( CommentConstants.PARAMETER_ID_COMMENT, comment.getIdParentComment( ) );
+                }
+                url.addParameter( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace(
+                        request.getParameter( CommentConstants.PARAMETER_FROM_URL ), CommentConstants.CONSTANT_AND,
+                        CommentConstants.CONSTANT_AND_HTML ) );
+
+                return url.getUrl( );
+        }
+        return AdminMessageService.getMessageUrl( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE,
+                AdminMessage.TYPE_ERROR );
+    }
+    }
     
     
-}
+    

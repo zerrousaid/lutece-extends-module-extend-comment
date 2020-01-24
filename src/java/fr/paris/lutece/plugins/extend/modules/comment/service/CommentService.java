@@ -35,22 +35,31 @@ package fr.paris.lutece.plugins.extend.modules.comment.service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.paris.lutece.plugins.extend.business.extender.ResourceExtenderDTO;
+import fr.paris.lutece.plugins.extend.business.extender.ResourceExtenderDTOFilter;
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.plugins.extend.modules.comment.business.CommentFilter;
 import fr.paris.lutece.plugins.extend.modules.comment.business.ICommentDAO;
+import fr.paris.lutece.plugins.extend.modules.comment.business.config.CommentExtenderConfig;
+import fr.paris.lutece.plugins.extend.modules.comment.service.extender.CommentResourceExtender;
 import fr.paris.lutece.plugins.extend.modules.comment.util.constants.CommentConstants;
+import fr.paris.lutece.plugins.extend.service.extender.IResourceExtenderService;
+import fr.paris.lutece.plugins.extend.service.extender.ResourceExtenderService;
+import fr.paris.lutece.plugins.extend.service.extender.config.IResourceExtenderConfigService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.workflow.WorkflowService;
 import fr.paris.lutece.util.ReferenceList;
 
 
@@ -66,7 +75,12 @@ public class CommentService implements ICommentService
       
     @Inject
     private ICommentDAO _commentDAO;
-
+    @Inject
+    @Named( ResourceExtenderService.BEAN_SERVICE )
+    private IResourceExtenderService _resourceExtenderService;
+    @Inject
+    @Named( CommentConstants.BEAN_CONFIG_SERVICE )
+    private IResourceExtenderConfigService _configService;
     /**
      * {@inheritDoc}
      */
@@ -83,7 +97,8 @@ public class CommentService implements ICommentService
             Comment parentComment = findByPrimaryKey( comment.getIdParentComment( ) );
             parentComment.setDateLastModif( currentTimestamp );
             update( parentComment );
-        }
+        }    
+       	processWorkflow(comment);
         CommentListenerService.createComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ),
                 comment.isPublished( ), request );
     }
@@ -104,6 +119,7 @@ public class CommentService implements ICommentService
             parentComment.setDateLastModif( currentTimestamp );
             update( parentComment );
         }
+        processWorkflow(comment);   
         CommentListenerService.createComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ),
                 comment.isPublished( ));
     }
@@ -144,13 +160,20 @@ public class CommentService implements ICommentService
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
     public void remove( int nIdComment )
     {
+    	  Comment comment = findByPrimaryKey( nIdComment );
         if ( CommentListenerService.hasListener( ) )
         {
-            Comment comment = findByPrimaryKey( nIdComment );
-            List<Integer> listIdRemovedComments = new ArrayList<Integer>( );
+          
+            List<Integer> listIdRemovedComments = new ArrayList< >( );
             listIdRemovedComments.add( nIdComment );
             CommentListenerService.deleteComment( comment.getExtendableResourceType( ),
                     comment.getIdExtendableResource( ), listIdRemovedComments );
+        }
+        if ( WorkflowService.getInstance( ).isAvailable( ) )
+        {
+        	String resourceType = getResourceType( comment.getExtendableResourceType( ) );    
+            WorkflowService.getInstance( ).doRemoveWorkFlowResource( nIdComment, resourceType );
+           
         }
         _commentDAO.delete( nIdComment, CommentPlugin.getPlugin( ) );
     }
@@ -162,12 +185,24 @@ public class CommentService implements ICommentService
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
     public void removeByResource( String strIdExtendableResource, String strExtendableResourceType )
     {
+    	   List<Integer> listRemovedComments = findIdsByResource( strIdExtendableResource, strExtendableResourceType,
+                   false );
         if ( CommentListenerService.hasListener( ) )
         {
-            List<Integer> listRemovedComments = findIdsByResource( strIdExtendableResource, strExtendableResourceType,
-                    false );
+         
             CommentListenerService.deleteComment( strExtendableResourceType, strIdExtendableResource,
                     listRemovedComments );
+        }
+        if ( WorkflowService.getInstance( ).isAvailable( ) )
+        {
+        	String resourceType = getResourceType( strExtendableResourceType );  
+        	for( int nIdComment:listRemovedComments){
+        		
+        		WorkflowService.getInstance( ).doRemoveWorkFlowResource( nIdComment, resourceType );
+        	
+        	}
+           // WorkflowService.getInstance( ).doRemoveWorkFlowResourceByListId(listRemovedComments, resourceType , id_wf);
+            
         }
         _commentDAO.deleteByResource( strIdExtendableResource, strExtendableResourceType, CommentPlugin.getPlugin( ) );
     }
@@ -475,7 +510,40 @@ public class CommentService implements ICommentService
 		 	_commentDAO.store(comment, plugin);
 		}
 
+    private void processWorkflow( Comment comment){
+    	
+    	String resourceType = getResourceType( comment.getExtendableResourceType( ) );        	
+     	ResourceExtenderDTOFilter filter = new ResourceExtenderDTOFilter(  );
+        filter.setFilterExtendableResourceType( comment.getExtendableResourceType( ) );
+        filter.setFilterIdExtendableResource(comment.getIdExtendableResource());
+        filter.setFilterExtenderType( CommentResourceExtender.EXTENDER_TYPE_COMMENT );
+        filter.setIncludeWildcardResource(true);
+        
+        List<ResourceExtenderDTO> listResourceExtender =_resourceExtenderService.findByFilter(filter);
+        int nIdExtendable= listResourceExtender.get(0).getIdExtender();
+        
+        CommentExtenderConfig config= (CommentExtenderConfig) _configService.find(nIdExtendable);
+        int idWorkflow= config.getIdExtender();
+        if( idWorkflow > 0){
+        	
+         WorkflowService.getInstance( ).getState( comment.getIdComment( ), resourceType , idWorkflow,
+         		nIdExtendable );
+         WorkflowService.getInstance( ).executeActionAutomatic( comment.getIdComment( ), resourceType,
+        		 idWorkflow, nIdExtendable );
+        }
+    }
+    
+    public String getResourceType( String extendableResourceType){
+    	
+    	 StringBuilder resourceType = new StringBuilder ();
+         resourceType.append(CommentResourceExtender.EXTENDER_TYPE_COMMENT);
+         resourceType.append("-");
+         resourceType.append( extendableResourceType) ;
+         
+         return resourceType.toString( );
+    }
     
     
+     
 
 }
