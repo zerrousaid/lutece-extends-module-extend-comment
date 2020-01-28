@@ -523,7 +523,7 @@ public class CommentService implements ICommentService
         int nIdExtendable= listResourceExtender.get(0).getIdExtender();
         
         CommentExtenderConfig config= (CommentExtenderConfig) _configService.find(nIdExtendable);
-        int idWorkflow= config.getIdExtender();
+        int idWorkflow= config.getIdWorkflow();
         if( idWorkflow > 0){
         	
          WorkflowService.getInstance( ).getState( comment.getIdComment( ), resourceType , idWorkflow,
