@@ -39,12 +39,15 @@ import fr.paris.lutece.util.sql.DAOUtil;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 
 /**
@@ -52,8 +55,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public class CommentDAO implements ICommentDAO
 {
-    private static final String SQL_QUERY_NEW_PK = " SELECT max( id_comment ) FROM extend_comment ";
-    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment ( id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment, lutece_user_name,is_pinned,comment_order,is_important ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+    
+    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment ( id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment, lutece_user_name,is_pinned,comment_order,is_important ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
     private static final String SQL_QUERY_SELECT_ALL = " SELECT id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment, lutece_user_name,is_pinned,comment_order,is_important FROM extend_comment ";
     private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_ALL + " WHERE id_comment = ? ";
     private static final String SQL_QUERY_SELECT_BY_RESOURCE = SQL_QUERY_SELECT_ALL
@@ -102,66 +105,39 @@ public class CommentDAO implements ICommentDAO
     private static final String CONSTANT_SQL_ALL_RESSOURCE_ID = "%";
 
     /**
-     * Generates a new primary key.
-     * 
-     * @param plugin the plugin
-     * @return The new primary key
-     */
-    private int newPrimaryKey( Plugin plugin )
-    {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEW_PK, plugin );
-        daoUtil.executeQuery( );
-
-        int nKey = 1;
-
-        if ( daoUtil.next( ) )
-        {
-            nKey = daoUtil.getInt( 1 ) + 1;
-        }
-
-        daoUtil.free( );
-
-        return nKey;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public synchronized void insert( Comment comment, Plugin plugin )
     {
-        int nNewPrimaryKey = newPrimaryKey( plugin );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, plugin ) )
+        {
+            int nIndex = 1;
 
-        comment.setIdComment( nNewPrimaryKey );
-
-        int nIndex = 1;
-
-        daoUtil.setInt( nIndex++, comment.getIdComment( ) );
-        daoUtil.setString( nIndex++, comment.getIdExtendableResource( ) );
-        daoUtil.setString( nIndex++, comment.getExtendableResourceType( ) );
-        daoUtil.setTimestamp( nIndex++, comment.getDateComment( ) );
-        daoUtil.setString( nIndex++, comment.getName( ) );
-        daoUtil.setString( nIndex++, comment.getEmail( ) );
-        daoUtil.setString( nIndex++, comment.getIpAddress( ) );
-        daoUtil.setString( nIndex++, comment.getComment( ) );
-        daoUtil.setBoolean( nIndex++, comment.isPublished( ) );
-        daoUtil.setTimestamp( nIndex++, comment.getDateLastModif( ) );
-        daoUtil.setInt( nIndex++, comment.getIdParentComment( ) );
-        daoUtil.setBoolean( nIndex++, comment.getIsAdminComment( ) );
-        daoUtil.setString( nIndex++, comment.getLuteceUserName());
-        daoUtil.setBoolean( nIndex++, comment.isPinned() );
-        daoUtil.setInt( nIndex++, comment.getCommentOrder());
-        daoUtil.setBoolean( nIndex++, comment.getIsImportant() );
-        
-        
-        
-        
-
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+            daoUtil.setString( nIndex++, comment.getIdExtendableResource( ) );
+            daoUtil.setString( nIndex++, comment.getExtendableResourceType( ) );
+            daoUtil.setTimestamp( nIndex++, comment.getDateComment( ) );
+            daoUtil.setString( nIndex++, comment.getName( ) );
+            daoUtil.setString( nIndex++, comment.getEmail( ) );
+            daoUtil.setString( nIndex++, comment.getIpAddress( ) );
+            daoUtil.setString( nIndex++, comment.getComment( ) );
+            daoUtil.setBoolean( nIndex++, comment.isPublished( ) );
+            daoUtil.setTimestamp( nIndex++, comment.getDateLastModif( ) );
+            daoUtil.setInt( nIndex++, comment.getIdParentComment( ) );
+            daoUtil.setBoolean( nIndex++, comment.getIsAdminComment( ) );
+            daoUtil.setString( nIndex++, comment.getLuteceUserName());
+            daoUtil.setBoolean( nIndex++, comment.isPinned() );
+            daoUtil.setInt( nIndex++, comment.getCommentOrder());
+            daoUtil.setBoolean( nIndex++, comment.getIsImportant() );
+            
+            daoUtil.executeUpdate( );
+            if ( daoUtil.nextGeneratedKey( ) )
+            {
+                comment.setIdComment( daoUtil.getGeneratedKeyInt( 1 ) );
+            }   
+            daoUtil.free( );
+        }
     }
-
     /**
      * {@inheritDoc}
      */
