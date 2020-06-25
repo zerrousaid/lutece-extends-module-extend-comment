@@ -56,7 +56,7 @@ import java.sql.Statement;
 public class CommentDAO implements ICommentDAO
 {
     
-    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment ( id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment, lutece_user_name,is_pinned,comment_order,is_important ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+    private static final String SQL_QUERY_INSERT = " INSERT INTO extend_comment ( id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment, lutece_user_name,is_pinned,comment_order,is_important ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
     private static final String SQL_QUERY_SELECT_ALL = " SELECT id_comment, id_resource, resource_type, date_comment, name, email, ip_address, comment, is_published, date_last_modif, id_parent_comment, is_admin_comment, lutece_user_name,is_pinned,comment_order,is_important FROM extend_comment ";
     private static final String SQL_QUERY_SELECT = SQL_QUERY_SELECT_ALL + " WHERE id_comment = ? ";
     private static final String SQL_QUERY_SELECT_BY_RESOURCE = SQL_QUERY_SELECT_ALL
@@ -112,15 +112,8 @@ public class CommentDAO implements ICommentDAO
     {
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, plugin ) )
         {
-        
-            if ( daoUtil.nextGeneratedKey( ) )
-            {
-                comment.setIdComment( daoUtil.getGeneratedKeyInt( 1 ) );
-            }   
-
             int nIndex = 1;
 
-            daoUtil.setInt( nIndex++, comment.getIdComment( ) );
             daoUtil.setString( nIndex++, comment.getIdExtendableResource( ) );
             daoUtil.setString( nIndex++, comment.getExtendableResourceType( ) );
             daoUtil.setTimestamp( nIndex++, comment.getDateComment( ) );
@@ -138,6 +131,10 @@ public class CommentDAO implements ICommentDAO
             daoUtil.setBoolean( nIndex++, comment.getIsImportant() );
             
             daoUtil.executeUpdate( );
+            if ( daoUtil.nextGeneratedKey( ) )
+            {
+                comment.setIdComment( daoUtil.getGeneratedKeyInt( 1 ) );
+            }   
             daoUtil.free( );
         }
     }
