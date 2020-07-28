@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -88,7 +88,6 @@ import fr.paris.lutece.util.html.IPaginator;
 import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.url.UrlItem;
 
-
 /**
  * 
  * CommentResourceExtenderComponent
@@ -109,11 +108,10 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     @Named( CommentConstants.BEAN_CONFIG_SERVICE )
     private IResourceExtenderConfigService _configService;
     @Inject
-    @Named(ResourceExtenderService.BEAN_SERVICE)
+    @Named( ResourceExtenderService.BEAN_SERVICE )
     private IResourceExtenderService _resourceExtenderService;
 
-    private int _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt(
-            CommentConstants.PROPERTY_DEFAULT_LIST_COMMENTS_PER_PAGE, 50 );
+    private int _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( CommentConstants.PROPERTY_DEFAULT_LIST_COMMENTS_PER_PAGE, 50 );
 
     private volatile ContentPostProcessor _contentPostProcessor;
 
@@ -121,8 +119,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
      * {@inheritDoc}
      */
     @Override
-    public void buildXmlAddOn( String strIdExtendableResource, String strExtendableResourceType, String strParameters,
-            StringBuffer strXml )
+    public void buildXmlAddOn( String strIdExtendableResource, String strExtendableResourceType, String strParameters, StringBuffer strXml )
     {
         // Nothing yet
     }
@@ -131,13 +128,11 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
      * {@inheritDoc}
      */
     @Override
-    public String getPageAddOn( String strIdExtendableResource, String strExtendableResourceType, String strParameters,
-            HttpServletRequest request )
+    public String getPageAddOn( String strIdExtendableResource, String strExtendableResourceType, String strParameters, HttpServletRequest request )
     {
-        CommentExtenderConfig config = _configService.find( getResourceExtender( ).getKey( ), strIdExtendableResource,
-                strExtendableResourceType );
-                 
-     	int nNbComments = 1;
+        CommentExtenderConfig config = _configService.find( getResourceExtender( ).getKey( ), strIdExtendableResource, strExtendableResourceType );
+
+        int nNbComments = 1;
         boolean bAuthorizedsubComments = true;
         boolean bUseBBCodeEditor = false;
         boolean bDisplaySubComments = true;
@@ -149,20 +144,20 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         {
             nNbComments = config.getNbComments( );
             bAuthorizedsubComments = config.getAuthorizeSubComments( );
-            nAddCommentPosition =config.getAddCommentPosition( ); 
+            nAddCommentPosition = config.getAddCommentPosition( );
             bUseBBCodeEditor = config.getUseBBCodeEditor( );
             strAdminBadge = config.getAdminBadge( );
-            bDisplaySubComments = config.isDisplaySubComments( ) ;
+            bDisplaySubComments = config.isDisplaySubComments( );
             bTriCommentsByDateCreation = config.isTriCommentsByCreation( );
         }
 
-        List<Comment> listComments =_commentService.findLastComments( strIdExtendableResource,
-                    strExtendableResourceType, nNbComments, true, true, bAuthorizedsubComments, bDisplaySubComments, config.isTriCommentsByCreation( ) );
-		
-        int nNbPublishedComments = _commentService.getCommentNb( strIdExtendableResource,
-                                                                 strExtendableResourceType, !bDisplaySubComments, true );
-    	 Map<String, Object> model = new HashMap<String, Object>( );
-        model.put( CommentConstants.MARK_COMMENT_CONFIG, _configService.find( CommentResourceExtender.EXTENDER_TYPE_COMMENT, strIdExtendableResource, strExtendableResourceType ) );
+        List<Comment> listComments = _commentService.findLastComments( strIdExtendableResource, strExtendableResourceType, nNbComments, true, true,
+                bAuthorizedsubComments, bDisplaySubComments, config.isTriCommentsByCreation( ) );
+
+        int nNbPublishedComments = _commentService.getCommentNb( strIdExtendableResource, strExtendableResourceType, !bDisplaySubComments, true );
+        Map<String, Object> model = new HashMap<String, Object>( );
+        model.put( CommentConstants.MARK_COMMENT_CONFIG,
+                _configService.find( CommentResourceExtender.EXTENDER_TYPE_COMMENT, strIdExtendableResource, strExtendableResourceType ) );
         model.put( CommentConstants.MARK_LIST_COMMENTS, listComments );
         model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
         model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
@@ -173,11 +168,10 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         model.put( CommentConstants.MARK_DISPLAY_SUB_COMMENTS, bDisplaySubComments );
         model.put( CommentConstants.MARK_NB_PUBLISHED_COMMENTS, nNbPublishedComments );
         model.put( CommentConstants.MARK_TRI_COMMENTS_BY_DATE_CREATION, bTriCommentsByDateCreation );
-        
-        
-        if (nAddCommentPosition != AddCommentPosition.NEW_PAGE )
+
+        if ( nAddCommentPosition != AddCommentPosition.NEW_PAGE )
         {
-            // Add Captcha		
+            // Add Captcha
             boolean bIsCaptchaEnabled = PluginService.isPluginEnable( CommentConstants.JCAPTCHA_PLUGIN )
                     && Boolean.parseBoolean( AppPropertiesService.getProperty( CommentConstants.PROPERTY_USE_CAPTCHA, Boolean.TRUE.toString( ) ) );
             model.put( CommentConstants.MARK_IS_ACTIVE_CAPTCHA, bIsCaptchaEnabled );
@@ -187,14 +181,14 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
                 CaptchaSecurityService captchaService = new CaptchaSecurityService( );
                 model.put( CommentConstants.MARK_CAPTCHA, captchaService.getHtmlCode( ) );
             }
-            //Add NickName if auth mod enable
-            if(config != null && config.isEnabledAuthMode())
-	        {
-            	LuteceUser  user=SecurityService.getInstance().getRegisteredUser(request);
-	     	   	if(user!=null)
-	     	   	{
-	     	   		model.put(CommentConstants.MARK_NICKNAME, UserPreferencesService.instance().getNickname(user) );
-	     	   	}
+            // Add NickName if auth mod enable
+            if ( config != null && config.isEnabledAuthMode( ) )
+            {
+                LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+                if ( user != null )
+                {
+                    model.put( CommentConstants.MARK_NICKNAME, UserPreferencesService.instance( ).getNickname( user ) );
+                }
 
                 if ( CommentListenerService.canComment( user, strIdExtendableResource, strExtendableResourceType ) )
                 {
@@ -204,7 +198,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
                 {
                     model.put( CommentConstants.MARK_COMMENT_CLOSED, true );
                 }
-	        }
+            }
 
             if ( SecurityService.isAuthenticationEnable( ) )
             {
@@ -215,15 +209,17 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
                     model.put( CommentConstants.MARK_MYLUTECE_USER, user );
                 }
             }
-            
+
             // display message when form was submitted
-            if ( request.getSession().getAttribute( CommentConstants.SESSION_COMMENT_ADD_MESSAGE_RESULT + strIdExtendableResource ) != null )
+            if ( request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADD_MESSAGE_RESULT + strIdExtendableResource ) != null )
             {
-            	model.put( CommentConstants.MARK_ADD_COMMENT_MESSAGE_RESULT, (String) request.getSession().getAttribute( CommentConstants.SESSION_COMMENT_ADD_MESSAGE_RESULT + strIdExtendableResource ) );
-            	request.getSession().removeAttribute( CommentConstants.SESSION_COMMENT_ADD_MESSAGE_RESULT + strIdExtendableResource );
+                model.put( CommentConstants.MARK_ADD_COMMENT_MESSAGE_RESULT,
+                        (String) request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADD_MESSAGE_RESULT + strIdExtendableResource ) );
+                request.getSession( ).removeAttribute( CommentConstants.SESSION_COMMENT_ADD_MESSAGE_RESULT + strIdExtendableResource );
             }
             // get redirect URL
-            request.getSession().setAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, request.getRequestURI() + "?" + request.getQueryString() );
+            request.getSession( ).setAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL,
+                    request.getRequestURI( ) + "?" + request.getQueryString( ) );
             model.put( CommentConstants.PARAMETER_FROM_URL, CommentConstants.FROM_SESSION );
         }
 
@@ -234,8 +230,6 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             model.put( CommentConstants.MARK_REGISTERED_USER_EMAIL, user.getEmail( ) );
         }
 
-        
-        
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT, request.getLocale( ), model );
         String strContent = template.getHtml( );
 
@@ -244,8 +238,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         {
             strContent = postProcessor.process( request, strContent );
         }
-	
-	        return strContent;
+
+        return strContent;
     }
 
     /**
@@ -255,9 +249,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     public String getConfigHtml( ResourceExtenderDTO resourceExtender, Locale locale, HttpServletRequest request )
     {
         ReferenceList listIdsMailingList = new ReferenceList( );
-        listIdsMailingList
-                .addItem( -1, I18nService.getLocalizedString(
-                        CommentConstants.PROPERTY_COMMENT_CONFIG_LABEL_NO_MAILING_LIST, locale ) );
+        listIdsMailingList.addItem( -1, I18nService.getLocalizedString( CommentConstants.PROPERTY_COMMENT_CONFIG_LABEL_NO_MAILING_LIST, locale ) );
         listIdsMailingList.addAll( AdminMailingListService.getMailingLists( AdminUserService.getAdminUser( request ) ) );
 
         Map<String, Object> model = new HashMap<String, Object>( );
@@ -268,11 +260,11 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         model.put( CommentConstants.MARK_LOCALE, AdminUserService.getLocale( request ) );
         if ( WorkflowService.getInstance( ).isAvailable( ) )
         {
-        	AdminUser adminUser = AdminUserService.getAdminUser( request );
-            ReferenceList referenceList = WorkflowService.getInstance( ).getWorkflowsEnabled( adminUser, locale);
+            AdminUser adminUser = AdminUserService.getAdminUser( request );
+            ReferenceList referenceList = WorkflowService.getInstance( ).getWorkflowsEnabled( adminUser, locale );
             model.put( CommentConstants.MARK_WORKFLOW_REF_LIST, referenceList );
         }
-        
+
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT_CONFIG, request.getLocale( ), model );
 
         return template.getHtml( );
@@ -295,14 +287,13 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     {
         if ( resourceExtender != null )
         {
-        	
-        	// We save in session the post back URL
-            String strPostBackUrl = getPostBackUrl( request );
-            request.getSession( ).setAttribute(
-                    CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL, strPostBackUrl );
 
-            CommentExtenderConfig config = _configService.find( getResourceExtender( ).getKey( ),
-                    resourceExtender.getIdExtendableResource( ), resourceExtender.getExtendableResourceType( ) );
+            // We save in session the post back URL
+            String strPostBackUrl = getPostBackUrl( request );
+            request.getSession( ).setAttribute( CommentPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_ADMIN_POST_BACK_URL, strPostBackUrl );
+
+            CommentExtenderConfig config = _configService.find( getResourceExtender( ).getKey( ), resourceExtender.getIdExtendableResource( ),
+                    resourceExtender.getExtendableResourceType( ) );
 
             // We get the pagination info from the session
             Integer nItemsPerPage = _nDefaultItemsPerPage;
@@ -332,34 +323,32 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             {
                 strSortedAttributeName = (String) object;
             }
-            
-            object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_FILTER_STATE);
+
+            object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_FILTER_STATE );
             if ( object != null )
             {
                 strFilterState = (String) object;
             }
-            
-            object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_FILTER_PINNED);
+
+            object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_FILTER_PINNED );
             if ( object != null )
             {
-            	strFilterPinned = (String) object;
+                strFilterPinned = (String) object;
             }
-            
-            object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_FILTER_MARK_AS_IMPORTANT);
+
+            object = request.getSession( ).getAttribute( CommentConstants.SESSION_COMMENT_ADMIN_FILTER_MARK_AS_IMPORTANT );
             if ( object != null )
             {
-            	strFilterMarkAsImportant = (String) object;
+                strFilterMarkAsImportant = (String) object;
             }
 
-
-            int nItemsCount = _commentService.getCommentNb( resourceExtender.getIdExtendableResource( ),
-                    resourceExtender.getExtendableResourceType( ), config.getAuthorizeSubComments( ), false );
-            String strFromUrl = StringUtils.replace( request.getParameter( CommentConstants.PARAMETER_FROM_URL ),
-                    CommentConstants.CONSTANT_AND, CommentConstants.CONSTANT_AND_HTML );
+            int nItemsCount = _commentService.getCommentNb( resourceExtender.getIdExtendableResource( ), resourceExtender.getExtendableResourceType( ),
+                    config.getAuthorizeSubComments( ), false );
+            String strFromUrl = StringUtils.replace( request.getParameter( CommentConstants.PARAMETER_FROM_URL ), CommentConstants.CONSTANT_AND,
+                    CommentConstants.CONSTANT_AND_HTML );
             strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, strCurrentPageIndex );
             int nOldITemsPerPage = nItemsPerPage;
-            nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, nItemsPerPage,
-                    _nDefaultItemsPerPage );
+            nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, nItemsPerPage, _nDefaultItemsPerPage );
             if ( nItemsPerPage <= 0 )
             {
                 nItemsPerPage = _nDefaultItemsPerPage;
@@ -376,119 +365,114 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
                 strSortedAttributeName = strNewSortedAttributeName;
                 bIsAscSort = Boolean.parseBoolean( request.getParameter( Parameters.SORTED_ASC ) );
             }
-            
+
             if ( request.getParameter( CommentConstants.PARAMETER_FILTER_STATE ) != null )
             {
-            	strFilterState=request.getParameter( CommentConstants.PARAMETER_FILTER_STATE );
+                strFilterState = request.getParameter( CommentConstants.PARAMETER_FILTER_STATE );
             }
-            
-            if ( request.getParameter( CommentConstants.PARAMETER_FILTER_PINNED) != null )
+
+            if ( request.getParameter( CommentConstants.PARAMETER_FILTER_PINNED ) != null )
             {
-            	strFilterPinned=request.getParameter( CommentConstants.PARAMETER_FILTER_PINNED);
+                strFilterPinned = request.getParameter( CommentConstants.PARAMETER_FILTER_PINNED );
             }
-            
-            if ( request.getParameter( CommentConstants.PARAMETER_FILTER_MARK_AS_IMPORTANT) != null )
+
+            if ( request.getParameter( CommentConstants.PARAMETER_FILTER_MARK_AS_IMPORTANT ) != null )
             {
-            	strFilterMarkAsImportant=request.getParameter( CommentConstants.PARAMETER_FILTER_MARK_AS_IMPORTANT);
+                strFilterMarkAsImportant = request.getParameter( CommentConstants.PARAMETER_FILTER_MARK_AS_IMPORTANT );
             }
-         
+
             int nItemsOffset = nItemsPerPage * ( Integer.parseInt( strCurrentPageIndex ) - 1 );
 
-            
-            CommentFilter commentFilter=new CommentFilter();
-            if(StringUtils.isNotBlank( strFilterState ) && StringUtils.isNumeric( strFilterState ))
-        	{
-        		commentFilter.setCommentState(Integer.parseInt(strFilterState));
-        	}
-            if(StringUtils.isNotBlank( strFilterPinned ))
-        	{
-        		commentFilter.setPinned(new Boolean(strFilterPinned));
-        	}
-            if(StringUtils.isNotBlank( strFilterMarkAsImportant))
-        	{
-        		commentFilter.setImportant(new Boolean(strFilterMarkAsImportant));
-        	}
-        	commentFilter.setSortedAttributeName(strSortedAttributeName);
-        	commentFilter.setAscSort(bIsAscSort);
-       
+            CommentFilter commentFilter = new CommentFilter( );
+            if ( StringUtils.isNotBlank( strFilterState ) && StringUtils.isNumeric( strFilterState ) )
+            {
+                commentFilter.setCommentState( Integer.parseInt( strFilterState ) );
+            }
+            if ( StringUtils.isNotBlank( strFilterPinned ) )
+            {
+                commentFilter.setPinned( new Boolean( strFilterPinned ) );
+            }
+            if ( StringUtils.isNotBlank( strFilterMarkAsImportant ) )
+            {
+                commentFilter.setImportant( new Boolean( strFilterMarkAsImportant ) );
+            }
+            commentFilter.setSortedAttributeName( strSortedAttributeName );
+            commentFilter.setAscSort( bIsAscSort );
+
             List<Comment> listComments = _commentService.findByResource( resourceExtender.getIdExtendableResource( ),
-                    resourceExtender.getExtendableResourceType( ), commentFilter,
-                    nItemsOffset, nItemsPerPage, config.getAuthorizeSubComments( ) );
+                    resourceExtender.getExtendableResourceType( ), commentFilter, nItemsOffset, nItemsPerPage, config.getAuthorizeSubComments( ) );
 
             // We generate the base URL for the paginator
             UrlItem url = new UrlItem( strPostBackUrl );
             url.addParameter( CommentConstants.PARAMETER_EXTENDER_TYPE, CommentResourceExtender.EXTENDER_TYPE_COMMENT );
-            url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE,
-                    resourceExtender.getIdExtendableResource( ) );
-            url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE,
-                    resourceExtender.getExtendableResourceType( ) );
+            url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, resourceExtender.getIdExtendableResource( ) );
+            url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE, resourceExtender.getExtendableResourceType( ) );
             url.addParameter( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
 
-           
             // We get the paginator
-            IPaginator<Comment> paginator = new LocalizedDelegatePaginator<Comment>( listComments, nItemsPerPage,
-                    url.getUrl( ), Paginator.PARAMETER_PAGE_INDEX, strCurrentPageIndex, nItemsCount,
-                    AdminUserService.getLocale( request ) );
-            	
+            IPaginator<Comment> paginator = new LocalizedDelegatePaginator<Comment>( listComments, nItemsPerPage, url.getUrl( ), Paginator.PARAMETER_PAGE_INDEX,
+                    strCurrentPageIndex, nItemsCount, AdminUserService.getLocale( request ) );
+
             Map<String, Object> model = new HashMap<String, Object>( );
-            List<Comment> listCommentDisplay=paginator.getPageItems( );
+            List<Comment> listCommentDisplay = paginator.getPageItems( );
             AdminUser adminUser = AdminUserService.getAdminUser( request );
-    		if( adminUser!= null && WorkflowService.getInstance( ).isAvailable( )){
-    	        for(Comment comment: listCommentDisplay){
-    	        	
-    	        	comment.setListWorkflowActions( WorkflowService.getInstance( ).getActions( comment.getIdComment(),
-    	        			_commentService.getResourceType( comment.getExtendableResourceType() ), config.getIdWorkflow( ), adminUser ) );
-    	            
-    	        }
-    		} 
-            if(!CommentConstants.CONSTANT_ALL_RESSOURCE_ID.equals( resourceExtender.getIdExtendableResource()))
-        	{
-        	
-        		IExtendableResource resourceExtenderInfo=_resourceExtenderService.getExtendableResource(resourceExtender);
-        		 model.put( CommentConstants.MARK_RESOURCE_EXTENDER,  resourceExtenderInfo);
-        		 model.put(CommentConstants.MARK_ALL_RESOURCES, false);
-        	}
+            if ( adminUser != null && WorkflowService.getInstance( ).isAvailable( ) )
+            {
+                for ( Comment comment : listCommentDisplay )
+                {
+
+                    comment.setListWorkflowActions( WorkflowService.getInstance( ).getActions( comment.getIdComment( ),
+                            _commentService.getResourceType( comment.getExtendableResourceType( ) ), config.getIdWorkflow( ), adminUser ) );
+
+                }
+            }
+            if ( !CommentConstants.CONSTANT_ALL_RESSOURCE_ID.equals( resourceExtender.getIdExtendableResource( ) ) )
+            {
+
+                IExtendableResource resourceExtenderInfo = _resourceExtenderService.getExtendableResource( resourceExtender );
+                model.put( CommentConstants.MARK_RESOURCE_EXTENDER, resourceExtenderInfo );
+                model.put( CommentConstants.MARK_ALL_RESOURCES, false );
+            }
             else
             {
-            	HashMap<String, IExtendableResource> mapResourceExtender= new HashMap<>();
-            	for(Comment comment:listCommentDisplay)
-            	{
-            		if(!mapResourceExtender.containsKey(comment.getIdExtendableResource()))
-            		{
-            			
-            			mapResourceExtender.put(comment.getIdExtendableResource(), _resourceExtenderService.getExtendableResource(comment.getIdExtendableResource(), resourceExtender.getExtendableResourceType()));
-            		}
-            		
-            	}
-            	 model.put(CommentConstants.MARK_ALL_RESOURCES, true);
-            	 model.put(CommentConstants.MARK_RESOURCE_EXTENDER_MAP, mapResourceExtender);
+                HashMap<String, IExtendableResource> mapResourceExtender = new HashMap<>( );
+                for ( Comment comment : listCommentDisplay )
+                {
+                    if ( !mapResourceExtender.containsKey( comment.getIdExtendableResource( ) ) )
+                    {
+
+                        mapResourceExtender.put( comment.getIdExtendableResource( ), _resourceExtenderService
+                                .getExtendableResource( comment.getIdExtendableResource( ), resourceExtender.getExtendableResourceType( ) ) );
+                    }
+
+                }
+                model.put( CommentConstants.MARK_ALL_RESOURCES, true );
+                model.put( CommentConstants.MARK_RESOURCE_EXTENDER_MAP, mapResourceExtender );
             }
-            
-             model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, resourceExtender.getIdExtendableResource( ) );
+
+            model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, resourceExtender.getIdExtendableResource( ) );
             model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, resourceExtender.getExtendableResourceType( ) );
-           
+
             model.put( CommentConstants.MARK_LIST_COMMENTS, listCommentDisplay );
             model.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
             model.put( CommentConstants.MARK_PAGINATOR, paginator );
             model.put( CommentConstants.MARK_NB_ITEMS_PER_PAGE, Integer.toString( paginator.getItemsPerPage( ) ) );
             model.put( CommentConstants.MARK_ASC_SORT, bIsAscSort );
             model.put( Parameters.SORTED_ATTRIBUTE_NAME, strSortedAttributeName );
-            model.put( CommentConstants.PARAMETER_ID_COMMENT,
-                    request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
+            model.put( CommentConstants.PARAMETER_ID_COMMENT, request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
             model.put( CommentConstants.MARK_USE_BBCODE, config.getUseBBCodeEditor( ) );
             model.put( CommentConstants.MARK_ADMIN_BADGE, config.getAdminBadge( ) );
             model.put( CommentConstants.MARK_ALLOW_SUB_COMMENTS, config.getAuthorizeSubComments( ) );
-            model.put( CommentConstants.MARK_FILTER_STATE, strFilterState);
-            model.put( CommentConstants.MARK_FILTER_MARK_AS_IMPORTANT, strFilterMarkAsImportant);
-            model.put( CommentConstants.MARK_FILTER_PINNED, strFilterPinned);
-            model.put( CommentConstants. MARK_LIST_COMMENT_STATES,_commentService.getRefListCommentStates(locale));
-            model.put( CommentConstants. MARK_LIST_MARK_AS_IMPORTANT_FILTER,_commentService.getRefListFilterAsImportant(locale));
-            model.put( CommentConstants. MARK_LIST_PINNED_FILTER,_commentService.getRefListFilterAsPinned(locale));
-            
+            model.put( CommentConstants.MARK_FILTER_STATE, strFilterState );
+            model.put( CommentConstants.MARK_FILTER_MARK_AS_IMPORTANT, strFilterMarkAsImportant );
+            model.put( CommentConstants.MARK_FILTER_PINNED, strFilterPinned );
+            model.put( CommentConstants.MARK_LIST_COMMENT_STATES, _commentService.getRefListCommentStates( locale ) );
+            model.put( CommentConstants.MARK_LIST_MARK_AS_IMPORTANT_FILTER, _commentService.getRefListFilterAsImportant( locale ) );
+            model.put( CommentConstants.MARK_LIST_PINNED_FILTER, _commentService.getRefListFilterAsPinned( locale ) );
+
             model.put( CommentConstants.PARAMETER_POST_BACK_URL, strPostBackUrl );
 
-            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_COMMENTS, request.getLocale( ),
-                    model );
+            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MANAGE_COMMENTS, request.getLocale( ), model );
 
             // We save the pagination info in the session
             HttpSession session = request.getSession( );
@@ -496,8 +480,8 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
             session.setAttribute( CommentConstants.SESSION_COMMENT_ADMIN_CURRENT_PAGE_INDEX, strCurrentPageIndex );
             session.setAttribute( CommentConstants.SESSION_COMMENT_ADMIN_IS_ASC_SORT, bIsAscSort );
             session.setAttribute( CommentConstants.SESSION_COMMENT_ADMIN_SORTED_ATTRIBUTE_NAME, strSortedAttributeName );
-            session.setAttribute( CommentConstants.SESSION_COMMENT_ADMIN_FILTER_STATE, strFilterState);
-            
+            session.setAttribute( CommentConstants.SESSION_COMMENT_ADMIN_FILTER_STATE, strFilterState );
+
             String strContent = template.getHtml( );
 
             ContentPostProcessor postProcessor = getExtendPostProcessor( );
@@ -528,7 +512,7 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
     public String getPostBackUrl( HttpServletRequest request )
     {
         UrlItem urlItem = new UrlItem( request.getRequestURI( ) );
-        Map<String, String[]> mapParameters = new HashMap<String, String[]>( request.getParameterMap( ) );
+        Map<String, String [ ]> mapParameters = new HashMap<String, String [ ]>( request.getParameterMap( ) );
         // We ignore some parameters : those parameter will be set regardlessly of the post pack URL
         mapParameters.remove( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE );
         mapParameters.remove( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE );
@@ -539,22 +523,23 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         mapParameters.remove( Paginator.PARAMETER_ITEMS_PER_PAGE );
         mapParameters.remove( Parameters.SORTED_ATTRIBUTE_NAME );
         mapParameters.remove( Parameters.SORTED_ASC );
-        for ( Entry<String, String[]> entry : mapParameters.entrySet( ) )
+        for ( Entry<String, String [ ]> entry : mapParameters.entrySet( ) )
         {
-            urlItem.addParameter( entry.getKey( ), entry.getValue( )[0] );
+            urlItem.addParameter( entry.getKey( ), entry.getValue( ) [0] );
         }
         return urlItem.getUrl( );
     }
 
     /**
      * Get the content post processor of plugin extend
+     * 
      * @return the content post processor of plugin extend
      */
     private ContentPostProcessor getExtendPostProcessor( )
     {
         if ( _contentPostProcessor == null )
         {
-            synchronized ( this )
+            synchronized( this )
             {
                 if ( _contentPostProcessor == null )
                 {
@@ -564,6 +549,5 @@ public class CommentResourceExtenderComponent extends AbstractResourceExtenderCo
         }
         return _contentPostProcessor;
     }
-    
-    
+
 }

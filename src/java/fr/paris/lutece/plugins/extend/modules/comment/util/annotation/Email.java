@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,29 +47,24 @@ import javax.validation.Payload;
  */
 @Documented
 @Constraint( validatedBy = EmailValidator.class )
-@Target( value = 
-{
-    java.lang.annotation.ElementType.FIELD}
- )
+@Target( value = {
+        java.lang.annotation.ElementType.FIELD
+} )
 @Retention( value = java.lang.annotation.RetentionPolicy.RUNTIME )
 public @interface Email
 {
     /**
      * Message.
      */
-    String message(  ) default "Le format du courriel est incorrect";
+    String message( ) default "Le format du courriel est incorrect";
+
     /**
      * Groups.
      */
-    Class<?>[] groups(  ) default 
-    {
-    }
-    ;
+    Class<?> [ ] groups( ) default { };
+
     /**
      * Payload.
      */
-    Class<?extends Payload>[] payload(  ) default 
-    {
-    }
-    ;
+    Class<? extends Payload> [ ] payload( ) default { };
 }
