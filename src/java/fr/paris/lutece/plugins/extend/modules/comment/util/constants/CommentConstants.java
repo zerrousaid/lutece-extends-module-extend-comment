@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,14 +76,13 @@ public final class CommentConstants
     public static final String PARAMETER_FROM_URL = "from_url";
     public static final String PARAMETER_AUTHORIZE_SUB_COMMENTS = "authorizeSubComments";
     public static final String PARAMETER_NAME = "name";
-    public static final String PARAMETER_VIEW_ALL_RESOURCES="viewAllResources";
+    public static final String PARAMETER_VIEW_ALL_RESOURCES = "viewAllResources";
     public static final String PARAMETER_FILTER_STATE = "filterState";
     public static final String PARAMETER_FILTER_PINNED = "filterPinned";
     public static final String PARAMETER_FILTER_MARK_AS_IMPORTANT = "filterMarkAsImportant";
     public static final String PARAMETER_CONFIRM_REMOVE_COMMENT = "confirm_remove_comment";
     public static final String PARAMETER_PAGE = "page";
     public static final String PARAMETER_ID_ACTION = "id_action";
-
 
     // BEANS
     public static final String BEAN_CONFIG_SERVICE = "extend-comment.commentExtenderConfigService";
@@ -110,8 +109,8 @@ public final class CommentConstants
     public static final String MARK_DISPLAY_SUB_COMMENTS = "displaySubComments";
     public static final String MARK_MESSAGE_COMMENT_CREATED = "message_comment_created";
     public static final String MARK_RETURN_TO_COMMENT_LIST = "returnToCommentList";
-    public static final String MARK_ENABLE_AUTH_MODE="enable_auth_mode";
-    public static final String MARK_ALL_RESOURCES="allResources";
+    public static final String MARK_ENABLE_AUTH_MODE = "enable_auth_mode";
+    public static final String MARK_ALL_RESOURCES = "allResources";
     public static final String MARK_LIST_COMMENT_STATES = "listCommentStates";
     public static final String MARK_LIST_MARK_AS_IMPORTANT_FILTER = "listMarkAsImportantFilter";
     public static final String MARK_LIST_PINNED_FILTER = "listPinnedFilter";
@@ -121,8 +120,6 @@ public final class CommentConstants
     public static final String MARK_TRI_COMMENTS_BY_DATE_CREATION = "triCommentsByDateCreation";
     public static final String MARK_WORKFLOW_REF_LIST = "workflow_list";
 
-    
-    
     public static final String MARK_ADD_COMMENT_POSITION = "addCommentPosition";
     public static final String MARK_ADD_COMMENT_POSITIONS = "allPositions";
     public static final String MARK_CAPTCHA = "captcha";
@@ -145,7 +142,6 @@ public final class CommentConstants
     public static final String CONSTANT_AND = "&";
     public static final String CONSTANT_AND_HTML = "%26";
     public static final String CONSTANT_ALL_RESSOURCE_ID = "*";
-  
 
     public static final String SESSION_COMMENT_ITEMS_PER_PAGE = "session_comment_fo_items_per_page";
     public static final String SESSION_COMMENT_CURRENT_PAGE_INDEX = "session_comment_fo_current_page_index";
@@ -157,23 +153,21 @@ public final class CommentConstants
     public static final String SESSION_COMMENT_ADMIN_FILTER_STATE = "session_comment_bo_state";
     public static final String SESSION_COMMENT_ADMIN_FILTER_PINNED = "session_comment_bo_filter_pinned";
     public static final String SESSION_COMMENT_ADMIN_FILTER_MARK_AS_IMPORTANT = "session_comment_bo_filter_mark_as_important";
-    
-    
+
     public static final String MARK_ADMIN_BADGE = "adminBadge";
     public static final String SESSION_COMMENT_POST_BACK_URL = "commentPostBackUrl";
     public static final String PARAMETER_POST_BACK_URL = "postBackUrl";
     public static final String SESSION_COMMENT_ADMIN_POST_BACK_URL = "adminInfoPostBackUrl";
     public static final String SESSION_COMMENT_ADD_MESSAGE_RESULT = "addCommentMessageResult";
 
-   
     public static final String MARK_NICKNAME = "nickname";
     public static final String JCAPTCHA_PLUGIN = "jcaptcha";
-	public static final String ADD_COMMENT_MESSAGE_RESULT_ANCHOR = "message";
-	public static final String MARK_ADD_COMMENT_MESSAGE_RESULT = "addCommentMessageResult";
-	public static final String FROM_SESSION = "from_session";
-	
-	public static final String  SORT_BY_COMMENT_ORDER ="comment_order" ;
-	
+    public static final String ADD_COMMENT_MESSAGE_RESULT_ANCHOR = "message";
+    public static final String MARK_ADD_COMMENT_MESSAGE_RESULT = "addCommentMessageResult";
+    public static final String FROM_SESSION = "from_session";
+
+    public static final String SORT_BY_COMMENT_ORDER = "comment_order";
+
     /**
      * Instantiates a new comment constants.
      */

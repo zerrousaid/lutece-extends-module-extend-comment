@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
-
 /**
  *
  * CommentResourceExtender
@@ -74,7 +73,7 @@ public class CommentResourceExtender extends AbstractResourceExtender
     {
         if ( StringUtils.isNotBlank( strExtenderType ) )
         {
-            return getKey(  ).equals( strExtenderType );
+            return getKey( ).equals( strExtenderType );
         }
 
         return false;
@@ -84,15 +83,13 @@ public class CommentResourceExtender extends AbstractResourceExtender
      * {@inheritDoc}
      */
     @Override
-    public String getContent( String strIdExtendableResource, String strExtendableResourceType, String strParameters,
-        HttpServletRequest request )
+    public String getContent( String strIdExtendableResource, String strExtendableResourceType, String strParameters, HttpServletRequest request )
     {
         if ( StringUtils.equals( EXTENDABLE_RESOURCE_TYPE_COMMENT, strExtendableResourceType ) )
         {
             return StringUtils.EMPTY;
         }
-        return getResourceExtenderComponent(  )
-                   .getPageAddOn( strIdExtendableResource, strExtendableResourceType, strParameters, request );
+        return getResourceExtenderComponent( ).getPageAddOn( strIdExtendableResource, strExtendableResourceType, strParameters, request );
     }
 
     /**
@@ -101,7 +98,7 @@ public class CommentResourceExtender extends AbstractResourceExtender
     @Override
     public void doCreateResourceAddOn( ResourceExtenderDTO extender )
     {
-        CommentExtenderConfig config = new CommentExtenderConfig(  );
+        CommentExtenderConfig config = new CommentExtenderConfig( );
 
         // Default values
         CommentExtenderConfig defaultConfig = _configService.find( -1 );

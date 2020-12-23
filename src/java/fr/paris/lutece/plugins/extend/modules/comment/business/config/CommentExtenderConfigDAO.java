@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,6 @@ import fr.paris.lutece.plugins.extend.business.extender.config.IExtenderConfigDA
 import fr.paris.lutece.plugins.extend.modules.comment.service.CommentPlugin;
 import fr.paris.lutece.util.sql.DAOUtil;
 
-
 /**
  * 
  * CommentExtenderConfigDAO
@@ -74,7 +73,6 @@ public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExten
         daoUtil.setBoolean( nIndex++, config.isTriCommentsByCreation( ) );
         daoUtil.setInt( nIndex, config.getIdWorkflow( ) );
 
-        
         daoUtil.executeUpdate( );
         daoUtil.free( );
     }
@@ -100,9 +98,8 @@ public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExten
         daoUtil.setBoolean( nIndex++, config.isDisplaySubComments( ) );
         daoUtil.setBoolean( nIndex++, config.getDeleteComments( ) );
         daoUtil.setBoolean( nIndex++, config.isTriCommentsByCreation( ) );
-        daoUtil.setInt( nIndex++, config.getIdWorkflow( ));
+        daoUtil.setInt( nIndex++, config.getIdWorkflow( ) );
 
-        
         daoUtil.setInt( nIndex, config.getIdExtender( ) );
 
         daoUtil.executeUpdate( );
@@ -146,12 +143,12 @@ public class CommentExtenderConfigDAO implements IExtenderConfigDAO<CommentExten
             config.setUseBBCodeEditor( daoUtil.getBoolean( nIndex++ ) );
             config.setAdminBadge( daoUtil.getString( nIndex++ ) );
             config.setMessageCommentCreated( daoUtil.getString( nIndex++ ) );
-            config.setAddCommentPosition( daoUtil.getInt(  nIndex++ ) );
-            config.setEnabledAuthMode(daoUtil.getBoolean( nIndex++ ));
-            config.setDisplaySubComments(daoUtil.getBoolean( nIndex++ ));
+            config.setAddCommentPosition( daoUtil.getInt( nIndex++ ) );
+            config.setEnabledAuthMode( daoUtil.getBoolean( nIndex++ ) );
+            config.setDisplaySubComments( daoUtil.getBoolean( nIndex++ ) );
             config.setDeleteComments( daoUtil.getBoolean( nIndex++ ) );
             config.setTriCommentsByCreation( daoUtil.getBoolean( nIndex++ ) );
-            config.setIdWorkflow(daoUtil.getInt( nIndex ));
+            config.setIdWorkflow( daoUtil.getInt( nIndex ) );
         }
 
         daoUtil.free( );

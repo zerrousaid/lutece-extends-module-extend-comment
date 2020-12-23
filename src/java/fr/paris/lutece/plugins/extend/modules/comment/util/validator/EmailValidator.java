@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,6 @@ import java.util.regex.Pattern;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-
 /**
  * Check if a string match to an email
  */
@@ -52,8 +51,7 @@ public class EmailValidator implements ConstraintValidator<Email, String>
     private static final String ATOM = "[a-z0-9!#$%&'*+/=?^_`{|}~-]";
     private static final String DOMAIN = "(" + ATOM + "+(\\." + ATOM + "+)*";
     private static final String IP_DOMAIN = "\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\]";
-    private Pattern _pattern = Pattern.compile( "^" + ATOM + "+(\\." + ATOM + "+)*@" + DOMAIN + "|" + IP_DOMAIN + ")$",
-            Pattern.CASE_INSENSITIVE );
+    private Pattern _pattern = Pattern.compile( "^" + ATOM + "+(\\." + ATOM + "+)*@" + DOMAIN + "|" + IP_DOMAIN + ")$", Pattern.CASE_INSENSITIVE );
 
     /**
      * {@inheritDoc}
@@ -73,9 +71,9 @@ public class EmailValidator implements ConstraintValidator<Email, String>
 
         if ( StringUtils.isNotEmpty( strEmail ) )
         {
-            Matcher m = _pattern.matcher( strEmail.trim(  ) );
+            Matcher m = _pattern.matcher( strEmail.trim( ) );
 
-            if ( !m.matches(  ) )
+            if ( !m.matches( ) )
             {
                 valid = false;
             }

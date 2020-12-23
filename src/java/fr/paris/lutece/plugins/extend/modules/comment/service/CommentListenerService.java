@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  * Service to manage listeners over comments
  */
@@ -72,11 +71,12 @@ public class CommentListenerService
 
     /**
      * Register a comment listener.
-     * @param strExtendableResourceType The extendable resource type associated
-     *            with the listener. Use
-     *            {@link #CONSTANT_EVERY_EXTENDABLE_RESOURCE_TYPE} to associated
-     *            the listener with every resource type.
-     * @param listener The listener to register
+     * 
+     * @param strExtendableResourceType
+     *            The extendable resource type associated with the listener. Use {@link #CONSTANT_EVERY_EXTENDABLE_RESOURCE_TYPE} to associated the listener
+     *            with every resource type.
+     * @param listener
+     *            The listener to register
      */
     public static synchronized void registerListener( String strExtendableResourceType, ICommentListener listener )
     {
@@ -92,6 +92,7 @@ public class CommentListenerService
 
     /**
      * Check if there is listeners to notify
+     * 
      * @return True if there is at last one listener, false otherwise
      */
     public static boolean hasListener( )
@@ -100,15 +101,16 @@ public class CommentListenerService
     }
 
     /**
-     * Notify to listeners the creation of a comment. Only listeners associated
-     * with the extendable resource type of the comment are notified.
-     * @param strExtendableResourceType The extendable resource type of the
-     *            created comment
-     * @param strIdExtendableResource The extendable resource id of the comment
-     * @param bPublished True if the comment is published, false otherwise
+     * Notify to listeners the creation of a comment. Only listeners associated with the extendable resource type of the comment are notified.
+     * 
+     * @param strExtendableResourceType
+     *            The extendable resource type of the created comment
+     * @param strIdExtendableResource
+     *            The extendable resource id of the comment
+     * @param bPublished
+     *            True if the comment is published, false otherwise
      */
-    public static void createComment( String strExtendableResourceType, String strIdExtendableResource,
-            boolean bPublished )
+    public static void createComment( String strExtendableResourceType, String strIdExtendableResource, boolean bPublished )
     {
         List<ICommentListener> listListeners = _mapListeners.get( strExtendableResourceType );
         if ( listListeners != null )
@@ -127,18 +129,20 @@ public class CommentListenerService
             }
         }
     }
-    
+
     /**
-     * Notify to listeners the creation of a comment. Only listeners associated
-     * with the extendable resource type of the comment are notified.
-     * @param strExtendableResourceType The extendable resource type of the
-     *            created comment
-     * @param strIdExtendableResource The extendable resource id of the comment
-     * @param bPublished True if the comment is published, false otherwise
-     * @param request the HTTP request
+     * Notify to listeners the creation of a comment. Only listeners associated with the extendable resource type of the comment are notified.
+     * 
+     * @param strExtendableResourceType
+     *            The extendable resource type of the created comment
+     * @param strIdExtendableResource
+     *            The extendable resource id of the comment
+     * @param bPublished
+     *            True if the comment is published, false otherwise
+     * @param request
+     *            the HTTP request
      */
-    public static void createComment( String strExtendableResourceType, String strIdExtendableResource,
-            boolean bPublished, HttpServletRequest request )
+    public static void createComment( String strExtendableResourceType, String strIdExtendableResource, boolean bPublished, HttpServletRequest request )
     {
         List<ICommentListener> listListeners = _mapListeners.get( strExtendableResourceType );
         if ( listListeners != null )
@@ -157,13 +161,14 @@ public class CommentListenerService
             }
         }
     }
-    
+
     /**
-     * Notify to listeners the modification of a comment. Only listeners
-     * associated with the extendable resource type of the comment are notified.
-     * @param nIdComment The id of the updated comment
-     * @param bPublished True if the comment was published, false if it was
-     *            unpublished
+     * Notify to listeners the modification of a comment. Only listeners associated with the extendable resource type of the comment are notified.
+     * 
+     * @param nIdComment
+     *            The id of the updated comment
+     * @param bPublished
+     *            True if the comment was published, false if it was unpublished
      */
     public static void publishComment( int nIdComment, boolean bPublished )
     {
@@ -175,16 +180,16 @@ public class CommentListenerService
     }
 
     /**
-     * Notify to listeners the modification of a comment. Only listeners
-     * associated with the extendable resource type of the comment are notified.
-     * @param strExtendableResourceType The extendable resource type of the
-     *            updated comment
-     * @param strIdExtendableResource The extendable resource id of the comment
-     * @param bPublished True if the comment was published, false if it was
-     *            unpublished
+     * Notify to listeners the modification of a comment. Only listeners associated with the extendable resource type of the comment are notified.
+     * 
+     * @param strExtendableResourceType
+     *            The extendable resource type of the updated comment
+     * @param strIdExtendableResource
+     *            The extendable resource id of the comment
+     * @param bPublished
+     *            True if the comment was published, false if it was unpublished
      */
-    public static void publishComment( String strExtendableResourceType, String strIdExtendableResource,
-            boolean bPublished )
+    public static void publishComment( String strExtendableResourceType, String strIdExtendableResource, boolean bPublished )
     {
         List<ICommentListener> listListeners = _mapListeners.get( strExtendableResourceType );
         if ( listListeners != null )
@@ -205,15 +210,16 @@ public class CommentListenerService
     }
 
     /**
-     * Notify to listeners the modification of a comment. Only listeners
-     * associated with the extendable resource type of the comment are notified.
-     * @param strExtendableResourceType The extendable resource type of the
-     *            removed comment
-     * @param strIdExtendableResource The extendable resource id of the comment
-     * @param listIdRemovedComment The list of ids of removed comments
+     * Notify to listeners the modification of a comment. Only listeners associated with the extendable resource type of the comment are notified.
+     * 
+     * @param strExtendableResourceType
+     *            The extendable resource type of the removed comment
+     * @param strIdExtendableResource
+     *            The extendable resource id of the comment
+     * @param listIdRemovedComment
+     *            The list of ids of removed comments
      */
-    public static void deleteComment( String strExtendableResourceType, String strIdExtendableResource,
-            List<Integer> listIdRemovedComment )
+    public static void deleteComment( String strExtendableResourceType, String strIdExtendableResource, List<Integer> listIdRemovedComment )
     {
         try
         {
@@ -234,19 +240,21 @@ public class CommentListenerService
                 }
             }
         }
-        catch ( Exception e )
+        catch( Exception e )
         {
             AppLogService.error( e.getMessage( ), e );
         }
     }
-    
+
     /**
-     * Notify the check comment  
+     * Notify the check comment
+     * 
      * @param listErrors
      * @return
      */
-    public  static  String checkComment( String comment, String strExtendableResourceType, String uidUser ){
-    	
+    public static String checkComment( String comment, String strExtendableResourceType, String uidUser )
+    {
+
         StringBuilder sbError = new StringBuilder( );
         try
         {
@@ -255,10 +263,11 @@ public class CommentListenerService
             {
                 for ( ICommentListener listener : listListeners )
                 {
-                	String strError= listener.checkComment(comment, uidUser);
-                	if( strError!= null && !strError.isEmpty( )){
-                		sbError.append( strError );
-                	}
+                    String strError = listener.checkComment( comment, uidUser );
+                    if ( strError != null && !strError.isEmpty( ) )
+                    {
+                        sbError.append( strError );
+                    }
                 }
             }
             listListeners = _mapListeners.get( CONSTANT_EVERY_EXTENDABLE_RESOURCE_TYPE );
@@ -266,28 +275,30 @@ public class CommentListenerService
             {
                 for ( ICommentListener listener : listListeners )
                 {
-                	String strError=listener.checkComment(comment, uidUser);
-                	if(strError!= null && !strError.isEmpty( ) ){
-                		sbError.append( strError );
-                	}
+                    String strError = listener.checkComment( comment, uidUser );
+                    if ( strError != null && !strError.isEmpty( ) )
+                    {
+                        sbError.append( strError );
+                    }
                 }
             }
         }
-        catch ( Exception e )
+        catch( Exception e )
         {
             AppLogService.error( e.getMessage( ), e );
         }
         return sbError.toString( );
     }
-    
+
     /**
-     * Notify the check comment  
+     * Notify the check comment
+     * 
      * @param listErrors
      * @return
      */
     public static String checkComment( String comment, String strExtendableResourceType, String strResourceId, String uidUser )
     {
-        StringBuilder sbError = new StringBuilder(  );
+        StringBuilder sbError = new StringBuilder( );
         try
         {
             List<ICommentListener> listListeners = _mapListeners.get( strExtendableResourceType );
@@ -296,7 +307,8 @@ public class CommentListenerService
                 for ( ICommentListener listener : listListeners )
                 {
                     String strError = listener.checkComment( comment, uidUser, strExtendableResourceType, strResourceId );
-                    if( strError!= null && !strError.isEmpty(  )){
+                    if ( strError != null && !strError.isEmpty( ) )
+                    {
                         sbError.append( strError );
                     }
                 }
@@ -307,29 +319,32 @@ public class CommentListenerService
                 for ( ICommentListener listener : listListeners )
                 {
                     String strError = listener.checkComment( comment, uidUser, strExtendableResourceType, strResourceId );
-                    if( strError!= null && !strError.isEmpty(  ) )
+                    if ( strError != null && !strError.isEmpty( ) )
                     {
                         sbError.append( strError );
                     }
                 }
             }
         }
-        catch ( Exception e )
+        catch( Exception e )
         {
-            AppLogService.error( e.getMessage(  ), e );
+            AppLogService.error( e.getMessage( ), e );
         }
-        return sbError.toString(  );
+        return sbError.toString( );
     }
-    
+
     /**
      * Check if a user can comment. Call listeners.
-     * @param user The lutece user
-     * @param strIdExtendableResource The id of the extendable resource
-     * @param strExtendableResourceType The type of the resource
+     * 
+     * @param user
+     *            The lutece user
+     * @param strIdExtendableResource
+     *            The id of the extendable resource
+     * @param strExtendableResourceType
+     *            The type of the resource
      * @return true when the user has the rights, otherwise false
      */
-    public static boolean canComment( LuteceUser user, String strIdExtendableResource,
-            String strExtendableResourceType )
+    public static boolean canComment( LuteceUser user, String strIdExtendableResource, String strExtendableResourceType )
     {
         try
         {
@@ -358,21 +373,23 @@ public class CommentListenerService
                 }
             }
         }
-        catch ( Exception e )
+        catch( Exception e )
         {
             AppLogService.error( e.getMessage( ), e );
         }
         return true;
     }
+
     /**
      * Get the comment DAO
+     * 
      * @return the comment DAO
      */
     private static ICommentDAO getCommentDAO( )
     {
         if ( _commentDAO == null )
         {
-            synchronized ( CommentListenerService.class )
+            synchronized( CommentListenerService.class )
             {
                 if ( _commentDAO == null )
                 {

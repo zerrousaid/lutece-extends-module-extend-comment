@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,71 +42,82 @@ import javax.validation.ConstraintViolation;
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 
-
 /**
  * Interface of listeners of comments
+ * 
  * @param <A>
  */
 public interface ICommentListener
 {
     /**
      * Notify the creation of a comment
-     * @param strIdExtendableResource The id of the extendable resource
-     *            associated with the created comment
-     * @param bPublished True if the created comment is published, false
-     *            otherwise
+     * 
+     * @param strIdExtendableResource
+     *            The id of the extendable resource associated with the created comment
+     * @param bPublished
+     *            True if the created comment is published, false otherwise
      */
     void createComment( String strIdExtendableResource, boolean bPublished );
-    
+
     /**
      * Notify the creation of a comment
-     * @param strIdExtendableResource The id of the extendable resource
-     *            associated with the created comment
-     * @param bPublished True if the created comment is published, false
-     *            otherwise
-     * request  HttpServletRequest the Http request          
+     * 
+     * @param strIdExtendableResource
+     *            The id of the extendable resource associated with the created comment
+     * @param bPublished
+     *            True if the created comment is published, false otherwise request HttpServletRequest the Http request
      */
-    void createComment( String strIdExtendableResource, boolean bPublished , HttpServletRequest request);
+    void createComment( String strIdExtendableResource, boolean bPublished, HttpServletRequest request );
+
     /**
      * Notify the publication or unpublication of a comment
-     * @param strIdExtendableResource The id of the extendable resource
-     *            associated with the modified comment
-     * @param bPublished True if the comment was published, false if it was
-     *            unpublished
+     * 
+     * @param strIdExtendableResource
+     *            The id of the extendable resource associated with the modified comment
+     * @param bPublished
+     *            True if the comment was published, false if it was unpublished
      */
     void publishComment( String strIdExtendableResource, boolean bPublished );
 
     /**
      * Notify the removal of a comment
-     * @param strIdExtendableResource The id of the extendable resource
-     *            associated with the removed comment
-     * @param listIdRemovedComment The list of ids of removed comments
+     * 
+     * @param strIdExtendableResource
+     *            The id of the extendable resource associated with the removed comment
+     * @param listIdRemovedComment
+     *            The list of ids of removed comments
      */
     void deleteComment( String strIdExtendableResource, List<Integer> listIdRemovedComment );
-    
-   /**
-    * Notify the check comment  
-    * @param listErrors
-    * @return
-    */
-   public  String  checkComment( String comment, String uidUser );
-   
-   /**
-    * Notify the check comment
-    * @param comment
-    * @param uidUser
-    * @param strResourceType
-    * @param strResourceId
-    * @return
-    */
-   public String checkComment( String comment, String uidUser, String strResourceType, String strResourceId );
 
-   /**
-    * Check if user can comment
-    * @param user The lutece user
-    * @param strIdExtendableResource The id of the extendable resource
-    * @param strExtendableResourceType The type of the resource
-    * @return true when the user has the rights, otherwise false
-    */
-   public boolean canComment( LuteceUser user, String strIdExtendableResource, String strExtendableResourceType );
+    /**
+     * Notify the check comment
+     * 
+     * @param listErrors
+     * @return
+     */
+    public String checkComment( String comment, String uidUser );
+
+    /**
+     * Notify the check comment
+     * 
+     * @param comment
+     * @param uidUser
+     * @param strResourceType
+     * @param strResourceId
+     * @return
+     */
+    public String checkComment( String comment, String uidUser, String strResourceType, String strResourceId );
+
+    /**
+     * Check if user can comment
+     * 
+     * @param user
+     *            The lutece user
+     * @param strIdExtendableResource
+     *            The id of the extendable resource
+     * @param strExtendableResourceType
+     *            The type of the resource
+     * @return true when the user has the rights, otherwise false
+     */
+    public boolean canComment( LuteceUser user, String strIdExtendableResource, String strExtendableResourceType );
 }

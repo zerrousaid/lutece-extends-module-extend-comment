@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,6 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.workflow.WorkflowService;
 import fr.paris.lutece.util.ReferenceList;
 
-
 /**
  * 
  * CommentService
@@ -72,7 +71,7 @@ public class CommentService implements ICommentService
 {
     /** The Constant BEAN_SERVICE. */
     public static final String BEAN_SERVICE = "extend-comment.commentService";
-      
+
     @Inject
     private ICommentDAO _commentDAO;
     @Inject
@@ -81,6 +80,7 @@ public class CommentService implements ICommentService
     @Inject
     @Named( CommentConstants.BEAN_CONFIG_SERVICE )
     private IResourceExtenderConfigService _configService;
+
     /**
      * {@inheritDoc}
      */
@@ -97,11 +97,11 @@ public class CommentService implements ICommentService
             Comment parentComment = findByPrimaryKey( comment.getIdParentComment( ) );
             parentComment.setDateLastModif( currentTimestamp );
             update( parentComment );
-        }    
-       	processWorkflow(comment);
-        CommentListenerService.createComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ),
-                comment.isPublished( ), request );
+        }
+        processWorkflow( comment );
+        CommentListenerService.createComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ), comment.isPublished( ), request );
     }
+
     /**
      * {@inheritDoc}
      */
@@ -119,9 +119,8 @@ public class CommentService implements ICommentService
             parentComment.setDateLastModif( currentTimestamp );
             update( parentComment );
         }
-        processWorkflow(comment);   
-        CommentListenerService.createComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ),
-                comment.isPublished( ));
+        processWorkflow( comment );
+        CommentListenerService.createComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ), comment.isPublished( ) );
     }
 
     /**
@@ -136,10 +135,9 @@ public class CommentService implements ICommentService
         _commentDAO.store( comment, CommentPlugin.getPlugin( ) );
         if ( oldComment.isPublished( ) ^ comment.isPublished( ) )
         {
-            CommentListenerService.publishComment( comment.getExtendableResourceType( ),
-                    comment.getIdExtendableResource( ), comment.isPublished( ) );
+            CommentListenerService.publishComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ), comment.isPublished( ) );
         }
-        //        if ( ( oldComment.isPublished( ) && !comment.isPublished( ) ) || !oldComment.isPublished( ) && comment.isPublished( ) ) )
+        // if ( ( oldComment.isPublished( ) && !comment.isPublished( ) ) || !oldComment.isPublished( ) && comment.isPublished( ) ) )
     }
 
     /**
@@ -160,20 +158,19 @@ public class CommentService implements ICommentService
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
     public void remove( int nIdComment )
     {
-    	  Comment comment = findByPrimaryKey( nIdComment );
+        Comment comment = findByPrimaryKey( nIdComment );
         if ( CommentListenerService.hasListener( ) )
         {
-          
-            List<Integer> listIdRemovedComments = new ArrayList< >( );
+
+            List<Integer> listIdRemovedComments = new ArrayList<>( );
             listIdRemovedComments.add( nIdComment );
-            CommentListenerService.deleteComment( comment.getExtendableResourceType( ),
-                    comment.getIdExtendableResource( ), listIdRemovedComments );
+            CommentListenerService.deleteComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ), listIdRemovedComments );
         }
         if ( WorkflowService.getInstance( ).isAvailable( ) )
         {
-        	String resourceType = getResourceType( comment.getExtendableResourceType( ) );    
+            String resourceType = getResourceType( comment.getExtendableResourceType( ) );
             WorkflowService.getInstance( ).doRemoveWorkFlowResource( nIdComment, resourceType );
-           
+
         }
         _commentDAO.delete( nIdComment, CommentPlugin.getPlugin( ) );
     }
@@ -185,24 +182,23 @@ public class CommentService implements ICommentService
     @Transactional( CommentPlugin.TRANSACTION_MANAGER )
     public void removeByResource( String strIdExtendableResource, String strExtendableResourceType )
     {
-    	   List<Integer> listRemovedComments = findIdsByResource( strIdExtendableResource, strExtendableResourceType,
-                   false );
+        List<Integer> listRemovedComments = findIdsByResource( strIdExtendableResource, strExtendableResourceType, false );
         if ( CommentListenerService.hasListener( ) )
         {
-         
-            CommentListenerService.deleteComment( strExtendableResourceType, strIdExtendableResource,
-                    listRemovedComments );
+
+            CommentListenerService.deleteComment( strExtendableResourceType, strIdExtendableResource, listRemovedComments );
         }
         if ( WorkflowService.getInstance( ).isAvailable( ) )
         {
-        	String resourceType = getResourceType( strExtendableResourceType );  
-        	for( int nIdComment:listRemovedComments){
-        		
-        		WorkflowService.getInstance( ).doRemoveWorkFlowResource( nIdComment, resourceType );
-        	
-        	}
-           // WorkflowService.getInstance( ).doRemoveWorkFlowResourceByListId(listRemovedComments, resourceType , id_wf);
-            
+            String resourceType = getResourceType( strExtendableResourceType );
+            for ( int nIdComment : listRemovedComments )
+            {
+
+                WorkflowService.getInstance( ).doRemoveWorkFlowResource( nIdComment, resourceType );
+
+            }
+            // WorkflowService.getInstance( ).doRemoveWorkFlowResourceByListId(listRemovedComments, resourceType , id_wf);
+
         }
         _commentDAO.deleteByResource( strIdExtendableResource, strExtendableResourceType, CommentPlugin.getPlugin( ) );
     }
@@ -222,84 +218,78 @@ public class CommentService implements ICommentService
      * {@inheritDoc}
      */
     @Override
-    public List<Integer> findIdsByResource( String strIdExtendableResource, String strExtendableResourceType,
-            boolean bPublishedOnly )
+    public List<Integer> findIdsByResource( String strIdExtendableResource, String strExtendableResourceType, boolean bPublishedOnly )
     {
-        return _commentDAO.findIdsByResource( strIdExtendableResource, strExtendableResourceType, bPublishedOnly,
-                CommentPlugin.getPlugin( ) );
+        return _commentDAO.findIdsByResource( strIdExtendableResource, strExtendableResourceType, bPublishedOnly, CommentPlugin.getPlugin( ) );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType,
-            boolean bPublishedOnly, boolean bAscSort )
+    public List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType, boolean bPublishedOnly, boolean bAscSort )
     {
-    	
-    	CommentFilter commentFilter=new CommentFilter();
-    	if(bPublishedOnly)
-    	{
-    		commentFilter.setCommentState(Comment.COMMENT_STATE_PUBLISHED);
-    	}
-    
-    	commentFilter.setAscSort(bAscSort);
-    	
-    	return _commentDAO.findParentCommentsByResource( strIdExtendableResource, strExtendableResourceType,
-        		commentFilter, 0, 0, CommentPlugin.getPlugin( ) );
+
+        CommentFilter commentFilter = new CommentFilter( );
+        if ( bPublishedOnly )
+        {
+            commentFilter.setCommentState( Comment.COMMENT_STATE_PUBLISHED );
+        }
+
+        commentFilter.setAscSort( bAscSort );
+
+        return _commentDAO.findParentCommentsByResource( strIdExtendableResource, strExtendableResourceType, commentFilter, 0, 0, CommentPlugin.getPlugin( ) );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int getCommentNb( String strIdExtendableResource, String strExtendableResourceType, boolean bParentsOnly,
-            boolean bPublishedOnly )
+    public int getCommentNb( String strIdExtendableResource, String strExtendableResourceType, boolean bParentsOnly, boolean bPublishedOnly )
     {
-        return _commentDAO.getCommentNb( strIdExtendableResource, strExtendableResourceType, bParentsOnly,
-                bPublishedOnly, CommentPlugin.getPlugin( ) );
+        return _commentDAO.getCommentNb( strIdExtendableResource, strExtendableResourceType, bParentsOnly, bPublishedOnly, CommentPlugin.getPlugin( ) );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Comment> findLastComments( String strIdExtendableResource, String strExtendableResourceType,
-            int nNbComments, boolean bPublishedOnly, boolean bParentsOnly, boolean bGetNumberSubComments, boolean bDisplaySubComments, boolean bSortedByDateCreation  )
+    public List<Comment> findLastComments( String strIdExtendableResource, String strExtendableResourceType, int nNbComments, boolean bPublishedOnly,
+            boolean bParentsOnly, boolean bGetNumberSubComments, boolean bDisplaySubComments, boolean bSortedByDateCreation )
     {
         Plugin plugin = CommentPlugin.getPlugin( );
-        List<Comment> listComments = new ArrayList<>();
-        List <Comment> listSubComments = new ArrayList<>();
-        
-        List<Comment> listCommentsPinned = findCommentsPinned(strIdExtendableResource, strExtendableResourceType, nNbComments, bPublishedOnly?Comment.COMMENT_STATE_PUBLISHED:null, true, bGetNumberSubComments,null);
-        
-        listComments.addAll(listCommentsPinned);
-        
-        if(nNbComments==0 || listCommentsPinned.size()!=nNbComments)
-        {
-    	   if(listCommentsPinned.size()!=nNbComments)
-    	   {
-    		   nNbComments= nNbComments-listCommentsPinned.size();
-    	   }
-    	   List<Comment> listLastComments=  _commentDAO.selectLastComments( strIdExtendableResource,
-                   strExtendableResourceType, nNbComments, bPublishedOnly, bParentsOnly, plugin, bSortedByDateCreation );
-           if ( bGetNumberSubComments )
-           {
-               for ( Comment comment : listLastComments )
-               {
-            	   listSubComments = findByIdParent( comment.getIdComment( ), bPublishedOnly ) ;
+        List<Comment> listComments = new ArrayList<>( );
+        List<Comment> listSubComments = new ArrayList<>( );
 
-            	   comment.setNumberSubComments( listSubComments.size( ) ) ;
-                   if ( bDisplaySubComments )
-                   {
-                	   comment.setListSubComments( listSubComments );
-                   }
-               }
-           }
-        	listComments.addAll(listLastComments);
-         }
-        
-       
+        List<Comment> listCommentsPinned = findCommentsPinned( strIdExtendableResource, strExtendableResourceType, nNbComments,
+                bPublishedOnly ? Comment.COMMENT_STATE_PUBLISHED : null, true, bGetNumberSubComments, null );
+
+        listComments.addAll( listCommentsPinned );
+
+        if ( nNbComments == 0 || listCommentsPinned.size( ) != nNbComments )
+        {
+            if ( listCommentsPinned.size( ) != nNbComments )
+            {
+                nNbComments = nNbComments - listCommentsPinned.size( );
+            }
+            List<Comment> listLastComments = _commentDAO.selectLastComments( strIdExtendableResource, strExtendableResourceType, nNbComments, bPublishedOnly,
+                    bParentsOnly, plugin, bSortedByDateCreation );
+            if ( bGetNumberSubComments )
+            {
+                for ( Comment comment : listLastComments )
+                {
+                    listSubComments = findByIdParent( comment.getIdComment( ), bPublishedOnly );
+
+                    comment.setNumberSubComments( listSubComments.size( ) );
+                    if ( bDisplaySubComments )
+                    {
+                        comment.setListSubComments( listSubComments );
+                    }
+                }
+            }
+            listComments.addAll( listLastComments );
+        }
+
         return listComments;
     }
 
@@ -307,49 +297,45 @@ public class CommentService implements ICommentService
      * {@inheritDoc}
      */
     @Override
-    public List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType,
-            boolean bPublishedOnly, String strSortedAttributeName, boolean bAscSort, int nItemsOffset,
-            int nMaxItemsNumber, boolean bLoadSubComments )
+    public List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType, boolean bPublishedOnly,
+            String strSortedAttributeName, boolean bAscSort, int nItemsOffset, int nMaxItemsNumber, boolean bLoadSubComments )
     {
-    	
-    	CommentFilter commentFilter=new CommentFilter();
-    	if(bPublishedOnly)
-    	{
-    		commentFilter.setCommentState(Comment.COMMENT_STATE_PUBLISHED);
-    	}
-    	commentFilter.setSortedAttributeName(strSortedAttributeName);
-    	commentFilter.setAscSort(bAscSort);
-        return findByResource(strIdExtendableResource, strExtendableResourceType, commentFilter, nItemsOffset, nMaxItemsNumber, bLoadSubComments);
+
+        CommentFilter commentFilter = new CommentFilter( );
+        if ( bPublishedOnly )
+        {
+            commentFilter.setCommentState( Comment.COMMENT_STATE_PUBLISHED );
+        }
+        commentFilter.setSortedAttributeName( strSortedAttributeName );
+        commentFilter.setAscSort( bAscSort );
+        return findByResource( strIdExtendableResource, strExtendableResourceType, commentFilter, nItemsOffset, nMaxItemsNumber, bLoadSubComments );
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType,
-    		CommentFilter commentFilter, int nItemsOffset,
+    public List<Comment> findByResource( String strIdExtendableResource, String strExtendableResourceType, CommentFilter commentFilter, int nItemsOffset,
             int nMaxItemsNumber, boolean bLoadSubComments )
     {
-    	
-    	List<Comment> listComments =new ArrayList<>();
-        	
-    	listComments.addAll( _commentDAO.findParentCommentsByResource( strIdExtendableResource,
-        		strExtendableResourceType, commentFilter, nItemsOffset,
-        		nMaxItemsNumber, CommentPlugin.getPlugin( ) ) );
+
+        List<Comment> listComments = new ArrayList<>( );
+
+        listComments.addAll( _commentDAO.findParentCommentsByResource( strIdExtendableResource, strExtendableResourceType, commentFilter, nItemsOffset,
+                nMaxItemsNumber, CommentPlugin.getPlugin( ) ) );
 
         if ( bLoadSubComments )
         {
             for ( Comment comment : listComments )
             {
-                comment.setListSubComments( this.findByIdParent( comment.getIdComment( ), commentFilter.getCommentState()!= null && commentFilter.getCommentState().equals(Comment.COMMENT_STATE_PUBLISHED),
-                        commentFilter.getSortedAttributeName(), commentFilter.getAscSort() ) );
+                comment.setListSubComments( this.findByIdParent( comment.getIdComment( ),
+                        commentFilter.getCommentState( ) != null && commentFilter.getCommentState( ).equals( Comment.COMMENT_STATE_PUBLISHED ),
+                        commentFilter.getSortedAttributeName( ), commentFilter.getAscSort( ) ) );
             }
         }
 
         return listComments;
     }
-    
-
 
     /**
      * {@inheritDoc}
@@ -364,20 +350,18 @@ public class CommentService implements ICommentService
      * {@inheritDoc}
      */
     @Override
-    public List<Comment> findByIdParent( int nIdParent, boolean bPublishedOnly, String strSortedAttributeName,
-            boolean bAscSort )
+    public List<Comment> findByIdParent( int nIdParent, boolean bPublishedOnly, String strSortedAttributeName, boolean bAscSort )
     {
-    	CommentFilter commentFilter=new CommentFilter();
-    	
-    	if(bPublishedOnly)
-    	{
-    		commentFilter.setCommentState(Comment.COMMENT_STATE_PUBLISHED);
-    	}
-    	commentFilter.setSortedAttributeName(strSortedAttributeName);
-    	commentFilter.setAscSort(bAscSort);
-       
-        return _commentDAO.findByIdParent( nIdParent,commentFilter,
-                CommentPlugin.getPlugin( ) );
+        CommentFilter commentFilter = new CommentFilter( );
+
+        if ( bPublishedOnly )
+        {
+            commentFilter.setCommentState( Comment.COMMENT_STATE_PUBLISHED );
+        }
+        commentFilter.setSortedAttributeName( strSortedAttributeName );
+        commentFilter.setAscSort( bAscSort );
+
+        return _commentDAO.findByIdParent( nIdParent, commentFilter, CommentPlugin.getPlugin( ) );
     }
 
     /**
@@ -393,25 +377,23 @@ public class CommentService implements ICommentService
      * {@inheritDoc}
      */
     @Override
-    public List<Integer> findIdMostCommentedResources( String strExtendableResourceType, boolean bPublishedOnly,
-            int nItemsOffset, int nMaxItemsNumber )
+    public List<Integer> findIdMostCommentedResources( String strExtendableResourceType, boolean bPublishedOnly, int nItemsOffset, int nMaxItemsNumber )
     {
-        return _commentDAO.findIdMostCommentedResources( strExtendableResourceType, bPublishedOnly, nItemsOffset,
-                nMaxItemsNumber, CommentPlugin.getPlugin( ) );
+        return _commentDAO.findIdMostCommentedResources( strExtendableResourceType, bPublishedOnly, nItemsOffset, nMaxItemsNumber, CommentPlugin.getPlugin( ) );
     }
-    
-    
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public ReferenceList getRefListCommentStates(Locale locale )
+    public ReferenceList getRefListCommentStates( Locale locale )
     {
-        ReferenceList refListDiggSubmitState = new ReferenceList(  );
-        refListDiggSubmitState.addItem(  "", I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_ALL_STATE ,locale) );
-        refListDiggSubmitState.addItem( Comment.COMMENT_STATE_PUBLISHED, I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_STATE_PUBLISHED ,locale));
-        refListDiggSubmitState.addItem( Comment.COMMENT_STATE_UN_PUBLISHED, I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_STATE_UN_PUBLISHED,locale ));
+        ReferenceList refListDiggSubmitState = new ReferenceList( );
+        refListDiggSubmitState.addItem( "", I18nService.getLocalizedString( CommentConstants.PROPERTY_COMMENT_ALL_STATE, locale ) );
+        refListDiggSubmitState.addItem( Comment.COMMENT_STATE_PUBLISHED,
+                I18nService.getLocalizedString( CommentConstants.PROPERTY_COMMENT_STATE_PUBLISHED, locale ) );
+        refListDiggSubmitState.addItem( Comment.COMMENT_STATE_UN_PUBLISHED,
+                I18nService.getLocalizedString( CommentConstants.PROPERTY_COMMENT_STATE_UN_PUBLISHED, locale ) );
         return refListDiggSubmitState;
     }
 
@@ -419,131 +401,134 @@ public class CommentService implements ICommentService
      * {@inheritDoc}
      */
     @Override
-    public ReferenceList getRefListFilterAsImportant(Locale locale )
+    public ReferenceList getRefListFilterAsImportant( Locale locale )
     {
-        ReferenceList refListFilterAsImportant = new ReferenceList(  );
-        refListFilterAsImportant.addItem(  "", I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_FILTER_BY_IMPORTANT ,locale) );
-        refListFilterAsImportant.addItem( Boolean.TRUE.toString(), I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_FILTER_BY_IMPORTANT_ALL_FLAG_IMPORTANT ,locale));
-        refListFilterAsImportant.addItem( Boolean.FALSE.toString(), I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_FILTER_BY_IMPORTANT_ALL_NOT_FLAG_AS_IMPORTANT,locale ));
+        ReferenceList refListFilterAsImportant = new ReferenceList( );
+        refListFilterAsImportant.addItem( "", I18nService.getLocalizedString( CommentConstants.PROPERTY_COMMENT_FILTER_BY_IMPORTANT, locale ) );
+        refListFilterAsImportant.addItem( Boolean.TRUE.toString( ),
+                I18nService.getLocalizedString( CommentConstants.PROPERTY_COMMENT_FILTER_BY_IMPORTANT_ALL_FLAG_IMPORTANT, locale ) );
+        refListFilterAsImportant.addItem( Boolean.FALSE.toString( ),
+                I18nService.getLocalizedString( CommentConstants.PROPERTY_COMMENT_FILTER_BY_IMPORTANT_ALL_NOT_FLAG_AS_IMPORTANT, locale ) );
         return refListFilterAsImportant;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public ReferenceList getRefListFilterAsPinned(Locale locale )
+    public ReferenceList getRefListFilterAsPinned( Locale locale )
     {
-        ReferenceList refListDiggSubmitState = new ReferenceList(  );
-        refListDiggSubmitState.addItem(  "", I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_FILTER_BY_PINNED ,locale) );
-        refListDiggSubmitState.addItem(  Boolean.TRUE.toString(), I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_FILTER_BY_PINNED_ALL_PINNED ,locale));
-        refListDiggSubmitState.addItem(  Boolean.FALSE.toString(), I18nService.getLocalizedString(CommentConstants.PROPERTY_COMMENT_FILTER_BY_PINNED_ALL_NOT_PINNED,locale ));
+        ReferenceList refListDiggSubmitState = new ReferenceList( );
+        refListDiggSubmitState.addItem( "", I18nService.getLocalizedString( CommentConstants.PROPERTY_COMMENT_FILTER_BY_PINNED, locale ) );
+        refListDiggSubmitState.addItem( Boolean.TRUE.toString( ),
+                I18nService.getLocalizedString( CommentConstants.PROPERTY_COMMENT_FILTER_BY_PINNED_ALL_PINNED, locale ) );
+        refListDiggSubmitState.addItem( Boolean.FALSE.toString( ),
+                I18nService.getLocalizedString( CommentConstants.PROPERTY_COMMENT_FILTER_BY_PINNED_ALL_NOT_PINNED, locale ) );
         return refListDiggSubmitState;
     }
 
-	@Override
-	public List<Comment> findCommentsPinned(String strIdExtendableResource,
-			String strExtendableResourceType, int nNbComments,
-			Integer nCommentState, boolean bParentsOnly,
-			boolean bGetNumberSubComments,String strFilterUserName) {
-			Plugin plugin = CommentPlugin.getPlugin( );
-			CommentFilter filter=new CommentFilter();
-			filter.setPinned(true);
-			filter.setAscSort(false);
-			filter.setSortedAttributeName(CommentConstants.SORT_BY_COMMENT_ORDER);
-			filter.setCommentState(nCommentState);
-			filter.setLuteceUserName(strFilterUserName);
-			
-			List<Comment> listComments = _commentDAO.findParentCommentsByResource(strIdExtendableResource, strExtendableResourceType, filter, 0, nNbComments, plugin);
-	       
-		    if ( bGetNumberSubComments )
-	        {
-	            for ( Comment comment : listComments )
-	            {
-	                comment.setNumberSubComments( _commentDAO.countByIdParent( comment.getIdComment( ), (nCommentState != null && nCommentState.equals(Comment.COMMENT_STATE_PUBLISHED)),
-	                        plugin ) );
-	            }
-	        }
-	        return listComments;
-		
-		
-	}
+    @Override
+    public List<Comment> findCommentsPinned( String strIdExtendableResource, String strExtendableResourceType, int nNbComments, Integer nCommentState,
+            boolean bParentsOnly, boolean bGetNumberSubComments, String strFilterUserName )
+    {
+        Plugin plugin = CommentPlugin.getPlugin( );
+        CommentFilter filter = new CommentFilter( );
+        filter.setPinned( true );
+        filter.setAscSort( false );
+        filter.setSortedAttributeName( CommentConstants.SORT_BY_COMMENT_ORDER );
+        filter.setCommentState( nCommentState );
+        filter.setLuteceUserName( strFilterUserName );
 
-	 @Override
-	  @Transactional( CommentPlugin.TRANSACTION_MANAGER )
-	public void updateFlagImportant(int nIdComment, boolean bImportant) {
-			 Plugin plugin = CommentPlugin.getPlugin( );	
-			 Comment comment=findByPrimaryKey( nIdComment );
-			 	if(comment!=null)
-			 	{
-			 		comment.setIsImportant(bImportant);
-			 	}
-			 	_commentDAO.store(comment, plugin);
-		}
+        List<Comment> listComments = _commentDAO.findParentCommentsByResource( strIdExtendableResource, strExtendableResourceType, filter, 0, nNbComments,
+                plugin );
 
-	 @Override
-	 @Transactional( CommentPlugin.TRANSACTION_MANAGER )
-	 public void updateCommentPinned(int nIdComment, boolean bPinned) {
-		 Plugin plugin = CommentPlugin.getPlugin( );	
-		 Comment comment=findByPrimaryKey( nIdComment );
-		 	if(comment!=null)
-		 	{
-		 		comment.setPinned(bPinned);
-		 		if(bPinned)
-            	{
-            		//update comment Order
-                	CommentFilter filter=new CommentFilter();
-                	filter.setPinned(true);
-                	List<Comment> listComment=findByResource(comment.getIdExtendableResource(), comment.getExtendableResourceType(), filter, 0, 10000, false);
-                	int nOrder=1;
-                	for(Comment commentPinned:listComment)
-                	{
-                		if(commentPinned.getCommentOrder()>=nOrder) 
-                		{
-                			nOrder=commentPinned.getCommentOrder()+1;
-                		}
-                	}
-                	comment.setCommentOrder(nOrder);
-            	}
-		 		
-		 	}
-		 	_commentDAO.store(comment, plugin);
-		}
+        if ( bGetNumberSubComments )
+        {
+            for ( Comment comment : listComments )
+            {
+                comment.setNumberSubComments( _commentDAO.countByIdParent( comment.getIdComment( ),
+                        ( nCommentState != null && nCommentState.equals( Comment.COMMENT_STATE_PUBLISHED ) ), plugin ) );
+            }
+        }
+        return listComments;
 
-    private void processWorkflow( Comment comment){
-    	
-    	String resourceType = getResourceType( comment.getExtendableResourceType( ) );        	
-     	ResourceExtenderDTOFilter filter = new ResourceExtenderDTOFilter(  );
+    }
+
+    @Override
+    @Transactional( CommentPlugin.TRANSACTION_MANAGER )
+    public void updateFlagImportant( int nIdComment, boolean bImportant )
+    {
+        Plugin plugin = CommentPlugin.getPlugin( );
+        Comment comment = findByPrimaryKey( nIdComment );
+        if ( comment != null )
+        {
+            comment.setIsImportant( bImportant );
+        }
+        _commentDAO.store( comment, plugin );
+    }
+
+    @Override
+    @Transactional( CommentPlugin.TRANSACTION_MANAGER )
+    public void updateCommentPinned( int nIdComment, boolean bPinned )
+    {
+        Plugin plugin = CommentPlugin.getPlugin( );
+        Comment comment = findByPrimaryKey( nIdComment );
+        if ( comment != null )
+        {
+            comment.setPinned( bPinned );
+            if ( bPinned )
+            {
+                // update comment Order
+                CommentFilter filter = new CommentFilter( );
+                filter.setPinned( true );
+                List<Comment> listComment = findByResource( comment.getIdExtendableResource( ), comment.getExtendableResourceType( ), filter, 0, 10000, false );
+                int nOrder = 1;
+                for ( Comment commentPinned : listComment )
+                {
+                    if ( commentPinned.getCommentOrder( ) >= nOrder )
+                    {
+                        nOrder = commentPinned.getCommentOrder( ) + 1;
+                    }
+                }
+                comment.setCommentOrder( nOrder );
+            }
+
+        }
+        _commentDAO.store( comment, plugin );
+    }
+
+    private void processWorkflow( Comment comment )
+    {
+
+        String resourceType = getResourceType( comment.getExtendableResourceType( ) );
+        ResourceExtenderDTOFilter filter = new ResourceExtenderDTOFilter( );
         filter.setFilterExtendableResourceType( comment.getExtendableResourceType( ) );
-        filter.setFilterIdExtendableResource(comment.getIdExtendableResource());
+        filter.setFilterIdExtendableResource( comment.getIdExtendableResource( ) );
         filter.setFilterExtenderType( CommentResourceExtender.EXTENDER_TYPE_COMMENT );
-        filter.setIncludeWildcardResource(true);
-        
-        List<ResourceExtenderDTO> listResourceExtender =_resourceExtenderService.findByFilter(filter);
-        int nIdExtendable= listResourceExtender.get(0).getIdExtender();
-        
-        CommentExtenderConfig config= (CommentExtenderConfig) _configService.find(nIdExtendable);
-        int idWorkflow= config.getIdWorkflow();
-        if( idWorkflow > 0){
-        	
-         WorkflowService.getInstance( ).getState( comment.getIdComment( ), resourceType , idWorkflow,
-         		nIdExtendable );
-         WorkflowService.getInstance( ).executeActionAutomatic( comment.getIdComment( ), resourceType,
-        		 idWorkflow, nIdExtendable );
+        filter.setIncludeWildcardResource( true );
+
+        List<ResourceExtenderDTO> listResourceExtender = _resourceExtenderService.findByFilter( filter );
+        int nIdExtendable = listResourceExtender.get( 0 ).getIdExtender( );
+
+        CommentExtenderConfig config = (CommentExtenderConfig) _configService.find( nIdExtendable );
+        int idWorkflow = config.getIdWorkflow( );
+        if ( idWorkflow > 0 )
+        {
+
+            WorkflowService.getInstance( ).getState( comment.getIdComment( ), resourceType, idWorkflow, nIdExtendable );
+            WorkflowService.getInstance( ).executeActionAutomatic( comment.getIdComment( ), resourceType, idWorkflow, nIdExtendable );
         }
     }
-    
-    public String getResourceType( String extendableResourceType){
-    	
-    	 StringBuilder resourceType = new StringBuilder ();
-         resourceType.append(CommentResourceExtender.EXTENDER_TYPE_COMMENT);
-         resourceType.append("-");
-         resourceType.append( extendableResourceType) ;
-         
-         return resourceType.toString( );
+
+    public String getResourceType( String extendableResourceType )
+    {
+
+        StringBuilder resourceType = new StringBuilder( );
+        resourceType.append( CommentResourceExtender.EXTENDER_TYPE_COMMENT );
+        resourceType.append( "-" );
+        resourceType.append( extendableResourceType );
+
+        return resourceType.toString( );
     }
-    
-    
-     
 
 }

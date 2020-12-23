@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -101,7 +101,6 @@ import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.http.SecurityUtil;
 import fr.paris.lutece.util.url.UrlItem;
 
-
 /**
  * 
  * CommentApp
@@ -109,10 +108,9 @@ import fr.paris.lutece.util.url.UrlItem;
  */
 public class CommentApp implements XPageApplication
 {
-    // 																			
+    //
     private static final String MESSAGE_STOP_GENERIC_MESSAGE = "module.extend.comment.message.stop.genericMessage";
     private static final String MESSAGE_ERROR_BAD_JCAPTCHA = "module.extend.comment.message.error.badJcaptcha";
-   
 
     // PROPERTIES
     private static final String PROPERTY_USE_CAPTCHA = "module.extend.comment.useCaptcha";
@@ -122,14 +120,13 @@ public class CommentApp implements XPageApplication
     private static final String MARK_CAPTCHA = "captcha";
     private static final String MARK_IS_ACTIVE_CAPTCHA = "is_active_captcha";
 
-
     // TEMPLATES
     private static final String TEMPLATE_XPAGE_VIEW_COMMENTS = "skin/plugins/extend/modules/comment/view_comments.html";
     private static final String TEMPLATE_XPAGE_ADD_COMMENT = "skin/plugins/extend/modules/comment/add_comment.html";
     private static final String TEMPLATE_XPAGE_MESSAGE_COMMENT_CREATED = "skin/plugins/extend/modules/comment/message_comment_created.html";
     private static final String TEMPLATE_COMMENT_NOTIFY_MESSAGE = "skin/plugins/extend/modules/comment/comment_notify_message.html";
 
-    //Jsp redirections
+    // Jsp redirections
     private static final String JSP_PORTAL = "jsp/site/Portal.jsp";
     private static final String JSP_URL_DEFAULT_POST_BACK = "jsp/site/Portal.jsp?page=extend-comment";
 
@@ -148,19 +145,16 @@ public class CommentApp implements XPageApplication
     private static int _nDefaultItemsPerPage;
 
     private final boolean _bIsCaptchaEnabled = PluginService.isPluginEnable( JCAPTCHA_PLUGIN )
-            && Boolean
-                    .parseBoolean( AppPropertiesService.getProperty( PROPERTY_USE_CAPTCHA, Boolean.TRUE.toString( ) ) );
-
+            && Boolean.parseBoolean( AppPropertiesService.getProperty( PROPERTY_USE_CAPTCHA, Boolean.TRUE.toString( ) ) );
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public XPage getPage( HttpServletRequest request, int nMode, Plugin plugin ) throws UserNotSignedException,
-            SiteMessageException
+    public XPage getPage( HttpServletRequest request, int nMode, Plugin plugin ) throws UserNotSignedException, SiteMessageException
     {
         XPage page = null;
-        
+
         // Check if the extender is indeed in the parameters
         String strIdExtendableResource = request.getParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE );
         String strExtendableResourceType = request.getParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE );
@@ -178,34 +172,36 @@ public class CommentApp implements XPageApplication
             {
                 page = getAddCommentPage( request, strIdExtendableResource, strExtendableResourceType );
             }
-            else if ( CommentConstants.ACTION_DO_ADD_COMMENT.equals( strAction ) )
-            {
-                page = doAddComment( request, strIdExtendableResource, strExtendableResourceType );
-            }
-            else if ( CommentConstants.ACTION_CONFIRM_REMOVE_COMMENT.equals( strAction ) )
-            {
-                String strIdComment = String.valueOf( request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
-                String strFromUrl = (String) request.getSession( ).getAttribute(
-                        ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
-                if ( strFromUrl != null )
+            else
+                if ( CommentConstants.ACTION_DO_ADD_COMMENT.equals( strAction ) )
                 {
-                    strFromUrl = strFromUrl.replaceAll( CONSTANT_AND, CONSTANT_AND_HTML );
+                    page = doAddComment( request, strIdExtendableResource, strExtendableResourceType );
                 }
-                Map<String, Object> requestParameters = new HashMap<String, Object>(  );
-                requestParameters.put( CommentConstants.PARAMETER_PAGE, "extend-comment" );
-                requestParameters.put( MVCUtils.PARAMETER_ACTION, CommentConstants.ACTION_REMOVE_COMMENT );
-                requestParameters.put( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
-                requestParameters.put( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
-                requestParameters.put( CommentConstants.PARAMETER_ID_COMMENT, strIdComment );
-                requestParameters.put( CommentConstants.PARAMETER_CONFIRM_REMOVE_COMMENT, "1" );
-                requestParameters.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
-                SiteMessageService.setMessage( request, CommentConstants.MESSAGE_CONFIRM_REMOVE_COMMENT, SiteMessage.TYPE_CONFIRMATION,
-                    JSP_PORTAL, requestParameters );
-            }
-            else if ( CommentConstants.ACTION_REMOVE_COMMENT.equals( strAction ) )
-            {
-                page = doRemoveComment( request, strIdExtendableResource, strExtendableResourceType );
-            }
+                else
+                    if ( CommentConstants.ACTION_CONFIRM_REMOVE_COMMENT.equals( strAction ) )
+                    {
+                        String strIdComment = String.valueOf( request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
+                        String strFromUrl = (String) request.getSession( ).getAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
+                        if ( strFromUrl != null )
+                        {
+                            strFromUrl = strFromUrl.replaceAll( CONSTANT_AND, CONSTANT_AND_HTML );
+                        }
+                        Map<String, Object> requestParameters = new HashMap<String, Object>( );
+                        requestParameters.put( CommentConstants.PARAMETER_PAGE, "extend-comment" );
+                        requestParameters.put( MVCUtils.PARAMETER_ACTION, CommentConstants.ACTION_REMOVE_COMMENT );
+                        requestParameters.put( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
+                        requestParameters.put( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
+                        requestParameters.put( CommentConstants.PARAMETER_ID_COMMENT, strIdComment );
+                        requestParameters.put( CommentConstants.PARAMETER_CONFIRM_REMOVE_COMMENT, "1" );
+                        requestParameters.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
+                        SiteMessageService.setMessage( request, CommentConstants.MESSAGE_CONFIRM_REMOVE_COMMENT, SiteMessage.TYPE_CONFIRMATION, JSP_PORTAL,
+                                requestParameters );
+                    }
+                    else
+                        if ( CommentConstants.ACTION_REMOVE_COMMENT.equals( strAction ) )
+                        {
+                            page = doRemoveComment( request, strIdExtendableResource, strExtendableResourceType );
+                        }
         }
 
         if ( page == null )
@@ -219,17 +215,20 @@ public class CommentApp implements XPageApplication
     /**
      * Gets the view comment page.
      * 
-     * @param request the request
-     * @param strIdExtendableResource the str id extendable resource
-     * @param strExtendableResourceType the str extendable resource type
-     * @param strPostBackUrl The URL to use for post backs.
+     * @param request
+     *            the request
+     * @param strIdExtendableResource
+     *            the str id extendable resource
+     * @param strExtendableResourceType
+     *            the str extendable resource type
+     * @param strPostBackUrl
+     *            The URL to use for post backs.
      * @return the view comment page
      */
-    public static String getViewCommentPageContent( HttpServletRequest request, String strIdExtendableResource,
-            String strExtendableResourceType, String strPostBackUrl )
+    public static String getViewCommentPageContent( HttpServletRequest request, String strIdExtendableResource, String strExtendableResourceType,
+            String strPostBackUrl )
     {
-        request.getSession( ).setAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_POST_BACK_URL,
-                strPostBackUrl );
+        request.getSession( ).setAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_POST_BACK_URL, strPostBackUrl );
 
         Integer nItemsPerPage = getDefaultItemsPerPage( );
         String strCurrentPageIndex = CommentConstants.CONSTANT_FIRST_PAGE_NUMBER;
@@ -259,8 +258,7 @@ public class CommentApp implements XPageApplication
         String strFromUrl = request.getParameter( CommentConstants.PARAMETER_FROM_URL );
         if ( CommentConstants.FROM_SESSION.equals( strFromUrl ) )
         {
-            strFromUrl = (String) request.getSession( ).getAttribute(
-                    ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
+            strFromUrl = (String) request.getSession( ).getAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
         }
         if ( StringUtils.isEmpty( strFromUrl ) )
         {
@@ -274,8 +272,7 @@ public class CommentApp implements XPageApplication
 
         strCurrentPageIndex = Paginator.getPageIndex( request, Paginator.PARAMETER_PAGE_INDEX, strCurrentPageIndex );
         int nOldITemsPerPage = nItemsPerPage;
-        nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, nItemsPerPage,
-                getDefaultItemsPerPage( ) );
+        nItemsPerPage = Paginator.getItemsPerPage( request, Paginator.PARAMETER_ITEMS_PER_PAGE, nItemsPerPage, getDefaultItemsPerPage( ) );
         if ( nItemsPerPage <= 0 )
         {
             nItemsPerPage = getDefaultItemsPerPage( );
@@ -298,27 +295,25 @@ public class CommentApp implements XPageApplication
         boolean bAllowSubComments = false;
         boolean bEnableAuthMode = false;
         String strAdminBadge = StringUtils.EMPTY;
-        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
-                strIdExtendableResource, strExtendableResourceType );
+        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT, strIdExtendableResource,
+                strExtendableResourceType );
         if ( config != null )
         {
             bGetSubComments = config.getAuthorizeSubComments( );
             bUseBBCodeEditor = config.getUseBBCodeEditor( );
             bAllowSubComments = config.getAuthorizeSubComments( );
-            bEnableAuthMode=config.isEnabledAuthMode();
+            bEnableAuthMode = config.isEnabledAuthMode( );
             strAdminBadge = config.getAdminBadge( );
         }
         int nItemsOffset = nItemsPerPage * ( Integer.parseInt( strCurrentPageIndex ) - 1 );
 
-        List<Comment> listItems = getCommentService( ).findByResource( strIdExtendableResource,
-                strExtendableResourceType, true, null, bIsAscSort, nItemsOffset, nItemsPerPage, bGetSubComments );
+        List<Comment> listItems = getCommentService( ).findByResource( strIdExtendableResource, strExtendableResourceType, true, null, bIsAscSort, nItemsOffset,
+                nItemsPerPage, bGetSubComments );
 
-        int nItemsCount = getCommentService( ).getCommentNb( strIdExtendableResource, strExtendableResourceType, true,
-                true );
+        int nItemsCount = getCommentService( ).getCommentNb( strIdExtendableResource, strExtendableResourceType, true, true );
 
-        IPaginator<Comment> paginator = new LocalizedDelegatePaginator<Comment>( listItems, nItemsPerPage,
-                urlSort.getUrl( ), Paginator.PARAMETER_PAGE_INDEX, strCurrentPageIndex, nItemsCount,
-                request.getLocale( ) );
+        IPaginator<Comment> paginator = new LocalizedDelegatePaginator<Comment>( listItems, nItemsPerPage, urlSort.getUrl( ), Paginator.PARAMETER_PAGE_INDEX,
+                strCurrentPageIndex, nItemsCount, request.getLocale( ) );
 
         Map<String, Object> model = new HashMap<String, Object>( );
         model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
@@ -340,8 +335,7 @@ public class CommentApp implements XPageApplication
             model.put( CommentConstants.MARK_REGISTERED_USER_EMAIL, user.getEmail( ) );
         }
 
-        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_XPAGE_VIEW_COMMENTS, request.getLocale( ),
-                model );
+        HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_XPAGE_VIEW_COMMENTS, request.getLocale( ), model );
 
         HttpSession session = request.getSession( );
         session.setAttribute( CommentConstants.SESSION_COMMENT_ITEMS_PER_PAGE, nItemsPerPage );
@@ -354,48 +348,47 @@ public class CommentApp implements XPageApplication
     /**
      * Gets the view comment page.
      * 
-     * @param request the request
-     * @param strIdExtendableResource the str id extendable resource
-     * @param strExtendableResourceType the str extendable resource type
+     * @param request
+     *            the request
+     * @param strIdExtendableResource
+     *            the str id extendable resource
+     * @param strExtendableResourceType
+     *            the str extendable resource type
      * @return the view comment page
      */
-    public XPage getViewCommentPage( HttpServletRequest request, String strIdExtendableResource,
-            String strExtendableResourceType )
+    public XPage getViewCommentPage( HttpServletRequest request, String strIdExtendableResource, String strExtendableResourceType )
     {
         XPage page = new XPage( );
-        page.setTitle( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_VIEW_COMMENTS_PAGE_TITLE,
-                request.getLocale( ) ) );
-        page.setPathLabel( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_VIEW_COMMENTS_PATH_LABEL,
-                request.getLocale( ) ) );
+        page.setTitle( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_VIEW_COMMENTS_PAGE_TITLE, request.getLocale( ) ) );
+        page.setPathLabel( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_VIEW_COMMENTS_PATH_LABEL, request.getLocale( ) ) );
 
-        page.setContent( getViewCommentPageContent( request, strIdExtendableResource, strExtendableResourceType,
-                JSP_URL_DEFAULT_POST_BACK ) );
+        page.setContent( getViewCommentPageContent( request, strIdExtendableResource, strExtendableResourceType, JSP_URL_DEFAULT_POST_BACK ) );
         return page;
     }
 
     /**
      * Gets the adds the comment page.
      * 
-     * @param request the request
-     * @param strIdExtendableResource the str id extendable resource
-     * @param strExtendableResourceType the str extendable resource type
+     * @param request
+     *            the request
+     * @param strIdExtendableResource
+     *            the str id extendable resource
+     * @param strExtendableResourceType
+     *            the str extendable resource type
      * @return the adds the comment page
      */
-    private XPage getAddCommentPage( HttpServletRequest request, String strIdExtendableResource,
-            String strExtendableResourceType )throws UserNotSignedException
+    private XPage getAddCommentPage( HttpServletRequest request, String strIdExtendableResource, String strExtendableResourceType )
+            throws UserNotSignedException
     {
         XPage page = new XPage( );
 
-        page.setTitle( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_ADD_COMMENT_PAGE_TITLE,
-                request.getLocale( ) ) );
-        page.setPathLabel( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_ADD_COMMENT_PAGE_LABEL,
-                request.getLocale( ) ) );
+        page.setTitle( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_ADD_COMMENT_PAGE_TITLE, request.getLocale( ) ) );
+        page.setPathLabel( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_ADD_COMMENT_PAGE_LABEL, request.getLocale( ) ) );
 
         String strFromUrl = request.getParameter( CommentConstants.PARAMETER_FROM_URL );
         if ( CommentConstants.FROM_SESSION.equals( strFromUrl ) )
         {
-            strFromUrl = (String) request.getSession( ).getAttribute(
-                    ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
+            strFromUrl = (String) request.getSession( ).getAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
         }
         if ( StringUtils.isEmpty( strFromUrl ) )
         {
@@ -407,61 +400,59 @@ public class CommentApp implements XPageApplication
         }
         request.getSession( ).setAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL, strFromUrl );
 
-        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
-                strIdExtendableResource, strExtendableResourceType );
-        
-        if(config != null)
+        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT, strIdExtendableResource,
+                strExtendableResourceType );
+
+        if ( config != null )
         {
-        	Map<String, Object> model = new HashMap<String, Object>( );
- 	       
-        	if(config.isEnabledAuthMode())
+            Map<String, Object> model = new HashMap<String, Object>( );
+
+            if ( config.isEnabledAuthMode( ) )
             {
-        		LuteceUser  user=SecurityService.getInstance().getRegisteredUser(request);
-         	   if(user==null)
-         	   {
-         		   throw new UserNotSignedException(  );
-         	   }
-         	  model.put(CommentConstants.MARK_NICKNAME, UserPreferencesService.instance().getNickname(user) );
+                LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+                if ( user == null )
+                {
+                    throw new UserNotSignedException( );
+                }
+                model.put( CommentConstants.MARK_NICKNAME, UserPreferencesService.instance( ).getNickname( user ) );
             }
-	        model.put( CommentConstants.MARK_ADD_COMMENT_POSITION, config.getAddCommentPosition(  ) );
-	        model.put( CommentConstants.MARK_COMMENT_CONFIG, config );
-	        model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
-	        model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
-	        model.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
-	        model.put( CommentConstants.MARK_RETURN_TO_COMMENT_LIST,
-	                Boolean.parseBoolean( request.getParameter( CommentConstants.MARK_RETURN_TO_COMMENT_LIST ) ) );
-	        model.put( CommentConstants.PARAMETER_ID_COMMENT, request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
-	        model.put( CommentConstants.MARK_WEBAPP_URL, AppPathService.getBaseUrl( request ) );
-	        model.put( CommentConstants.MARK_LOCALE, Locale.getDefault( ) );
-	
-	        // Add Captcha
-	        model.put( MARK_IS_ACTIVE_CAPTCHA, _bIsCaptchaEnabled );
-	         
-	
-	        if ( _bIsCaptchaEnabled )
-	        {
-	            CaptchaSecurityService captchaService = new CaptchaSecurityService( );
-	            model.put( MARK_CAPTCHA, captchaService.getHtmlCode( ) );
-	        }
-	
-	        if ( SecurityService.isAuthenticationEnable( ) )
-	        {
-	            LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
-	
-	            if ( user != null )
-	            {
-	                model.put( CommentConstants.MARK_MYLUTECE_USER, user );
-	            }
-	        }
-	
-	        HtmlTemplate template = AppTemplateService
-	                .getTemplate( TEMPLATE_XPAGE_ADD_COMMENT, request.getLocale( ), model );
-	
-	        page.setContent( template.getHtml( ) );
+            model.put( CommentConstants.MARK_ADD_COMMENT_POSITION, config.getAddCommentPosition( ) );
+            model.put( CommentConstants.MARK_COMMENT_CONFIG, config );
+            model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, strIdExtendableResource );
+            model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
+            model.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
+            model.put( CommentConstants.MARK_RETURN_TO_COMMENT_LIST,
+                    Boolean.parseBoolean( request.getParameter( CommentConstants.MARK_RETURN_TO_COMMENT_LIST ) ) );
+            model.put( CommentConstants.PARAMETER_ID_COMMENT, request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
+            model.put( CommentConstants.MARK_WEBAPP_URL, AppPathService.getBaseUrl( request ) );
+            model.put( CommentConstants.MARK_LOCALE, Locale.getDefault( ) );
+
+            // Add Captcha
+            model.put( MARK_IS_ACTIVE_CAPTCHA, _bIsCaptchaEnabled );
+
+            if ( _bIsCaptchaEnabled )
+            {
+                CaptchaSecurityService captchaService = new CaptchaSecurityService( );
+                model.put( MARK_CAPTCHA, captchaService.getHtmlCode( ) );
+            }
+
+            if ( SecurityService.isAuthenticationEnable( ) )
+            {
+                LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+
+                if ( user != null )
+                {
+                    model.put( CommentConstants.MARK_MYLUTECE_USER, user );
+                }
+            }
+
+            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_XPAGE_ADD_COMMENT, request.getLocale( ), model );
+
+            page.setContent( template.getHtml( ) );
         }
         else
         {
-        	return redirectToLastUrl(request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE, strIdExtendableResource );
+            return redirectToLastUrl( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE, strIdExtendableResource );
         }
         return page;
     }
@@ -469,34 +460,34 @@ public class CommentApp implements XPageApplication
     /**
      * Do add comment.
      * 
-     * @param request the request
-     * @param strIdExtendableResource the str id extendable resource
-     * @param strExtendableResourceType the str extendable resource type
+     * @param request
+     *            the request
+     * @param strIdExtendableResource
+     *            the str id extendable resource
+     * @param strExtendableResourceType
+     *            the str extendable resource type
      * @return The page to display, or null to display the default page
-     * @throws SiteMessageException the site message exception
+     * @throws SiteMessageException
+     *             the site message exception
      */
-    private XPage doAddComment( HttpServletRequest request, String strIdExtendableResource,
-            String strExtendableResourceType ) throws SiteMessageException,UserNotSignedException
+    private XPage doAddComment( HttpServletRequest request, String strIdExtendableResource, String strExtendableResourceType )
+            throws SiteMessageException, UserNotSignedException
     {
-       
-    	
-    	
-    	Comment comment = new Comment( );
-        LuteceUser user=null;	
+
+        Comment comment = new Comment( );
+        LuteceUser user = null;
         try
         {
             BeanUtils.populate( comment, request.getParameterMap( ) );
         }
-        catch ( IllegalAccessException e )
+        catch( IllegalAccessException e )
         {
             AppLogService.error( "Unable to fetch data from request", e );
         }
-        catch ( InvocationTargetException e )
+        catch( InvocationTargetException e )
         {
             AppLogService.error( "Unable to fetch data from request", e );
         }
-
-       
 
         // Test the captcha
         if ( _bIsCaptchaEnabled )
@@ -509,58 +500,63 @@ public class CommentApp implements XPageApplication
             }
         }
 
-        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
-              strIdExtendableResource, strExtendableResourceType );
-        //test authentication if needed
-        if(config!=null && config.isEnabledAuthMode())
+        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT, strIdExtendableResource,
+                strExtendableResourceType );
+        // test authentication if needed
+        if ( config != null && config.isEnabledAuthMode( ) )
         {
-     	   user=SecurityService.getInstance().getRegisteredUser(request);
-     	   if(user==null)
-     	   {
-     		   throw new UserNotSignedException(  );
-     	   }
+            user = SecurityService.getInstance( ).getRegisteredUser( request );
+            if ( user == null )
+            {
+                throw new UserNotSignedException( );
+            }
         }
-        
+
         // Check mandatory fields
-		Set<ConstraintViolation<Comment>> constraintViolations = BeanValidationUtil.validate( comment );
+        Set<ConstraintViolation<Comment>> constraintViolations = BeanValidationUtil.validate( comment );
 
         if ( constraintViolations.size( ) > 0 )
         {
-            Object[] params = { buildStopMessage( constraintViolations ) };
+            Object [ ] params = {
+                    buildStopMessage( constraintViolations )
+            };
 
             SiteMessageService.setMessage( request, MESSAGE_STOP_GENERIC_MESSAGE, params, SiteMessage.TYPE_STOP );
         }
 
-        if ( StringUtils.isBlank( comment.getName( ) ) || StringUtils.isBlank( comment.getComment( ) )
-                || StringUtils.isBlank( comment.getEmail( ) ) )
+        if ( StringUtils.isBlank( comment.getName( ) ) || StringUtils.isBlank( comment.getComment( ) ) || StringUtils.isBlank( comment.getEmail( ) ) )
         {
             SiteMessageService.setMessage( request, Messages.MANDATORY_FIELDS, SiteMessage.TYPE_STOP );
         }
 
         if ( config != null )
         {
-           if(config.isEnabledAuthMode())
-           {
-               String strParamError=  CommentListenerService.checkComment( comment.getComment( ), strExtendableResourceType, comment.getIdExtendableResource( ), user.getName( ) );
-               Object[] paramsError= { strParamError };
+            if ( config.isEnabledAuthMode( ) )
+            {
+                String strParamError = CommentListenerService.checkComment( comment.getComment( ), strExtendableResourceType,
+                        comment.getIdExtendableResource( ), user.getName( ) );
+                Object [ ] paramsError = {
+                        strParamError
+                };
 
-               if ( strParamError != null && StringUtils.isNotEmpty( strParamError ) )
-               {
-                   SiteMessageService.setMessage( request, MESSAGE_STOP_GENERIC_MESSAGE, paramsError,SiteMessage.TYPE_STOP );
-               }
+                if ( strParamError != null && StringUtils.isNotEmpty( strParamError ) )
+                {
+                    SiteMessageService.setMessage( request, MESSAGE_STOP_GENERIC_MESSAGE, paramsError, SiteMessage.TYPE_STOP );
+                }
 
-        	   comment.setEmail(user.getUserInfo(AppPropertiesService.getProperty(PROPERTY_USER_INFO_EMAIL)));
-        	   comment.setLuteceUserName(user.getName());
-        	   if(!StringUtils.isEmpty(comment.getName()) )
-        	   {
-        		 if(UserPreferencesService.instance(  ).getNickname(user) == null || !UserPreferencesService.instance().getNickname(user).equals(comment.getName()))
-				 {
-        			 UserPreferencesService.instance(  ).setNickname(user.getName(), comment.getName());
-				 }
-        	   }
-        	}
-        	
-        	comment.setIpAddress( SecurityUtil.getRealIp( request ) );
+                comment.setEmail( user.getUserInfo( AppPropertiesService.getProperty( PROPERTY_USER_INFO_EMAIL ) ) );
+                comment.setLuteceUserName( user.getName( ) );
+                if ( !StringUtils.isEmpty( comment.getName( ) ) )
+                {
+                    if ( UserPreferencesService.instance( ).getNickname( user ) == null
+                            || !UserPreferencesService.instance( ).getNickname( user ).equals( comment.getName( ) ) )
+                    {
+                        UserPreferencesService.instance( ).setNickname( user.getName( ), comment.getName( ) );
+                    }
+                }
+            }
+
+            comment.setIpAddress( SecurityUtil.getRealIp( request ) );
             comment.setIdExtendableResource( strIdExtendableResource );
             comment.setExtendableResourceType( strExtendableResourceType );
             comment.setPublished( !config.isModerated( ) );
@@ -569,62 +565,58 @@ public class CommentApp implements XPageApplication
                 comment.setIdParentComment( 0 );
             }
             boolean bIsCreated = false;
-            
+
             comment.setComment( comment.getComment( ).replaceAll( "\r", "<br />" ) );
             try
             {
                 getCommentService( ).create( comment, request );
                 bIsCreated = true;
             }
-            catch ( Exception ex )
+            catch( Exception ex )
             {
                 // Something wrong happened... a database check might be needed
                 AppLogService.error( ex.getMessage( ) + " when creating a comment ", ex );
                 // Revert
                 getCommentService( ).remove( comment.getIdComment( ) );
 
-                SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE,
-                        SiteMessage.TYPE_ERROR );
+                SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE, SiteMessage.TYPE_ERROR );
             }
 
             if ( bIsCreated )
             {
                 // Add to the resource extender history
-                getResourceExtenderHistoryService( ).create( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
-                        strIdExtendableResource, strExtendableResourceType, request );
+                getResourceExtenderHistoryService( ).create( CommentResourceExtender.EXTENDER_TYPE_COMMENT, strIdExtendableResource, strExtendableResourceType,
+                        request );
 
                 // Notify the mailing list
                 sendCommentNotification( request, comment, config );
 
                 XPage page = new XPage( );
-                page.setTitle( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_ADD_COMMENT_PAGE_TITLE,
-                        request.getLocale( ) ) );
-                page.setPathLabel( I18nService.getLocalizedString(
-                        CommentConstants.PROPERTY_XPAGE_ADD_COMMENT_PAGE_LABEL, request.getLocale( ) ) );
+                page.setTitle( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_ADD_COMMENT_PAGE_TITLE, request.getLocale( ) ) );
+                page.setPathLabel( I18nService.getLocalizedString( CommentConstants.PROPERTY_XPAGE_ADD_COMMENT_PAGE_LABEL, request.getLocale( ) ) );
 
-                String strPostBackUrl = (String) request.getSession( ).getAttribute(
-                        ExtendPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_POST_BACK_URL );
+                String strPostBackUrl = (String) request.getSession( )
+                        .getAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.SESSION_COMMENT_POST_BACK_URL );
                 if ( strPostBackUrl == null )
                 {
                     strPostBackUrl = JSP_URL_DEFAULT_POST_BACK;
                 }
-                
+
                 String strFromUrl = request.getParameter( CommentConstants.PARAMETER_FROM_URL );
                 if ( CommentConstants.FROM_SESSION.equals( strFromUrl ) )
                 {
-                    strFromUrl = (String) request.getSession( ).getAttribute(
-                            ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
+                    strFromUrl = (String) request.getSession( ).getAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
                 }
                 if ( strFromUrl != null )
                 {
                     strFromUrl = strFromUrl.replaceAll( CONSTANT_AND_HTML, CONSTANT_AND );
                 }
 
-                if ( ! request.getParameter( "page" ).equals( CommentPlugin.PLUGIN_NAME ) && config.getAddCommentPosition() != AddCommentPosition.NEW_PAGE )
+                if ( !request.getParameter( "page" ).equals( CommentPlugin.PLUGIN_NAME ) && config.getAddCommentPosition( ) != AddCommentPosition.NEW_PAGE )
                 {
-                    return redirectToLastUrl(request, config.getMessageCommentCreated() , strIdExtendableResource);
+                    return redirectToLastUrl( request, config.getMessageCommentCreated( ), strIdExtendableResource );
                 }
-                
+
                 Map<String, Object> model = new HashMap<String, Object>( );
 
                 model.put( CommentConstants.MARK_MESSAGE_COMMENT_CREATED, config.getMessageCommentCreated( ) );
@@ -632,14 +624,13 @@ public class CommentApp implements XPageApplication
                 model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, strExtendableResourceType );
                 model.put( CommentConstants.PARAMETER_ID_COMMENT,
 
-                comment.getIdParentComment( ) == 0 ? comment.getIdComment( ) : comment.getIdParentComment( ) );
+                        comment.getIdParentComment( ) == 0 ? comment.getIdComment( ) : comment.getIdParentComment( ) );
                 model.put( CommentConstants.PARAMETER_POST_BACK_URL, strPostBackUrl );
                 model.put( CommentConstants.MARK_RETURN_TO_COMMENT_LIST,
                         Boolean.parseBoolean( request.getParameter( CommentConstants.MARK_RETURN_TO_COMMENT_LIST ) ) );
                 model.put( CommentConstants.PARAMETER_FROM_URL, strFromUrl );
 
-                HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_XPAGE_MESSAGE_COMMENT_CREATED,
-                        request.getLocale( ), model );
+                HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_XPAGE_MESSAGE_COMMENT_CREATED, request.getLocale( ), model );
 
                 page.setContent( template.getHtml( ) );
 
@@ -647,32 +638,34 @@ public class CommentApp implements XPageApplication
             }
             return null;
         }
-        redirectToLastUrl(request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE, strIdExtendableResource );
+        redirectToLastUrl( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE, strIdExtendableResource );
         return null;
     }
 
-    private XPage redirectToLastUrl(HttpServletRequest request, String message, String strIdExtendableResource)
+    private XPage redirectToLastUrl( HttpServletRequest request, String message, String strIdExtendableResource )
     {
-        request.getSession().setAttribute( CommentConstants.SESSION_COMMENT_ADD_MESSAGE_RESULT + strIdExtendableResource, message );
-        HttpServletResponse response = LocalVariables.getResponse(  );
+        request.getSession( ).setAttribute( CommentConstants.SESSION_COMMENT_ADD_MESSAGE_RESULT + strIdExtendableResource, message );
+        HttpServletResponse response = LocalVariables.getResponse( );
         UrlItem url = new UrlItem( (String) request.getSession( ).getAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL ) );
         url.setAnchor( CommentConstants.ADD_COMMENT_MESSAGE_RESULT_ANCHOR );
         try
         {
-            response.sendRedirect( url.getUrl() );
+            response.sendRedirect( url.getUrl( ) );
         }
-        catch (IOException e)
+        catch( IOException e )
         {
             // log ?
         }
-        return new XPage();
+        return new XPage( );
     }
 
-	/**
+    /**
      * Builds the stop message.
      * 
-     * @param <A> the generic type
-     * @param listErrors the list errors
+     * @param <A>
+     *            the generic type
+     * @param listErrors
+     *            the list errors
      * @return the string
      */
     private static <A> String buildStopMessage( Set<ConstraintViolation<A>> listErrors )
@@ -694,9 +687,12 @@ public class CommentApp implements XPageApplication
     /**
      * Send comment notification.
      * 
-     * @param request the request
-     * @param comment the document comment
-     * @param config the config
+     * @param request
+     *            the request
+     * @param comment
+     *            the document comment
+     * @param config
+     *            the config
      */
     private void sendCommentNotification( HttpServletRequest request, Comment comment, CommentExtenderConfig config )
     {
@@ -709,26 +705,26 @@ public class CommentApp implements XPageApplication
 
             String strSenderEmail = comment.getEmail( );
             String strSenderName = comment.getName( );
-            String strResourceName = getResourceExtenderService( ).getExtendableResourceName(
-                    comment.getIdExtendableResource( ), comment.getExtendableResourceType( ) );
+            String strResourceName = getResourceExtenderService( ).getExtendableResourceName( comment.getIdExtendableResource( ),
+                    comment.getExtendableResourceType( ) );
 
-            Object[] params = { strResourceName };
-            String strSubject = I18nService.getLocalizedString( CommentConstants.MESSAGE_NOTIFY_SUBJECT, params,
-                    request.getLocale( ) );
+            Object [ ] params = {
+                    strResourceName
+            };
+            String strSubject = I18nService.getLocalizedString( CommentConstants.MESSAGE_NOTIFY_SUBJECT, params, request.getLocale( ) );
 
             UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl( ) );
             url.addParameter( XPageAppService.PARAM_XPAGE_APP, CommentPlugin.PLUGIN_NAME );
             url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, comment.getIdExtendableResource( ) );
             url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE, comment.getExtendableResourceType( ) );
 
-            model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, comment.getIdExtendableResource() );
+            model.put( CommentConstants.MARK_ID_EXTENDABLE_RESOURCE, comment.getIdExtendableResource( ) );
             model.put( CommentConstants.MARK_EXTENDABLE_RESOURCE_TYPE, comment.getExtendableResourceType( ) );
             model.put( CommentConstants.MARK_RESOURCE_EXTENDER_NAME, strResourceName );
             model.put( CommentConstants.MARK_RESOURCE_EXTENDER_URL, url.getUrl( ) );
             model.put( CommentConstants.MARK_COMMENT, comment );
 
-            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT_NOTIFY_MESSAGE,
-                    request.getLocale( ), model );
+            HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_COMMENT_NOTIFY_MESSAGE, request.getLocale( ), model );
             String strBody = template.getHtml( );
 
             MailService.sendMailHtml( recipient.getEmail( ), strSenderName, strSenderEmail, strSubject, strBody );
@@ -737,20 +733,21 @@ public class CommentApp implements XPageApplication
 
     /**
      * Get the default number of items per page
+     * 
      * @return the default number of items per page
      */
     private static int getDefaultItemsPerPage( )
     {
         if ( _nDefaultItemsPerPage == 0 )
         {
-            _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt(
-                    CommentConstants.PROPERTY_DEFAULT_LIST_COMMENTS_PER_PAGE, 50 );
+            _nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( CommentConstants.PROPERTY_DEFAULT_LIST_COMMENTS_PER_PAGE, 50 );
         }
         return _nDefaultItemsPerPage;
     }
 
     /**
      * Get the comment service
+     * 
      * @return the comment service
      */
     private static ICommentService getCommentService( )
@@ -764,6 +761,7 @@ public class CommentApp implements XPageApplication
 
     /**
      * Get the config service
+     * 
      * @return the config service
      */
     private static IResourceExtenderConfigService getConfigService( )
@@ -777,6 +775,7 @@ public class CommentApp implements XPageApplication
 
     /**
      * Get the resource extender service
+     * 
      * @return the resource extender service
      */
     private static IResourceExtenderService getResourceExtenderService( )
@@ -790,6 +789,7 @@ public class CommentApp implements XPageApplication
 
     /**
      * Get the resource extender history service
+     * 
      * @return the resource extender history service
      */
     private static IResourceExtenderHistoryService getResourceExtenderHistoryService( )
@@ -803,6 +803,7 @@ public class CommentApp implements XPageApplication
 
     /**
      * Removes comment
+     * 
      * @param request
      * @param strIdExtendableResource
      * @param strExtendableResourceType
@@ -810,23 +811,21 @@ public class CommentApp implements XPageApplication
      * @throws SiteMessageException
      * @throws UserNotSignedException
      */
-    private XPage doRemoveComment( HttpServletRequest request, String strIdExtendableResource,
-            String strExtendableResourceType ) throws SiteMessageException, UserNotSignedException
+    private XPage doRemoveComment( HttpServletRequest request, String strIdExtendableResource, String strExtendableResourceType )
+            throws SiteMessageException, UserNotSignedException
     {
-        String strConfirmRemoveComment = String
-                .valueOf( request.getParameter( CommentConstants.PARAMETER_CONFIRM_REMOVE_COMMENT ) );
+        String strConfirmRemoveComment = String.valueOf( request.getParameter( CommentConstants.PARAMETER_CONFIRM_REMOVE_COMMENT ) );
         String strIdComment = String.valueOf( request.getParameter( CommentConstants.PARAMETER_ID_COMMENT ) );
         int nIdComment = Integer.parseInt( strIdComment );
         Comment comment = getCommentService( ).findByPrimaryKey( nIdComment );
         LuteceUser user = null;
 
-        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT,
-                strIdExtendableResource, strExtendableResourceType );
+        CommentExtenderConfig config = getConfigService( ).find( CommentResourceExtender.EXTENDER_TYPE_COMMENT, strIdExtendableResource,
+                strExtendableResourceType );
 
         if ( comment == null || strConfirmRemoveComment == null )
         {
-            SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE,
-                    SiteMessage.TYPE_ERROR );
+            SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE, SiteMessage.TYPE_ERROR );
         }
 
         // test authentication if needed
@@ -839,14 +838,16 @@ public class CommentApp implements XPageApplication
             }
             else
             {
-                String strParamError=  CommentListenerService.checkComment( comment.getComment( ), strExtendableResourceType, comment.getIdExtendableResource( ), user.getName( ) );
-                Object[] paramsError= { strParamError };
+                String strParamError = CommentListenerService.checkComment( comment.getComment( ), strExtendableResourceType,
+                        comment.getIdExtendableResource( ), user.getName( ) );
+                Object [ ] paramsError = {
+                        strParamError
+                };
 
                 if ( strParamError != null && StringUtils.isNotEmpty( strParamError ) )
                 {
-                    SiteMessageService.setMessage( request, MESSAGE_STOP_GENERIC_MESSAGE, paramsError,SiteMessage.TYPE_STOP );
+                    SiteMessageService.setMessage( request, MESSAGE_STOP_GENERIC_MESSAGE, paramsError, SiteMessage.TYPE_STOP );
                 }
-
 
                 // Remove the comment only if it does not have subcomments && the delete option is enabled
                 // and the user must be the author
@@ -857,31 +858,29 @@ public class CommentApp implements XPageApplication
                 }
                 else
                 {
-                    SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_CANNOT_DELETE,
-                                                   SiteMessage.TYPE_ERROR );
+                    SiteMessageService.setMessage( request, CommentConstants.MESSAGE_ERROR_CANNOT_DELETE, SiteMessage.TYPE_ERROR );
                 }
 
                 String strFromUrl = request.getParameter( CommentConstants.PARAMETER_FROM_URL );
                 if ( CommentConstants.FROM_SESSION.equals( strFromUrl ) )
                 {
-                    strFromUrl = (String) request.getSession( )
-                            .getAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
+                    strFromUrl = (String) request.getSession( ).getAttribute( ExtendPlugin.PLUGIN_NAME + CommentConstants.PARAMETER_FROM_URL );
                 }
                 if ( strFromUrl != null )
                 {
                     strFromUrl = strFromUrl.replaceAll( CONSTANT_AND_HTML, CONSTANT_AND );
                 }
 
-                HttpServletResponse response = LocalVariables.getResponse(  );
+                HttpServletResponse response = LocalVariables.getResponse( );
                 try
                 {
                     response.sendRedirect( strFromUrl );
                 }
-                catch (IOException e)
+                catch( IOException e )
                 {
                     // log ?
                 }
-                return new XPage();
+                return new XPage( );
             }
         }
         redirectToLastUrl( request, CommentConstants.MESSAGE_ERROR_GENERIC_MESSAGE, strIdExtendableResource );

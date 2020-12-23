@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.extend.modules.comment.business.config;
 
 import fr.paris.lutece.plugins.extend.business.extender.config.ExtenderConfig;
 
-
 /**
  * 
  * CommentExtenderConfig
@@ -57,8 +56,7 @@ public class CommentExtenderConfig extends ExtenderConfig
     private boolean _bTriCommentsByCreation;
     private int _nIdWorkflow;
 
-
-	/**
+    /**
      * Checks if is moderated.
      * 
      * @return true, if is moderated
@@ -71,7 +69,8 @@ public class CommentExtenderConfig extends ExtenderConfig
     /**
      * Sets the moderated.
      * 
-     * @param bModerated the new moderated
+     * @param bModerated
+     *            the new moderated
      */
     public void setModerated( boolean bModerated )
     {
@@ -87,7 +86,8 @@ public class CommentExtenderConfig extends ExtenderConfig
     }
 
     /**
-     * @param nNbComments the nNbComments to set
+     * @param nNbComments
+     *            the nNbComments to set
      */
     public void setNbComments( int nNbComments )
     {
@@ -103,7 +103,8 @@ public class CommentExtenderConfig extends ExtenderConfig
     }
 
     /**
-     * @param nIdMailingList the nIdMailingList to set
+     * @param nIdMailingList
+     *            the nIdMailingList to set
      */
     public void setIdMailingList( int nIdMailingList )
     {
@@ -112,6 +113,7 @@ public class CommentExtenderConfig extends ExtenderConfig
 
     /**
      * Check if sub comments are authorized for this extender
+     * 
      * @return True if sub comments are authorized, false otherwise
      */
     public boolean getAuthorizeSubComments( )
@@ -121,8 +123,9 @@ public class CommentExtenderConfig extends ExtenderConfig
 
     /**
      * Authorize or unauthorize sub comments for this extender
-     * @param bAuthorizeSubComments True if sub comments are authorized, false
-     *            otherwise
+     * 
+     * @param bAuthorizeSubComments
+     *            True if sub comments are authorized, false otherwise
      */
     public void setAuthorizeSubComments( boolean bAuthorizeSubComments )
     {
@@ -131,8 +134,8 @@ public class CommentExtenderConfig extends ExtenderConfig
 
     /**
      * Check if a BBCode editor should be used to compose comments
-     * @return True if a BBCode should be used to compose comments, false
-     *         otherwise
+     * 
+     * @return True if a BBCode should be used to compose comments, false otherwise
      */
     public boolean getUseBBCodeEditor( )
     {
@@ -141,8 +144,9 @@ public class CommentExtenderConfig extends ExtenderConfig
 
     /**
      * Set the usage of a BBCode editor compose comments
-     * @param bUseBBCodeEditor True to use a BBCode editor to compose comments,
-     *            false otherwise
+     * 
+     * @param bUseBBCodeEditor
+     *            True to use a BBCode editor to compose comments, false otherwise
      */
     public void setUseBBCodeEditor( boolean bUseBBCodeEditor )
     {
@@ -151,6 +155,7 @@ public class CommentExtenderConfig extends ExtenderConfig
 
     /**
      * Get the badge of comments posted by admin users
+     * 
      * @return The badge of comments posted by admin users
      */
     public String getAdminBadge( )
@@ -160,7 +165,9 @@ public class CommentExtenderConfig extends ExtenderConfig
 
     /**
      * Set the badge of comments posted by admin users
-     * @param strAdminAnswerBadge The badge of comments posted by admin users
+     * 
+     * @param strAdminAnswerBadge
+     *            The badge of comments posted by admin users
      */
     public void setAdminBadge( String strAdminAnswerBadge )
     {
@@ -169,6 +176,7 @@ public class CommentExtenderConfig extends ExtenderConfig
 
     /**
      * Get the message to display to users when a comment is created
+     * 
      * @return The message to display
      */
     public String getMessageCommentCreated( )
@@ -178,7 +186,9 @@ public class CommentExtenderConfig extends ExtenderConfig
 
     /**
      * Set the message to display to users when a comment is created
-     * @param strMessageCommentCreated The message to display
+     * 
+     * @param strMessageCommentCreated
+     *            The message to display
      */
     public void setMessageCommentCreated( String strMessageCommentCreated )
     {
@@ -188,66 +198,74 @@ public class CommentExtenderConfig extends ExtenderConfig
     /**
      * @returnthe position number of the add comment form
      */
-    public int getAddCommentPosition()
+    public int getAddCommentPosition( )
     {
-    	return _nAddCommentPosition;
+        return _nAddCommentPosition;
     }
-    
+
     /**
      * * @param the position number
+     * 
      * @return void
      */
-    public void setAddCommentPosition (int nPosition)
+    public void setAddCommentPosition( int nPosition )
     {
-    	_nAddCommentPosition = nPosition;
+        _nAddCommentPosition = nPosition;
     }
-    
+
     /**
      * 
      * @return isEnableAuthMode true if the authentication mode is enable
      */
-	public boolean isEnabledAuthMode() {
-		return _bEnabledAuthMode;
-	}
-	
-	/**
-	 * 
-	 * @param bEnableAuthMode  true if the authentication mode is enable
-	 */
-	public void setEnabledAuthMode(boolean bEnableAuthMode) {
-		this._bEnabledAuthMode = bEnableAuthMode;
-	}
-	
-	/**
-	 * 
-	 * @return isDisplaySubComments true if the display sub comments mode is enable 
-	 */
-	public boolean isDisplaySubComments( )
-	{
-		return _bDisplaySubComments;
-	}
-	
-	/**
-	 * 
-	 * @param bDisplaySubComments true if the display sub comments mode is enable
-	 */
-	public void setDisplaySubComments( boolean bDisplaySubComments )
-	{
-		this._bDisplaySubComments = bDisplaySubComments;
-	}
+    public boolean isEnabledAuthMode( )
+    {
+        return _bEnabledAuthMode;
+    }
 
-	/**
-	 * Returns the DeleteComments option
-	 * @return True if the the option is enabled
-	 */
-    public boolean getDeleteComments()
+    /**
+     * 
+     * @param bEnableAuthMode
+     *            true if the authentication mode is enable
+     */
+    public void setEnabledAuthMode( boolean bEnableAuthMode )
+    {
+        this._bEnabledAuthMode = bEnableAuthMode;
+    }
+
+    /**
+     * 
+     * @return isDisplaySubComments true if the display sub comments mode is enable
+     */
+    public boolean isDisplaySubComments( )
+    {
+        return _bDisplaySubComments;
+    }
+
+    /**
+     * 
+     * @param bDisplaySubComments
+     *            true if the display sub comments mode is enable
+     */
+    public void setDisplaySubComments( boolean bDisplaySubComments )
+    {
+        this._bDisplaySubComments = bDisplaySubComments;
+    }
+
+    /**
+     * Returns the DeleteComments option
+     * 
+     * @return True if the the option is enabled
+     */
+    public boolean getDeleteComments( )
     {
         return _bDeleteComments;
     }
 
     /**
      * Sets the DeleteComments option
-     * @param bDeleteComments The DeleteComments option
+     * 
+     * @param bDeleteComments
+     *            The DeleteComments option
      */
     public void setDeleteComments( boolean bDeleteComments )
     {
@@ -256,22 +274,26 @@ public class CommentExtenderConfig extends ExtenderConfig
 
     /**
      * Get Tri date comments
+     * 
      * @return if tri date comments
      */
-	public boolean isTriCommentsByCreation( ) 
-	{
-		return _bTriCommentsByCreation;
-	}
-	/**
-	 * Sets tri date comments
-	 * @param bTriDateComments tri date comments
-	 */
-	public void setTriCommentsByCreation( boolean bTriDateComments ) 
-	{
-		_bTriCommentsByCreation = bTriDateComments;
-	}
+    public boolean isTriCommentsByCreation( )
+    {
+        return _bTriCommentsByCreation;
+    }
 
-	/**
+    /**
+     * Sets tri date comments
+     * 
+     * @param bTriDateComments
+     *            tri date comments
+     */
+    public void setTriCommentsByCreation( boolean bTriDateComments )
+    {
+        _bTriCommentsByCreation = bTriDateComments;
+    }
+
+    /**
      * Getter for id_workflow
      * 
      * @return the _nIdWorkflow
@@ -291,6 +313,5 @@ public class CommentExtenderConfig extends ExtenderConfig
     {
         _nIdWorkflow = nIdWorkflow;
     }
-    
-}
 
+}

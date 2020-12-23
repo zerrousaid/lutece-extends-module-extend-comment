@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,14 +52,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 
-
 /**
  * 
  * ManageCommentsPluginAction
  * 
  */
-public class ManageCommentsPluginAction extends AbstractPluginAction<IExtendableResource>
-    implements IExtendableResourcePluginAction
+public class ManageCommentsPluginAction extends AbstractPluginAction<IExtendableResource> implements IExtendableResourcePluginAction
 {
     private static final String ACTION_NAME = "Manage comments";
 
@@ -111,18 +109,15 @@ public class ManageCommentsPluginAction extends AbstractPluginAction<IExtendable
      * {@inheritDoc}
      */
     @Override
-    public IPluginActionResult process( HttpServletRequest request, HttpServletResponse response, AdminUser adminUser,
-            IExtendableResource sessionFields ) throws AccessDeniedException
+    public IPluginActionResult process( HttpServletRequest request, HttpServletResponse response, AdminUser adminUser, IExtendableResource sessionFields )
+            throws AccessDeniedException
     {
         UrlItem url = new UrlItem( AppPathService.getBaseUrl( request ) + JSP_URL );
         url.addParameter( CommentConstants.PARAMETER_EXTENDER_TYPE, CommentResourceExtender.EXTENDER_TYPE_COMMENT );
-        url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE,
-                request.getParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE ) );
-        url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE,
-                request.getParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE ) );
-        url.addParameter( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace(
-                request.getHeader( CommentConstants.PARAMETER_REFERER ), CommentConstants.CONSTANT_AND,
-                CommentConstants.CONSTANT_AND_HTML ) );
+        url.addParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE, request.getParameter( CommentConstants.PARAMETER_ID_EXTENDABLE_RESOURCE ) );
+        url.addParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE, request.getParameter( CommentConstants.PARAMETER_EXTENDABLE_RESOURCE_TYPE ) );
+        url.addParameter( CommentConstants.PARAMETER_FROM_URL, StringUtils.replace( request.getHeader( CommentConstants.PARAMETER_REFERER ),
+                CommentConstants.CONSTANT_AND, CommentConstants.CONSTANT_AND_HTML ) );
 
         DefaultPluginActionResult result = new DefaultPluginActionResult( );
         result.setRedirect( url.getUrl( ) );
