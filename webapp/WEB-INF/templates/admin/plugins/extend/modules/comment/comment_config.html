@@ -1,110 +1,83 @@
 <#include "/admin/util/editor/editor.html" />
-<div class="form-group">
-	<label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label" for="moderated">#i18n{module.extend.comment.comment_config.labelModerated} : </label>
-	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-		<br />
-		<input type="radio" name="moderated" value="true" <#if commentConfig.moderated>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelYes}
-		<input type="radio" name="moderated" value="false" <#if !commentConfig.moderated>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelNo}
-	</div>
-</div>
-<div class="form-group">
-	<label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label" for="nbComments">#i18n{module.extend.comment.comment_config.labelNbComments} : </label>
-	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-		<input type="text" name="nbComments" value="${commentConfig.nbComments!}" maxlength="2" size="2" />
-	</div>
-</div>
-<div class="form-group">
-	<label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label" for="authorizeSubComments">#i18n{module.extend.comment.comment_config.labelAuthorizeSubComments} : </label>
-	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-		<input type="radio" name="authorizeSubComments" value="true" <#if commentConfig.authorizeSubComments>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelYes}
-		<input type="radio" name="authorizeSubComments" value="false" <#if !commentConfig.authorizeSubComments>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelNo}
-	</div>
-</div>
-<div class="form-group">
-	<label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label" for="displaySubComments">#i18n{module.extend.comment.comment_config.labelShowComments} : </label>
-	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-		<input type="radio" name="displaySubComments" value="true" <#if commentConfig.displaySubComments>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelYes}
-		<input type="radio" name="displaySubComments" value="false" <#if !commentConfig.displaySubComments>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelNo}
-	</div>
-</div>
-<div class="form-group">
-	<label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label" for="displaySubComments"> #i18n{module.extend.comment.comment_config.labelTriComments} : </label> 
-	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-		<input type="radio" name="triCommentsByCreation" value="false" <#if !commentConfig.triCommentsByCreation>checked="checked"</#if> />&nbsp;#i18n{module.extend.comment.comment_config.labelTriCommentsParDateModification}
-		<input type="radio" name="triCommentsByCreation" value="true" <#if commentConfig.triCommentsByCreation>checked="checked"</#if> />&nbsp;#i18n{module.extend.comment.comment_config.labelTriCommentsParDateCreation}
-	</div>
-</div>
+<@row>
+<@columns sm=3>
+<@formGroup rows=2 labelKey='#i18n{module.extend.comment.comment_config.labelModerated}' >
+	<#assign rbMod><#if commentConfig.moderated>true<#else>false</#if></#assign>
+	<@radioButton name='moderated' id='modOk' value='true' labelKey='#i18n{portal.util.labelYes}' labelFor='modOk' orientation='' checked=rbMod?boolean /> 
+	<#assign rbMod><#if !commentConfig.moderated>true<#else>false</#if></#assign>
+	<@radioButton name='moderated' id='modNOk' value='true' labelKey='#i18n{portal.util.labelNo}' labelFor='modNOk' orientation='' checked=rbMod?boolean /> 
+</@formGroup>
+<@formGroup rows=2 labelKey='#i18n{module.extend.comment.comment_config.labelAddCommentPosition}' labelFor='addCommentPosition' >
+	<@select name='addCommentPosition' id='addCommentPosition' title='#i18n{module.extend.comment.comment_config.labelAddCommentPosition}'>
+		<#list allPositions?keys as position>
+			<option <#if position='${commentConfig.addCommentPosition}'>selected="selected" </#if>value="${position}">#i18n{${allPositions[position]}}</option>
+		</#list>
+	</@select>
+</@formGroup>
+<@formGroup rows=2 labelKey='#i18n{module.extend.comment.comment_config.labelNbComments}' labelFor='nbComments' >
+	<@input type='number' name='nbComments' value='${commentConfig.nbComments!}' maxlength=2 min=1 />
+</@formGroup>
+<@formGroup rows=2 labelKey='#i18n{module.extend.comment.comment_config.labelAuthorizeSubComments}' labelFor='authorizeSubComments' >
+	<#assign rbMod><#if commentConfig.authorizeSubComments>true<#else>false</#if></#assign>
+	<@radioButton name='authorizeSubComments' id='authorizeSubCommentsOk' value='true' labelKey='#i18n{portal.util.labelYes}' labelFor='authorizeSubCommentsOk' orientation='' checked=rbMod?boolean /> 
+	<#assign rbMod><#if !commentConfig.authorizeSubComments>true<#else>false</#if></#assign>
+	<@radioButton name='authorizeSubComments' id='authorizeSubCommentsNOk' value='true' labelKey='#i18n{portal.util.labelNo}' labelFor='authorizeSubCommentsNOk' orientation='' checked=rbMod?boolean /> 
+</@formGroup>
+<@formGroup rows=2 labelKey='#i18n{module.extend.comment.comment_config.labelShowComments}' labelFor='displaySubComments' >
+	<#assign rbMod><#if commentConfig.moderated>true<#else>false</#if></#assign>
+	<@radioButton name='moderated' id='modOk' value='true' labelKey='#i18n{portal.util.labelYes}' labelFor='modOk' orientation='' checked=rbMod?boolean /> 
+	<#assign rbMod><#if !commentConfig.moderated>true<#else>false</#if></#assign>
+	<@radioButton name='moderated' id='modNOk' value='true' labelKey='#i18n{portal.util.labelNo}' labelFor='modNOk' orientation='' checked=rbMod?boolean /> 
+</@formGroup>
+<@formGroup rows=2 labelKey='#i18n{module.extend.comment.comment_config.labelTriComments}' labelFor='triCommentsByCreation' >
+	<#assign rbMod><#if commentConfig.moderated>true<#else>false</#if></#assign>
+	<@radioButton name='triCommentsByCreation' id='triCommentsByCreationOk' value='true' labelKey='#i18n{portal.util.labelYes}' labelFor='triCommentsByCreationOk' orientation='' checked=rbMod?boolean /> 
+	<#assign rbMod><#if !commentConfig.moderated>true<#else>false</#if></#assign>
+	<@radioButton name='triCommentsByCreation' id='triCommentsByCreationNOk' value='true' labelKey='#i18n{portal.util.labelNo}' labelFor='triCommentsByCreationNOk' orientation='' checked=rbMod?boolean /> 
+</@formGroup>
 
-<div class="form-group">
-  <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label" for="addCommentPosition">#i18n{module.extend.comment.comment_config.labelAddCommentPosition} : </label>
-	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-		<select name="addCommentPosition" id="addCommentPosition" title="#i18n{module.extend.comment.comment_config.labelAddCommentPosition}">
-			<#list allPositions?keys as position>
-				<option <#if position = "${commentConfig.addCommentPosition}"> selected="selected" </#if>value="${position}">#i18n{${allPositions[position]}}</option>
-			</#list>
-		</select>
-	</div>
-</div>
-<div class="form-group">
-	<label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label" for="enabledAuthMode">#i18n{module.extend.comment.comment_config.labelEnabledAuthMode} : </label>
-	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-		<input id="extend-comment-auth-mode-enabled" type="radio" name="enabledAuthMode" value="true" <#if commentConfig.enabledAuthMode>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelYes}
-		<input id="extend-comment-auth-mode-disabled" type="radio" name="enabledAuthMode" value="false" <#if !commentConfig.enabledAuthMode>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelNo}
-	</div>
-</div>
-<div class="form-group" id="extend-comment-delete-options">
-    <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label" for="deleteComments">#i18n{module.extend.comment.comment_config.labelEnabledDeleteComments} : </label>
-    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-    <input id="extend-comment-delete-comments-enabled" type="radio" name="deleteComments" value="true" <#if commentConfig.deleteComments>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelYes}
-    <input id="extend-comment-delete-comments-disabled" type="radio" name="deleteComments" value="false" <#if !commentConfig.deleteComments>checked="checked"</#if> />&nbsp;#i18n{portal.util.labelNo}
-    </div>
-</div>
-<div class="form-group">
-	<label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label" for="idMailingList">#i18n{module.extend.comment.comment_config.labelMailingList} : </label>
-	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-		<@comboSorted name="idMailingList" default_value="${commentConfig.idMailingList!}" items=listIdsMailingList />
-		<span class="help-block">#i18n{module.extend.comment.comment_config.labelMailingListComment}</span>
-	</div>
-</div>
+<@formGroup rows=2 labelKey='#i18n{module.extend.comment.comment_config.labelEnabledAuthMode}' labelFor='enabledAuthMode' >
+<#assign rbMod><#if commentConfig.enabledAuthMode>true<#else>false</#if></#assign>
+	<@radioButton name='enabledAuthMode' id='extend-comment-auth-mode-enabled' value='true' labelKey='#i18n{portal.util.labelYes}' labelFor='extend-comment-auth-mode-enabled' orientation='' checked=rbMod?boolean /> 
+	<#assign rbMod><#if !commentConfig.enabledAuthMode>true<#else>false</#if></#assign>
+	<@radioButton name='enabledAuthMode' id='extend-comment-auth-mode-disabled' value='true' labelKey='#i18n{portal.util.labelNo}' labelFor='extend-comment-auth-mode-disabled' orientation='' checked=rbMod?boolean /> 
+</@formGroup>
+<@formGroup rows=2 labelKey='#i18n{module.extend.comment.comment_config.labelEnabledDeleteComments}' labelFor='deleteComments' >
+	<#assign rbMod><#if commentConfig.deleteComments>true<#else>false</#if></#assign>
+	<@radioButton name='deleteComments' id='extend-comment-delete-comments-enabled' value='true' labelKey='#i18n{portal.util.labelYes}' labelFor='extend-comment-delete-comments-enabled' orientation='' checked=rbMod?boolean /> 
+	<#assign rbMod><#if !commentConfig.deleteComments>true<#else>false</#if></#assign>
+	<@radioButton name='deleteComments' id='extend-comment-delete-comments-disabled' value='true' labelKey='#i18n{portal.util.labelNo}' labelFor='extend-comment-delete-comments-disabled' orientation='' checked=rbMod?boolean /> 
+</@formGroup>
+</@columns>
+<@columns sm=4>
+<@formGroup rows=2 labelKey='#i18n{module.extend.comment.comment_config.labelMailingList}' labelFor='idMailingList' helpKey='#i18n{module.extend.comment.comment_config.labelMailingListComment}' >
+	<@select name="idMailingList" default_value="${commentConfig.idMailingList!}" items=listIdsMailingList />
+</@formGroup>
 <#if workflow_list?has_content && workflow_list?size gt 1>
-<div class="form-group">
-
-<label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label" for="idWorkflow">#i18n{module.extend.comment.comment_config.workflow.labelWorkflow} : </label>
-	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-
-		<@select name='idWorkflow' items=workflow_list default_value='${commentConfig.idWorkflow!}' />
-						
-	</div>
-</div>					
-	</#if>
-<div class="form-group">
-	<label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label" for="adminBadge">#i18n{module.extend.comment.comment_config.labelAdminComment} : </label>
-	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-		<textarea class="richtext" name="adminBadge">${commentConfig.adminBadge!}</textarea>
-	</div>
-</div>
-
-<div class="form-group">
-	<label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label" for="messageCommentCreated">#i18n{module.extend.comment.comment_config.labelMessageCommentCreated} : </label>
-	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-		<textarea class="richtext" name="messageCommentCreated">${commentConfig.messageCommentCreated!}</textarea>
-	</div>
-</div>
+<@formGroup rows=2 labelKey='#i18n{module.extend.comment.comment_config.workflow.labelWorkflow}' labelFor='idWorkflow' >
+	<@select name='idWorkflow' items=workflow_list default_value='${commentConfig.idWorkflow!}' />
+</@formGroup>					
+</#if>
+<@formGroup rows=2 labelKey='#i18n{module.extend.comment.comment_config.labelAdminComment}' labelFor='adminBadge' >
+	<@input type='textarea' name='adminBadge' class='richtext' >${commentConfig.adminBadge!}</@input>	
+</@formGroup>
+</@columns>
+<@columns sm=4>
+<@formGroup rows=2 labelKey='#i18n{module.extend.comment.comment_config.labelMessageCommentCreated}' labelFor='messageCommentCreated' >
+	<@input type='textarea' name='messageCommentCreated' class='richtext' >${commentConfig.messageCommentCreated!}</@input>	
+</@formGroup>
+</@columns>
+</@row>
 <@initEditor />
-<script type="text/javascript">
-$( document ).ready( function (  ) {
-    /* Hide the options if unique vote is selected */
-    if ( $( '#extend-comment-auth-mode-disabled' ).attr( 'checked' ) != "undefined" 
-        && $( '#extend-comment-auth-mode-disabled' ).attr( 'checked' ) == "checked" ) {
-        $( '#extend-comment-delete-options' ).hide(  );
-    }
-
-    $( '#extend-comment-auth-mode-disabled' ).click( function (  ) {
-        $( '#extend-comment-delete-options' ).hide(  );
-    } );
-    $( '#extend-comment-auth-mode-enabled' ).click( function (  ) {
-        $( '#extend-comment-delete-options' ).show(  );
-    } );
-
+<@extendScript>
+/* Hide the options if unique vote is selected */
+if ( $( '#extend-comment-auth-mode-disabled' ).prop( 'checked' ) != "undefined" && $( '#extend-comment-auth-mode-disabled' ).prop( 'checked' ) == "checked" ) {
+	$( '#extend-comment-delete-options' ).hide(  );
+}
+$( '#extend-comment-auth-mode-disabled' ).click( function (  ) {
+	$( '#extend-comment-delete-options' ).hide(  );
 } );
-</script>
+$( '#extend-comment-auth-mode-enabled' ).click( function (  ) {
+	$( '#extend-comment-delete-options' ).show(  );
+} );
+</@extendScript>
