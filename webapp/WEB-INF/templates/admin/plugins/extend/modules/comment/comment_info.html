@@ -3,32 +3,32 @@
 <h3 class="sr-only">${extendableResourceType?capitalize} ${resourceExtender.extendableResourceName}</h3>	
  </#if>
 <@tform type='inline' action='jsp/admin/plugins/extend/ViewExtenderInfo.jsp'>
-<@input type='hidden' name='idExtendableResource' value='${idExtendableResource}' />
-<@input type='hidden' name='extendableResourceType' value='${extendableResourceType}' />
-<@input type='hidden' name='extenderType' value='comment' />
-<#if from_url?? && from_url?has_content && from_url != "null"><@input type='hidden' name='from_url' value='${from_url}' /></#if>
-<@select name='filterPinned' default_value="${filterPinned!''}" class='form-control' items=listPinnedFilter />
-<@select name='filterMarkAsImportant' default_value="${filterMarkAsImportant!''}" class='form-control' items=listMarkAsImportantFilter />
-<@select name='filterState' default_value="${filterState!''}" class='form-control' items=listCommentStates />
-<@select class='form-control' name='sorted_attribute_name'>
-	<option <#if sorted_attribute_name?? && sorted_attribute_name = "date_last_modif">selected="selected"</#if> value="date_last_modif">Date de modifications</option>
-	<option <#if sorted_attribute_name?? && sorted_attribute_name = "date_comment">selected="selected"</#if> value="date_comment">Date de création</option>
-</@select>
-<@inputGroup>
-	<@select class='form-control' name='asc_sort'>
-		<option <#if asc_sort?? && asc_sort>selected="selected"</#if> value="true">#i18n{portal.util.sort.asc}</option>
-		<option <#if asc_sort?? && !asc_sort>selected="selected"</#if>value="false">#i18n{portal.util.sort.desc}</option>
+	<@input type='hidden' name='idExtendableResource' value='${idExtendableResource}' />
+	<@input type='hidden' name='extendableResourceType' value='${extendableResourceType}' />
+	<@input type='hidden' name='extenderType' value='comment' />
+	<#if from_url?? && from_url?has_content && from_url != "null"><@input type='hidden' name='from_url' value='${from_url}' /></#if>
+	<@select name='filterPinned' default_value="${filterPinned!''}" class='form-control' items=listPinnedFilter />
+	<@select name='filterMarkAsImportant' default_value="${filterMarkAsImportant!''}" class='form-control' items=listMarkAsImportantFilter />
+	<@select name='filterState' default_value="${filterState!''}" class='form-control' items=listCommentStates />
+	<@select class='form-control' name='sorted_attribute_name'>
+		<option <#if sorted_attribute_name?? && sorted_attribute_name = "date_last_modif">selected="selected"</#if> value="date_last_modif">Date de modifications</option>
+		<option <#if sorted_attribute_name?? && sorted_attribute_name = "date_comment">selected="selected"</#if> value="date_comment">Date de création</option>
 	</@select>
-	<@inputGroupItem>
-		<@button type='submit' size='' color='primary' style=' '  title='#i18n{module.extend.comment.comment_info.labelSearch}' hideTitle=['all'] buttonIcon='filter' />
-	</@inputGroupItem>
-</@inputGroup>
-<#if !allResources> 
-<#assign resHref>jsp/admin/plugins/extend/modules/comment/GetCreateComment.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{module.extend.comment.comment.labelAddComment}</#assign>
-<@link class='btn btn-primary pull-right' href=resHref title='#i18n{module.extend.comment.comment.labelAddComment}'>
-	<@icon style='plus' />  #i18n{module.extend.comment.comment.labelAddComment}
-</@link>
-</#if>	
+	<@inputGroup>
+		<@select class='form-control' name='asc_sort'>
+			<option <#if asc_sort?? && asc_sort>selected="selected"</#if> value="true">#i18n{portal.util.sort.asc}</option>
+			<option <#if asc_sort?? && !asc_sort>selected="selected"</#if>value="false">#i18n{portal.util.sort.desc}</option>
+		</@select>
+		<@inputGroupItem>
+			<@button type='submit' size='' color='primary' style=' '  title='#i18n{module.extend.comment.comment_info.labelSearch}' hideTitle=['all'] buttonIcon='filter' />
+		</@inputGroupItem>
+	</@inputGroup>
+	<#if !allResources> 
+	<#assign resHref>jsp/admin/plugins/extend/modules/comment/GetCreateComment.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{module.extend.comment.comment.labelAddComment}</#assign>
+	<@link class='btn btn-primary pull-right' href=resHref title='#i18n{module.extend.comment.comment.labelAddComment}'>
+		<@icon style='plus' />  #i18n{module.extend.comment.comment.labelAddComment}
+	</@link>
+	</#if>	
 </@tform>
 <#if listComments?? && listComments?has_content>
 	<@table>
