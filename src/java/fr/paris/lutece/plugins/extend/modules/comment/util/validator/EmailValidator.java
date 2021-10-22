@@ -35,7 +35,7 @@ package fr.paris.lutece.plugins.extend.modules.comment.util.validator;
 
 import fr.paris.lutece.plugins.extend.modules.comment.util.annotation.Email;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

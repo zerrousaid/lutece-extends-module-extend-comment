@@ -48,7 +48,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolation;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import fr.paris.lutece.plugins.extend.modules.comment.business.AddCommentPosition;
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;

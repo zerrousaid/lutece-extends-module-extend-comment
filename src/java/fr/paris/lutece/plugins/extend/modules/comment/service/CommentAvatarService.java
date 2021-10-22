@@ -33,7 +33,7 @@
  */
 package fr.paris.lutece.plugins.extend.modules.comment.service;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import fr.paris.lutece.plugins.avatar.service.AvatarService;
 import fr.paris.lutece.plugins.extend.modules.comment.business.Comment;
