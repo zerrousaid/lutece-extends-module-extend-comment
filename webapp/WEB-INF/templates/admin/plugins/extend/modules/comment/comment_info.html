@@ -1,232 +1,299 @@
 <#assign cumber_char_comments=200/>
-<#if !allResources && resourceExtender??>
-<h3 class="sr-only">${extendableResourceType?capitalize} ${resourceExtender.extendableResourceName}</h3>	
- </#if>
-<@tform type='inline' action='jsp/admin/plugins/extend/ViewExtenderInfo.jsp'>
-	<@input type='hidden' name='idExtendableResource' value='${idExtendableResource}' />
-	<@input type='hidden' name='extendableResourceType' value='${extendableResourceType}' />
-	<@input type='hidden' name='extenderType' value='comment' />
-	<#if from_url?? && from_url?has_content && from_url != "null"><@input type='hidden' name='from_url' value='${from_url}' /></#if>
-	<@select name='filterPinned' default_value="${filterPinned!''}" class='form-control' items=listPinnedFilter />
-	<@select name='filterMarkAsImportant' default_value="${filterMarkAsImportant!''}" class='form-control' items=listMarkAsImportantFilter />
-	<@select name='filterState' default_value="${filterState!''}" class='form-control' items=listCommentStates />
-	<@select class='form-control' name='sorted_attribute_name'>
-		<option <#if sorted_attribute_name?? && sorted_attribute_name = "date_last_modif">selected="selected"</#if> value="date_last_modif">Date de modifications</option>
-		<option <#if sorted_attribute_name?? && sorted_attribute_name = "date_comment">selected="selected"</#if> value="date_comment">Date de création</option>
-	</@select>
-	<@inputGroup>
-		<@select class='form-control' name='asc_sort'>
+<@div class='d-flex justify-content-between is-flex is-justify-content-space-between pb-3 mb-2 pt-2 border-bottom border-info'>
+	<@tform type='inline' class='d-flex justify-content-around is-flex is-justify-content-space-around' action='jsp/admin/plugins/extend/ViewExtenderInfo.jsp'>
+		<@input type='hidden' name='idExtendableResource' value='${idExtendableResource}' />
+		<@input type='hidden' name='extendableResourceType' value='${extendableResourceType}' />
+		<@input type='hidden' name='extenderType' value='comment' />
+		<#if from_url?? && from_url?has_content && from_url != "null"><@input type='hidden' name='from_url' value='${from_url}' /></#if>
+		<@select name='filterPinned' default_value="${filterPinned!''}" class='form-control form-select-sm' items=listPinnedFilter />
+		<@select name='filterMarkAsImportant' default_value="${filterMarkAsImportant!''}" class='form-control form-select-sm' items=listMarkAsImportantFilter />
+		<@select name='filterState' default_value="${filterState!''}" class='form-control form-select-sm' items=listCommentStates />
+		<@select class='form-control form-select-sm' name='sorted_attribute_name'>
+			<option <#if sorted_attribute_name?? && sorted_attribute_name = "date_last_modif">selected="selected"</#if> value="date_last_modif">Date de modifications</option>
+			<option <#if sorted_attribute_name?? && sorted_attribute_name = "date_comment">selected="selected"</#if> value="date_comment">Date de création</option>
+		</@select>
+		<@select class='form-control form-select-sm' name='asc_sort'>
 			<option <#if asc_sort?? && asc_sort>selected="selected"</#if> value="true">#i18n{portal.util.sort.asc}</option>
 			<option <#if asc_sort?? && !asc_sort>selected="selected"</#if>value="false">#i18n{portal.util.sort.desc}</option>
 		</@select>
-		<@inputGroupItem>
-			<@button type='submit' size='' color='primary' style=' '  title='#i18n{module.extend.comment.comment_info.labelSearch}' hideTitle=['all'] buttonIcon='filter' />
-		</@inputGroupItem>
-	</@inputGroup>
-	<#if !allResources> 
+		<@button type='submit' color='primary' style=' ' title='#i18n{module.extend.comment.comment_info.labelSearch}' hideTitle=['xs'] buttonIcon='filter' />
+	</@tform>
 	<#assign resHref>jsp/admin/plugins/extend/modules/comment/GetCreateComment.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{module.extend.comment.comment.labelAddComment}</#assign>
-	<@link class='btn btn-primary pull-right' href=resHref title='#i18n{module.extend.comment.comment.labelAddComment}'>
-		<@icon style='plus' />  #i18n{module.extend.comment.comment.labelAddComment}
-	</@link>
-	</#if>	
-</@tform>
+	<@aButton href=resHref title='' >
+		<@icon style='plus me-1 mr-1' /> #i18n{module.extend.comment.comment.labelAddComment}
+	</@aButton>
+</@div>
 <#if listComments?? && listComments?has_content>
-	<@table>
-		<@th scope='col'>#i18n{module.extend.comment.comment_info.statePublished}</@th>
-		<@th scope='col' colspan=4>#i18n{module.extend.comment.comment_info.labelComment}</@th>
-		<@tableHeadBodySeparator />
-		<#list listComments as comment>
-			<@tr>
-				<@td>
-					<@ul class='list-unstyled'>
-					<@li>
+<@timeline>
+	<#assign lOrder=1>
+	<#list listComments as comment>
+  		<#assign order>style="order:<#if comment.pinned>0<#else>${lOrder}</#if>"</#assign>
+  		<#assign commentIcon><#if comment.pinned>thumb-tack<#elseif comment.isImportant>exclamation<#else>comment</#if><#if comment.isAdminComment><#if !comment.published> not-published</#if></#if></#assign>
+  		<#assign commentIconBg><#if !comment.published> bg-danger<#elseif comment.isImportant> bg-warning<#else> bg-primary</#if></#assign>
+  		<#assign commentTime>
+		  <#assign unpublishedSubComment = comment.firstUnpublishedSubComment >
+		  <#if 0 < unpublishedSubComment>
+			  <@tag color='warning' title='#i18n{module.extend.comment.comment_info.unpublishedSubComments}' tagIcon='exclamation-triangle fa-fw'>#i18n{module.extend.comment.comment_info.unpublishedSubComments}</@tag>
+		  </#if>
+		</#assign>
+		<#assign commentLabel>
+		<#assign adminClass><#if !comment.isAdminComment> comment</#if></#assign>
+		<@div class="d-flex justify-content-between align-items-center ${adminClass}">
+			<@div>
+				<@icon style='user' /> 
+				${comment.name!} a comment&eacute; 
+				<@span class='dt-comment' params='data-author="${comment.name!}" data-comment="#content_${comment.idComment!}"'>
+					${comment.dateComment!?string["dd/MM/yyyy HH:mm"]}
+				</@span> 
+				<small>${comment.email!}</small> 
+				${commentTime}
+			</@div>
+			<@tform type='inline' align='right' action='jsp/admin/plugins/extend/modules/comment/DoPublishUnpublishComment.jsp#comment_${comment.idComment!}'>
+				<@input type='hidden' name='idComment' value='${comment.idComment!}' />
+				<@input type='hidden' name='viewAllResources' value='${allResources?c}' />
+				<#if from_url?? && from_url?has_content && from_url != "null"><@input type='hidden' name='from_url' value='${from_url!}' /></#if>
+				<@btnGroup>
 					<#if comment.published>
-						<@tag color='success' title='#i18n{module.extend.comment.comment_info.statePublished}' tagIcon='check fa-fw' />
+						<@button color='danger btn-sm' type='submit' name='unpublish' value='#i18n{module.extend.comment.comment_info.buttonPublish}' title='#i18n{module.extend.comment.comment_info.buttonUnpublish}' hideTitle=['xs'] buttonIcon='toggle-off' />
 					<#else>
-						<@tag color='danger' title='#i18n{module.extend.comment.comment_info.stateNotPublished}' tagIcon='times fa-fw' />
-					</#if>
-					</@li>
-						<#if comment.pinned>
-						<@li>
-							<@tag color='success' tagIcon='thumbtack fa-fw' />
-						</@li>
-					</#if>
-					<#if comment.isImportant>
-						<@li>
-							<@tag color='success' title='#i18n{module.extend.comment.comment_info.important}' tagIcon='thumbs-up fa-fw' />
-						</@li>
-					</#if>
-					<#assign unpublishedSubComment = comment.firstUnpublishedSubComment >
-					<#if 0 < unpublishedSubComment >
-						<#assign paramslink> onclick="javascript:$(\'#comment_toggle_${comment.idComment!}\').next().show();"</#assign>
-						<#assign uscHref>${postBackUrl!}<#if postBackUrl?contains('?')>&amp;<#else>?</#if>extenderType=comment&idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${comment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>#subcomment_${unpublishedSubComment}"></#assign>
-						<@link class='btn btn-warning' href=uscHref title='#i18n{module.extend.comment.comment.labelAddComment}' params=paramslink >
-							<@icon style='search' />  #i18n{module.extend.comment.comment_info.unpublishedSubComments}
-						</@link>
-					</#if>
-					</@ul>	
-				</@td>
-				<@td>
-					<@link params=' name="comment_${comment.idComment!}"' />
-					<@p><#if use_bbcode>${comment.BBCodeComment!}<#else>${comment.comment!}</#if></@p>
-					<#if comment.listSubComments?? && 0 < comment.listSubComments?size>
-						<#list comment.listSubComments as subComment>
-							<#assign commentTitle>
-							<#if subComment.published>
-								<@tag color='success' title='#i18n{module.extend.comment.comment_info.statePublished}' tagIcon='check fa-fw' />
-							<#else>
-								<@tag color='danger' title='#i18n{module.extend.comment.comment_info.stateNotPublished}' tagIcon='times fa-fw' />
-							</#if>
-							<#if use_bbcode>
-								<#if subComment.BBCodeComment?length <= cumber_char_comments>
-									${(subComment.BBCodeComment)!""}
-								<#else>
-									${(subComment.BBCodeComment[0..cumber_char_comments-1])!""}...
-								</#if> 
-							<#else>
-								<#if subComment.comment?length <= cumber_char_comments>
-									${(subComment.comment)!""}
-								<#else>
-									${(subComment.comment[0..cumber_char_comments-1])!""}...
-								</#if> 
-							</#if>
-							</#assign>
-							<@box collapsed=true>
-								<@boxHeader title=commentTitle boxTools=true >
-									<@tform type='inline' action='jsp/admin/plugins/extend/modules/comment/DoPublishUnpublishComment.jsp#comment_${comment.idComment!}'>
-										<@input type='hidden' name='viewAllResources' value='${allResources?c}' />
-										<@input type='hidden' name='idComment' value='${subComment.idComment!}' />
-										<#if from_url?? && from_url?has_content && from_url != "null">
-											<@input type='hidden' name='from_url' value='${from_url!}' />
-										</#if>
-										<@btnGroup>
-											<#if subComment.published>
-												<@button color='danger' type='submit' title='#i18n{module.extend.comment.comment_info.buttonUnpublish}' name='unpublish' value='#i18n{module.extend.comment.comment_info.buttonUnpublish}' title='#i18n{module.extend.comment.comment_info.labelPublished}' buttonIcon='fa fa-unlink' />
-											<#else>
-												<@button color='success' title='#i18n{module.extend.comment.comment_info.buttonPublish}' type='submit' name='publish' value='#i18n{module.extend.comment.comment_info.buttonPublish}' title='#i18n{module.extend.comment.comment_info.labelUnpublished}' buttonIcon='fa fa-link' />
-											</#if>
-											<#assign delHref>jsp/admin/plugins/extend/modules/comment/ConfirmRemoveComment.jsp?idComment=${subComment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if></#assign>
-											<@link class='btn btn-danger' title='#i18n{portal.util.labelDelete}' href=delHref title="#i18n{portal.util.labelDelete}">
-												<@icon style='trash' />
-											</@link>
-										</@btnGroup>
-									</@tform>
-									<@button color='btn btn-box-tool' title='Collapse' buttonIcon='minus' params='data-widget="collapse" data-toggle="tooltip"' />
-								</@boxHeader>
-								<@boxBody>
-								<#if use_bbcode>${subComment.BBCodeComment!}<#else>${subComment.comment!}</#if>
-								<#if subComment.isAdminComment>
-								<@p>${adminBadge!}</@p>
-								</#if>
-								<@p><strong>#i18n{module.extend.comment.comment_info.labelAuthor}</strong> #i18n{module.extend.comment.comment_info.labelName} : ${subComment.name!} - #i18n{module.extend.comment.comment_info.labelSendTime} : ${subComment.dateComment!}</@p>
-								<@p>#i18n{module.extend.comment.comment_info.labelEmail} : ${subComment.email!} - #i18n{module.extend.comment.comment_info.labelIpAddress} : ${subComment.ipAddress!}</@p>
-								</@boxBody>
-							</@box>
-						</#list>
-					</#if>
-				</@td>
-				<@td>
-					<@tform type='inline'  action='jsp/admin/plugins/extend/modules/comment/DoPublishUnpublishComment.jsp#comment_${comment.idComment!}'>
-					<@input type='hidden' name='idComment' value='${comment.idComment!}' />
-					<@input type='hidden' name='viewAllResources' value='${allResources?c}' />
-					<#if from_url?? && from_url?has_content && from_url != "null">
-						<@input type='hidden' name='from_url' value='${from_url!}' />
-					</#if>
-					<@btnGroup>
-					<#if comment.published>
-						<@button color='danger' type='submit' name='unpublish' value='#i18n{module.extend.comment.comment_info.buttonPublish}' title='#i18n{module.extend.comment.comment_info.labelUnpublished}' hideTitle=['all'] buttonIcon='toggle-off' />
-					<#else>
-						<@button color='success' type='submit' name='publish' value='#i18n{module.extend.comment.comment_info.buttonUnpublish}" title="#i18n{module.extend.comment.comment_info.labelPublished}' hideTitle=['all'] buttonIcon='toggle-on' />
+						<@button color='success btn-sm' type='submit' name='publish' value='#i18n{module.extend.comment.comment_info.buttonUnpublish}" title="#i18n{module.extend.comment.comment_info.buttonPublish}' hideTitle=['xs'] buttonIcon='toggle-on' />
 					</#if>
 					<#if allowSubComments>
 						<#assign subComHref>jsp/admin/plugins/extend/modules/comment/GetCreateComment.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${comment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if></#assign>
-						<@link class='btn btn-primary' href=subComHref title='#i18n{module.extend.comment.comment_info.labelAnswer}'>
-							<@icon style='comment' prefix='fa far' />
-						</@link>
+						<@aButton href=subComHref title=''>
+							<@icon style='comment' /> #i18n{module.extend.comment.comment_info.labelAnswer}
+						</@aButton>
 					</#if>
 					<#assign subDelHref>jsp/admin/plugins/extend/modules/comment/ConfirmRemoveComment.jsp?idComment=${comment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if></#assign> 
-					<@link class='btn btn-danger' href=subDelHref title="#i18n{portal.util.labelDelete}">
-						<@icon style='trash' />
-					</@link>
-					<#if comment.listSubComments?? && 0 < comment.listSubComments?size>
-						<@link class='btn btn-primary comment_toggle' href='javascript:;'  id='comment_toggle_${comment.idComment!}' params=' data-toggle-id="subcomment_${comment.idComment!}"' title='#i18n{module.extend.comment.comment_info.displaySubComments}'>
-							<@icon style='chevron-down' />
-						</@link>
-					</#if>
+					<@aButton color='danger' href=subDelHref title=''>
+						<@icon style='trash' /> #i18n{portal.util.labelDelete}
+					</@aButton>
 					<#if comment.isImportant>
 						<#assign subImpThumb>jsp/admin/plugins/extend/modules/comment/DoCancelFlagAsImportant.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${comment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if></#assign> 
-						<@link class='btn btn-danger' href=subImpThumb title='#i18n{module.extend.comment.comment_info.labelCancelFlagImportant}'>
-							<@icon style='chevron-down' />
-						</@link>
+						<@aButton color='danger' href=subImpThumb title=''>
+							<@icon style='thumbs-down' /> #i18n{module.extend.comment.comment_info.labelCancelFlagImportant}
+						</@aButton>
 					<#else>
 						<#assign subImpThumb>jsp/admin/plugins/extend/modules/comment/DoFlagAsImportant.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${comment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if></#assign> 
-						<@link class='btn btn-primary' href=subImpThumb title='#i18n{module.extend.comment.comment_info.labelDoFlagImportant}'>
-							<@icon style='thumbs-up' />
-						</@link>
+						<@aButton href=subImpThumb title=''>
+							<@icon style='thumbs-up' /> #i18n{module.extend.comment.comment_info.labelDoFlagImportant}
+						</@aButton>
 					</#if>
 					<#if comment.pinned>
 						<#assign subPinHref>jsp/admin/plugins/extend/modules/comment/DoCancelPinned.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${comment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if></#assign> 
-						<@link class='btn btn-danger' href=subPinHref title='#i18n{module.extend.comment.comment_info.labelCancelPinned}'>
-							<@icon style='thumbtack' />
-						</@link>
+						<@aButton color='danger' href=subPinHref title=''>
+							<@icon style='thumbtack' /> #i18n{module.extend.comment.comment_info.labelCancelPinned}
+						</@aButton>
 					<#else>
 						<#assign subPinHref>jsp/admin/plugins/extend/modules/comment/DoPinned.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${comment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if></#assign>
-						<@link class='btn btn-primary' href=subPinHref title='#i18n{module.extend.comment.comment_info.labelDoPinned}'>
-							<@icon style='thumbtack' />
-						</@link>
+						<@aButton href=subPinHref title=''>
+							<@icon style='thumbtack' /> #i18n{module.extend.comment.comment_info.labelDoPinned}
+						</@aButton>
 					</#if>					
 					<#if comment.listWorkflowActions?? && comment.listWorkflowActions?size &gt; 0>
 						<#list comment.listWorkflowActions as action> 
-						<@link class='btn btn-primary' href="jsp/admin/plugins/extend/modules/comment/DoProcessWorkflowAction.jsp?id_action=${action.id}&amp;idComment=${comment.idComment}">
-							<#assign iconStyle><#if action.icon.width!=-1> width="${action.icon.width}" </#if><#if action.icon.height!=-1> height="${action.icon.height}"</#if></#assign>
-							<@img url='image?resource_type=workflow_icon_img&id=${action.icon.id}' title='${action.name}' alt='${action.name}' params=iconStyle />
-						</@link>
+							<@aButton href='jsp/admin/plugins/extend/modules/comment/DoProcessWorkflowAction.jsp?id_action=${action.id}&amp;idComment=${comment.idComment}'>
+								<#assign iconStyle><#if action.icon.width!=-1> width="${action.icon.width}" </#if><#if action.icon.height!=-1> height="${action.icon.height}"</#if></#assign>
+								<@img url='image?resource_type=workflow_icon_img&id=${action.icon.id}' title='${action.name}' alt='${action.name}' params=iconStyle />
+							</@aButton>
 						</#list>
 					</#if>
-					</@btnGroup>
-					</@tform>
-				</@td>
-				<@td>@Extender[${comment.idComment},Comment,rating,{show:"vote"}]@</@td>
-				<@td>
-					<#if allResources && resourceExtenderMap?? && resourceExtenderMap[comment.idExtendableResource]??>
-						<#assign resourceExtender=resourceExtenderMap[comment.idExtendableResource]/>
-						<@p><strong>${resourceExtender.extendableResourceName}</strong></@p>
-						<#assign resHref>jsp/admin/plugins/extend/modules/comment/GetCreateComment.jsp?idExtendableResource=${resourceExtender.idExtendableResource}&extendableResourceType=${extendableResourceType}&viewAllResources=true<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if></#assign>
-						<@link class='btn btn-primary' href=resHref title='#i18n{module.extend.comment.comment.labelAddComment}'>
-							<@icon style='plus' /> #i18n{module.extend.comment.comment.labelAddComment}
-						</@link>
-						${resourceExtender.extendableResourceDescription}
-					</#if>
-				</@td>
-				<@td>
-					<strong>#i18n{module.extend.comment.comment_info.labelAuthor}</strong>
-					<@p>#i18n{module.extend.comment.comment_info.labelSendTime} : ${comment.dateComment!} par ${comment.name!}</@p>
-					<@p>#i18n{module.extend.comment.comment_info.labelEmail} : ${comment.email!} - #i18n{module.extend.comment.comment_info.labelIpAddress} : ${comment.ipAddress!}
-					<#if comment.isAdminComment>${adminBadge!}</#if>
-					</@p>
-				</@td>
-			</@tr>
-		</#list>
-	</@table>
+				</@btnGroup>
+				<@btnGroup>
+					@Extender[${comment.idComment},Comment,rating,{show:"vote"}]@
+				</@btnGroup>		
+			</@tform>	
+		</@div>
+		</#assign>
+		<@timelineItem iconFace=commentIcon iconBg=commentIconBg label=commentLabel params=order >
+			<a name="comment_${comment.idComment!}"></a>
+			<@row>
+				<article id="content_${comment.idComment!}" class="col-xs-10 col-sm-11"><#if use_bbcode>${comment.BBCodeComment!}<#else>${comment.comment!}</#if></article>
+				<aside class="col-xs-2 col-sm-1 d-flex align-items-end">
+					<button class="btn btn-link btn-copy-html" data-code="#content_${comment.idComment!}" title="Copier le commentaire" type="button" role="button">
+						<i class="fa fa-copy fa-fw" data-code="#content_${comment.idComment!}" ></i>
+					</button>
+				</aside>
+			</@row>
+			<#if allResources && resourceExtenderMap?? && resourceExtenderMap[comment.idExtendableResource]??>
+				<#assign resourceExtender=resourceExtenderMap[comment.idExtendableResource]/>
+			</#if>
+			<#if comment.listSubComments?? && 0 < comment.listSubComments?size>
+				<#list comment.listSubComments as subComment>
+					<@timeline class='mt-3 pt-3 border-top'>
+						<#assign subCommentOrder>style="order:<#if subComment.pinned>0<#else>${lOrder}</#if>"</#assign>
+  						<#assign subCommentIcon><#if subComment.pinned>thumb-tack<#elseif subComment.isImportant>exclamation<#else>comment</#if><#if subComment.isAdminComment><#if !subComment.published> not-published</#if></#if></#assign>
+						<#assign subCommentIconBg><#if !subComment.published> bg-danger<#elseif subComment.isImportant> bg-warning<#else> bg-primary</#if></#assign>
+						<#assign subCommentLabel>
+						<#assign adminClass><#if !comment.isAdminComment> comment</#if></#assign>
+						<@div class="d-flex justify-content-between align-items-center is-flex is-justify-content-space-between is-align-items-center ${adminClass}">
+							<@div>
+								<@icon style='user' /> ${subComment.name!} a comment&eacute; 
+								<@span class='dt-comment' params='data-author="${subComment.name!}" data-comment="#content_${subComment.idComment!}"'>
+									${subComment.dateComment!?string["dd/MM/yyyy HH:mm"]}
+								</@span> 
+								<small>${subComment.email!}</small> 
+							</@div>
+							<@tform type='inline' align='right' action='jsp/admin/plugins/extend/modules/comment/DoPublishUnpublishComment.jsp#comment_${comment.idComment!}'>
+							<@input type='hidden' name='viewAllResources' value='${allResources?c}' />
+							<@input type='hidden' name='idComment' value='${subComment.idComment!}' />
+							<#if from_url?? && from_url?has_content && from_url != "null"><@input type='hidden' name='from_url' value='${from_url!}' />							</#if>
+							<@btnGroup>
+								<#if subComment.published>
+									<@button color='danger btn-sm' type='submit' title='#i18n{module.extend.comment.comment_info.buttonUnpublish}' name='unpublish' value='#i18n{module.extend.comment.comment_info.buttonUnpublish}' hideTitle=['all'] buttonIcon='toggle-off' />
+								<#else>
+									<@button color='success btn-sm' title='#i18n{module.extend.comment.comment_info.buttonPublish}' type='submit' name='publish' value='#i18n{module.extend.comment.comment_info.buttonPublish}' hideTitle=['all'] buttonIcon='toggle-off' />
+								</#if>
+								<#assign delHref>jsp/admin/plugins/extend/modules/comment/ConfirmRemoveComment.jsp?idComment=${subComment.idComment!}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if></#assign>
+								<@aButton color='danger' title='' href=delHref title="#i18n{portal.util.labelDelete}">
+									<@icon style='trash' /> #i18n{portal.util.labelDelete}
+								</@aButton>
+							</@btnGroup>
+							<#assign unpublishedSubComment = subComment.firstUnpublishedSubComment >
+							<#if 0 < unpublishedSubComment >
+								<a class="btn btn-warning btn-sm" onclick="javascript:$('#comment_toggle_${subComment.idComment!}').next().show();" href="${postBackUrl!}<#if postBackUrl?contains('?')>&amp;<#else>?</#if>extenderType=comment&idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}&idComment=${subComment.idComment}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>#subcomment_${unpublishedSubComment}">
+									#i18n{module.extend.comment.comment_info.unpublishedSubComments}
+								</a>
+							</#if>
+							</@tform>
+						</@div>
+						</#assign>
+						<@timelineItem iconFace=subCommentIcon iconBg=subCommentIconBg label=subCommentLabel params=subCommentOrder >
+							<a name="comment_${subComment.idComment!}"></a>
+							<@row>
+								<article id="content_${subComment.idComment!}" class="col-xs-10 col-sm-11"><#if use_bbcode>${subComment.BBCodeComment!}<#else>${subComment.comment!}</#if></article>
+								<aside class="col-xs-2 col-sm-1 d-flex align-items-end">
+									<button class="btn btn-link btn-copy-html" data-code="#content_${subComment.idComment!}" title="Copier le commentaire" type="button" role="button">
+										<i class="fa fa-copy fa-fw" data-code="#content_${subComment.idComment!}" ></i>
+									</button>
+								</aside>
+							</@row>
+						</@timelineItem>
+					</@timeline>
+				</#list>
+			</#if>
+		</@timelineItem>
+		<#assign lOrder=lOrder+1>
+	</#list>
+</@timeline>
 <@paginationAdmin paginator=paginator combo=1 />
+<link href="js/admin/jquery/plugins/toastr/toastr.min.css" crossorigin="anonymous" rel="stylesheet">
+<script src="js/admin/jquery/plugins/toastr/toastr.min.js"></script>
+<script src="js/admin/moment-with-locales.min.js"></script>
+<script src="js/admin/luxon.min.js"></script>
+<input id="html-text" type="text" value="" class="sr-only">
 <script>
-$(function(){
-	<#if !allResources && resourceExtender??>	
-	$('.box-title').html(' #i18n{module.extend.comment.extender.comment.label} | ${extendableResourceType?capitalize} [${resourceExtender.idExtendableResource!}]  ${resourceExtender.extendableResourceName}');
- 	</#if>
+function stripHTML(str) {
+    return String(str).replace(/(<script(\s|\S)*?<\/script>)|(<style(\s|\S)*?<\/style>)|(<!--(\s|\S)*?-->)|(<\/?(\s|\S)*?>)/g, '');
+}
+
+function copyHTML( copyText ) {
+    const txtHTML = document.querySelector('#html-text');
+    txtHTML.value=copyText.trim();
+    /* Select the text field */
+    txtHTML.select();
+    txtHTML.setSelectionRange(0, 99999); /* For mobile devices */
+
+    /* Copy the text inside the text field */
+    document.execCommand("copy");
+	toastr.options = {
+		"closeButton": true,
+		"debug": false,
+		"newestOnTop": true,
+		"progressBar": false,
+		"positionClass": "toast-top-right",
+		"preventDuplicates": true,
+		"onclick": null,
+		"showDuration": "300",
+		"hideDuration": "1000",
+		"timeOut": 0,
+		"extendedTimeOut": 0,
+		"showEasing": "swing",
+		"hideEasing": "linear",
+		"showMethod": "fadeIn",
+		"hideMethod": "fadeOut",
+		"tapToDismiss": false
+	}
+    toastr.success( "Commentaire copi&eacute; !" );
+}
+
+$( function(){
+	$('.article-link a span').each( function(){
+		var a=$(this).html();
+		$(this).html( stripHTML(a) );
+	});
+
 	$(".commentComments").toggle();
 	$( ".comment_toggle" ).click( function(){
 		var sId="#" + $(this).attr("data-toggle-id");
 		$(sId).fadeToggle("slow", "linear");
 	});
-});
+
+    const copyfm = document.querySelectorAll('.btn-copy-html');
+    copyfm.forEach(function(item) {
+        item.onclick = e =>{
+            e.preventDefault();
+            const code=e.target.getAttribute('data-code');
+            const txt= document.querySelector( code );
+			const v = stripHTML(txt.innerHTML);
+            copyHTML( v );
+            return false;
+        }
+    });
+
+	/* Affiche info de session */
+	moment.locale('fr');
+	$('.dt-comment').each( function(){
+		var dt = $(this).html(),
+			icc = $(this).data('comment');
+			acc = $(this).data('author');
+			m=moment(dt, "DD/MM/YYYY HH:mm").fromNow(),
+			di=moment(dt, "DD/MM/YYYY").format("YYYY-MM-DD"),
+			DateTime = luxon.DateTime,
+			Interval=luxon.Interval;
+
+		$(this).html( m );
+		/*
+		now = DateTime.local();
+		before = DateTime.fromISO( di );
+		i = Interval.fromDateTimes( before, now );
+
+		var nInterval= i.length('month', true);
+		
+		if( nInterval > 0.2 ){
+			toastr.options = {
+				"closeButton": true,
+				"debug": false,
+				"newestOnTop": true,
+				"progressBar": false,
+				"positionClass": "toast-bottom-right",
+				"preventDuplicates": true,
+				"onclick": null,
+				"showDuration": "300",
+				"hideDuration": "1000",
+				"timeOut": 0,
+				"extendedTimeOut": 0,
+				"showEasing": "swing",
+				"hideEasing": "linear",
+				"showMethod": "fadeIn",
+				"hideMethod": "fadeOut",
+				"tapToDismiss": false
+			}
+			//var link = 'jsp/admin/resource/DoProcessExtendableResourceAction.jsp?manageComments=manageComments&extendableResourceType=BLOG&idExtendableResource=${idExtendableResource}' + icc
+			var link = 'jsp/admin/plugins/forms/ManageDirectoryFormResponseDetails.jsp?view=view_form_response_details&filter_id_form=1&id_form_response=${idExtendableResource}' + icc
+			toastr["info"]('<p>Attention commentaire en attente depuis le ' + di + ' par ' + acc + '</p><p><a href="' + link + '">Voir le commentaire</a></p>');
+			$(this).closest('.timeline-header').css('border-left', '5px solid orange');
+			//.prepend('<i class="fa fa-warning text-warning"></i>');
+		
+		}	*/
+	});
+});	
 </script>
 <#else>
 	<@row>
 		<@columns>
-			<@callOut color='warning' titleLevel='h4' title='' callOutIcon='exclamation'>
-				#i18n{module.extend.comment.comment_info.labelNoComment}
-			</@callOut>
+			<@empty title='#i18n{module.extend.comment.comment_info.labelNoComment}' iconName='message-circle-off' subtitle=' ' />
 		</@columns>
 	</@row>
 </#if>
+<!-- End box-body -->
