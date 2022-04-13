@@ -79,8 +79,8 @@ public class CommentPlugin extends PluginDefaultImplementation
         			CommentResourceExtender.EXTENDER_TYPE_COMMENT,
         			(strIdExtendableResource,strExtendableResourceType)-> commentService.findByListResource(Arrays.asList(strIdExtendableResource), strExtendableResourceType),
         			commentService::findByListResource,
-        			(strIdExtendableResource,strExtendableResourceType) -> String.valueOf( commentService.getCommentNb(  strIdExtendableResource,  strExtendableResourceType, false, true )),
-        			(strIdExtendableResource,strExtendableResourceType)-> String.valueOf( commentService.getCommentNb(  strIdExtendableResource,  strExtendableResourceType, false, true )) )
+        			(strIdExtendableResource,strExtendableResourceType) -> String.valueOf( commentService.getCommentNb(  strIdExtendableResource,  strExtendableResourceType, true, true )),
+        			(strIdExtendableResource,strExtendableResourceType)-> String.valueOf( commentService.getCommentNb(  strIdExtendableResource,  strExtendableResourceType, true, true )) )
         );
     }
 }
