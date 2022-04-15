@@ -1,11 +1,12 @@
 <#assign cumber_char_comments=200 />
+<#assign resHref>jsp/admin/plugins/extend/modules/comment/GetCreateComment.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{module.extend.comment.comment.labelAddComment}</#assign>
+<@div class='position-absolute' params='style="top:15px; right: 60px;"'>
+	<@aButton href=resHref title='' >
+		<@icon style='plus me-1 mr-1' /> #i18n{module.extend.comment.comment.labelAddComment}
+	</@aButton>
+</@div>
+<#if listComments?? && listComments?has_content>
 <@div class='pb-3 mb-2 pt-2 border-bottom border-info'>
-	<#assign resHref>jsp/admin/plugins/extend/modules/comment/GetCreateComment.jsp?idExtendableResource=${idExtendableResource}&extendableResourceType=${extendableResourceType}<#if from_url?? && from_url?has_content && from_url != "null">&from_url=${from_url}</#if>" title="#i18n{module.extend.comment.comment.labelAddComment}</#assign>
-	<@div class='position-absolute' params='style="top:15px; right: 60px;"'>
-		<@aButton href=resHref title='' >
-			<@icon style='plus me-1 mr-1' /> #i18n{module.extend.comment.comment.labelAddComment}
-		</@aButton>
-	</@div>
 	<@tform type='inline' class='d-flex justify-content-around is-flex is-justify-content-space-around' action='jsp/admin/plugins/extend/ViewExtenderInfo.jsp'>
 		<@input type='hidden' name='idExtendableResource' value='${idExtendableResource}' />
 		<@input type='hidden' name='extendableResourceType' value='${extendableResourceType}' />
@@ -25,7 +26,6 @@
 		<@button type='submit' color='primary' style=' ' title='#i18n{module.extend.comment.comment_info.labelSearch}' hideTitle=['xs'] buttonIcon='filter' />
 	</@tform>
 </@div>
-<#if listComments?? && listComments?has_content>
 <@timeline class='d-flex flex-column'>
 	<#assign lOrder=1>
 	<#list listComments as comment>
