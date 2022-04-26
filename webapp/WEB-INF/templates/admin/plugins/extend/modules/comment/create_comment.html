@@ -14,7 +14,7 @@
 						<@input name='name' value='${name!}'  placeHolder='${name!}' mandatory=true />
 					</@formGroup>
 					<@formGroup labelKey='#i18n{module.extend.comment.add_comment.labelComment}' labelFor='comment'>
-						<@input name='comment' type='textarea' class='richtext' value='' placeHolder='#i18n{module.extend.comment.add_comment.placeholderComment}' mandatory=true />
+						<@input name='comment' type='textarea' class='richtext' value='' placeHolder='#i18n{module.extend.comment.add_comment.placeholderComment}' />
 					</@formGroup>
 					<@formGroup>
 						<@button type='submit' name='validate' value='' title='#i18n{portal.util.labelValidate}' color='primary' buttonIcon='check' />
