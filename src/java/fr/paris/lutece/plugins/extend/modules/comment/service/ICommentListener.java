@@ -52,32 +52,38 @@ public interface ICommentListener
     /**
      * Notify the creation of a comment
      * 
+     * @param nIdComment
+     * 
      * @param strIdExtendableResource
      *            The id of the extendable resource associated with the created comment
      * @param bPublished
      *            True if the created comment is published, false otherwise
      */
-    void createComment( String strIdExtendableResource, boolean bPublished );
+    void createComment( int nIdComment, String strIdExtendableResource, boolean bPublished );
 
     /**
      * Notify the creation of a comment
+     * 
+     * @param nIdComment
      * 
      * @param strIdExtendableResource
      *            The id of the extendable resource associated with the created comment
      * @param bPublished
      *            True if the created comment is published, false otherwise request HttpServletRequest the Http request
      */
-    void createComment( String strIdExtendableResource, boolean bPublished, HttpServletRequest request );
+    void createComment( int nIdComment, String strIdExtendableResource, boolean bPublished, HttpServletRequest request );
 
     /**
      * Notify the publication or unpublication of a comment
+     * 
+     * @param nIdComment
      * 
      * @param strIdExtendableResource
      *            The id of the extendable resource associated with the modified comment
      * @param bPublished
      *            True if the comment was published, false if it was unpublished
      */
-    void publishComment( String strIdExtendableResource, boolean bPublished );
+    void publishComment( int nIdComment, String strIdExtendableResource, boolean bPublished );
 
     /**
      * Notify the removal of a comment

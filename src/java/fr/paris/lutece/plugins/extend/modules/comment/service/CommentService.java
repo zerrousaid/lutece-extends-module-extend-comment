@@ -98,7 +98,7 @@ public class CommentService implements ICommentService
             update( parentComment );
         }
         processWorkflow( comment );
-        CommentListenerService.createComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ), comment.isPublished( ), request );
+        CommentListenerService.createComment( comment.getIdComment( ), comment.getExtendableResourceType( ), comment.getIdExtendableResource( ), comment.isPublished( ), request );
     }
 
     /**
@@ -119,7 +119,7 @@ public class CommentService implements ICommentService
             update( parentComment );
         }
         processWorkflow( comment );
-        CommentListenerService.createComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ), comment.isPublished( ) );
+        CommentListenerService.createComment( comment.getIdComment( ), comment.getExtendableResourceType( ), comment.getIdExtendableResource( ), comment.isPublished( ) );
     }
 
     /**
@@ -134,7 +134,7 @@ public class CommentService implements ICommentService
         _commentDAO.store( comment, CommentPlugin.getPlugin( ) );
         if ( oldComment.isPublished( ) ^ comment.isPublished( ) )
         {
-            CommentListenerService.publishComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ), comment.isPublished( ) );
+            CommentListenerService.publishComment( comment.getIdComment( ), comment.getExtendableResourceType( ), comment.getIdExtendableResource( ), comment.isPublished( ) );
         }
         // if ( ( oldComment.isPublished( ) && !comment.isPublished( ) ) || !oldComment.isPublished( ) && comment.isPublished( ) ) )
     }

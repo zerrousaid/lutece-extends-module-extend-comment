@@ -103,6 +103,8 @@ public class CommentListenerService
     /**
      * Notify to listeners the creation of a comment. Only listeners associated with the extendable resource type of the comment are notified.
      * 
+     * @param nIdComment
+     * 
      * @param strExtendableResourceType
      *            The extendable resource type of the created comment
      * @param strIdExtendableResource
@@ -110,14 +112,14 @@ public class CommentListenerService
      * @param bPublished
      *            True if the comment is published, false otherwise
      */
-    public static void createComment( String strExtendableResourceType, String strIdExtendableResource, boolean bPublished )
+    public static void createComment( int nIdComment, String strExtendableResourceType, String strIdExtendableResource, boolean bPublished )
     {
         List<ICommentListener> listListeners = _mapListeners.get( strExtendableResourceType );
         if ( listListeners != null )
         {
             for ( ICommentListener listener : listListeners )
             {
-                listener.createComment( strIdExtendableResource, bPublished );
+                listener.createComment( nIdComment, strIdExtendableResource, bPublished );
             }
         }
         listListeners = _mapListeners.get( CONSTANT_EVERY_EXTENDABLE_RESOURCE_TYPE );
@@ -125,13 +127,15 @@ public class CommentListenerService
         {
             for ( ICommentListener listener : listListeners )
             {
-                listener.createComment( strIdExtendableResource, bPublished );
+                listener.createComment( nIdComment, strIdExtendableResource, bPublished );
             }
         }
     }
 
     /**
      * Notify to listeners the creation of a comment. Only listeners associated with the extendable resource type of the comment are notified.
+     * 
+     * @param nIdComment
      * 
      * @param strExtendableResourceType
      *            The extendable resource type of the created comment
@@ -142,14 +146,14 @@ public class CommentListenerService
      * @param request
      *            the HTTP request
      */
-    public static void createComment( String strExtendableResourceType, String strIdExtendableResource, boolean bPublished, HttpServletRequest request )
+    public static void createComment( int nIdComment, String strExtendableResourceType, String strIdExtendableResource, boolean bPublished, HttpServletRequest request )
     {
         List<ICommentListener> listListeners = _mapListeners.get( strExtendableResourceType );
         if ( listListeners != null )
         {
             for ( ICommentListener listener : listListeners )
             {
-                listener.createComment( strIdExtendableResource, bPublished, request );
+                listener.createComment( nIdComment, strIdExtendableResource, bPublished, request );
             }
         }
         listListeners = _mapListeners.get( CONSTANT_EVERY_EXTENDABLE_RESOURCE_TYPE );
@@ -157,7 +161,7 @@ public class CommentListenerService
         {
             for ( ICommentListener listener : listListeners )
             {
-                listener.createComment( strIdExtendableResource, bPublished, request );
+                listener.createComment( nIdComment, strIdExtendableResource, bPublished, request );
             }
         }
     }
@@ -175,12 +179,14 @@ public class CommentListenerService
         if ( _mapListeners.size( ) > 0 )
         {
             Comment comment = getCommentDAO( ).load( nIdComment, CommentPlugin.getPlugin( ) );
-            publishComment( comment.getExtendableResourceType( ), comment.getIdExtendableResource( ), bPublished );
+            publishComment( nIdComment, comment.getExtendableResourceType( ), comment.getIdExtendableResource( ), bPublished );
         }
     }
 
     /**
      * Notify to listeners the modification of a comment. Only listeners associated with the extendable resource type of the comment are notified.
+     * 
+     * @param nIdComment
      * 
      * @param strExtendableResourceType
      *            The extendable resource type of the updated comment
@@ -189,14 +195,14 @@ public class CommentListenerService
      * @param bPublished
      *            True if the comment was published, false if it was unpublished
      */
-    public static void publishComment( String strExtendableResourceType, String strIdExtendableResource, boolean bPublished )
+    public static void publishComment(int nIdComment, String strExtendableResourceType, String strIdExtendableResource, boolean bPublished )
     {
         List<ICommentListener> listListeners = _mapListeners.get( strExtendableResourceType );
         if ( listListeners != null )
         {
             for ( ICommentListener listener : listListeners )
             {
-                listener.publishComment( strIdExtendableResource, bPublished );
+                listener.publishComment( nIdComment, strIdExtendableResource, bPublished );
             }
         }
         listListeners = _mapListeners.get( CONSTANT_EVERY_EXTENDABLE_RESOURCE_TYPE );
@@ -204,7 +210,7 @@ public class CommentListenerService
         {
             for ( ICommentListener listener : listListeners )
             {
-                listener.publishComment( strIdExtendableResource, bPublished );
+                listener.publishComment( nIdComment, strIdExtendableResource, bPublished );
             }
         }
     }
